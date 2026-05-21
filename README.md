@@ -1,8 +1,10 @@
 # Correspondence Auditor — Three-Gate Verification for LLM-as-Judge Pipelines - (v1.0-prereg)
 
+[![DOI](https://zenodo.org/badge/1245618004.svg)](https://doi.org/10.5281/zenodo.20326022)
+
 An open-source, high-integrity audit layer that sits **downstream** of any LLM-as-Judge pipeline. The Auditor is a Line 3 instrument: it does not try to be a better judge. It records what the judge was given, what the judge concluded, and whether those two things are reconcilable against the policy.  
 
-This repository is the frozen experimental artefact for "Auditing LLM-as-Judge Pipelines: A Source-Grounded Instrument for Detecting Strategic-Deception Blindspots"" (St. Vaughan, 2026, DOI). For the actively maintained tool, see [Correspondence Auditor](https://github.com/SourceCodeVault/Correspondence-Auditor). Issues against this code go to `KNOWN_ISSUES.md` and will be addressed in the main repo, not here.
+This repository is the frozen experimental artefact for "Auditing LLM-as-Judge Pipelines: A Source-Grounded Instrument for Detecting Strategic-Deception Blindspots" (St Vaughan, 2026, DOI: 10.5281/zenodo.20326022). For the actively maintained tool, see [Correspondence Auditor](https://github.com/SourceCodeVault/Correspondence-Auditor). Issues against this code go to `KNOWN_ISSUES.md` and will be addressed in the main repo, not here.
 
 ---
 
@@ -528,12 +530,12 @@ If you use this software in academic work, please cite:
 
 ```bibtex
 @software{stvaughan_correspondence_auditor_2026,
-  author = {St. Vaughan, Adrian},
+  author = {St Vaughan, Adrian},
   title  = {Correspondence Auditor: Three-Gate Verification for LLM-as-Judge Pipelines},
   year   = {2026},
   version = {v1.0-prereg},
-  doi    = {10.5281/zenodo.XXXXXXX},
-  url    = {https://github.com/.../Correspondence-Auditor}
+  doi    = {10.5281/zenodo.20326022},
+  url    = {https://github.com/SourceCodeVault/LLM-as-Judge-Deception-Audit}
 }
 ```  
 
