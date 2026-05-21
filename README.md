@@ -443,7 +443,60 @@ The repository ships with the **1,200-case pilot selection** used for the regist
 
 ## Reproducing the Pilot Selection (optional)
 
-If you want to verify the pilot was selected as registered, or to draw an independent stratified subset for your own work, rebuild the cache and re-run the selection utility:
+You can verify the pilot was selected as registered. The 1,200-case pilot is deterministically derived from the registered seed-date. To verify the committed manifest matches what the registered code produces:
+
+    git checkout v1.0-prereg
+    python tools/select_pilot.py --seed-date 20260521
+
+Compare the resulting `input/dataset_20260521_*/manifest.jsonl` against `data/pilot_manifest.tsv`. They will be bit-identical.
+
+You can use this script to compare:
+
+```bash
+ python3 << 'EOF'
+import json, glob, os
+
+# Find the regenerated manifest (latest dataset_* folder)
+regen_path = sorted(glob.glob('input/dataset_*/manifest.jsonl'), key=os.path.getmtime)[-1]
+print(f"Regenerated manifest: {regen_path}")
+
+regen = set()
+with open(regen_path) as f:
+    for line in f:
+        d = json.loads(line)
+        path = d['original_path'].split('data/raw/', 1)[1]
+        regen.add((path, d['bucket']))
+
+committed = set()
+with open('/tmp/committed_manifest.tsv') as f:
+    next(f)  # skip header
+    for line in f:
+        parts = line.rstrip('\n').split('\t')
+        committed.add((parts[0], parts[1]))
+
+print(f"Regenerated: {len(regen)} cases")
+print(f"Committed:   {len(committed)} cases")
+
+if regen == committed:
+    print("✅ MATCH — manifest is bit-identical to what the registered apparatus produces")
+else:
+    only_regen = regen - committed
+    only_committed = committed - regen
+    print(f"❌ MISMATCH")
+    print(f"  Only in regenerated: {len(only_regen)}")
+    print(f"  Only in committed:   {len(only_committed)}")
+    for x in list(only_regen)[:3]: print(f"    R: {x}")
+    for x in list(only_committed)[:3]: print(f"    C: {x}")
+EOF
+Regenerated manifest: input/dataset_20260521_181617/manifest.jsonl
+Regenerated: 1200 cases
+Committed:   1200 cases
+✅ MATCH — manifest is bit-identical to what the registered apparatus produces
+```
+
+## Create Independent Stratified Subset
+
+To draw an independent stratified subset for your own work, rebuild the cache and re-run the selection utility:
 
 ​```bash
 # 1. Rebuild the raw data index (fingerprinted to detect tampering)
