@@ -3,6 +3,7 @@
 An open-source, high-integrity audit layer that sits **downstream** of any LLM-as-Judge pipeline. The Auditor is a Line 3 instrument: it does not try to be a better judge. It records what the judge was given, what the judge concluded, and whether those two things are reconcilable against the policy.  
 
 This repository is the frozen experimental artefact for "Auditing LLM-as-Judge Pipelines: A Source-Grounded Instrument for Detecting Strategic-Deception Blindspots"" (St. Vaughan, 2026, DOI). For the actively maintained tool, see [Correspondence Auditor](https://github.com/SourceCodeVault/Correspondence-Auditor). Issues against this code go to `KNOWN_ISSUES.md` and will be addressed in the main repo, not here.
+
 ---
 
 ## The Problem  
