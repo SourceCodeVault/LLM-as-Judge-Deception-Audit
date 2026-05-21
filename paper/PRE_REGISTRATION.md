@@ -3,6 +3,24 @@
 
 ---
 
+## Registered Artefacts
+
+| Field | Value |
+|---|---|
+| Git tag | `v1.0-prereg` |
+| Commit hash | `443c27896e9730caceab268dcf6f223126700a54` |
+| Repository | https://github.com/SourceCodeVault/LLM-as-Judge-Deception-Audit |
+| Zenodo DOI | [10.5281/zenodo.20326022](https://doi.org/10.5281/zenodo.20326022) |
+| Selection seed-date | `20260521` |
+| Pilot manifest | `data/pilot_manifest.tsv` (the 1,200 stratified case IDs, sorted and committed at this tag) |
+| Tag date | 2026-05-21 |
+
+The above identifies the exact frozen state against which the pilot was run. Any analysis or claim in the corresponding preprint refers to this state. Replicators can verify by running `git checkout 443c2789`.
+
+---
+
+---
+
 ## 0. Orientation: The Source Corpus and the Instrument Under Test
 
 ### 0.1 The Apollo Insider-Trading Corpus
@@ -664,3 +682,7 @@ Patched `tools/build_dashboard.py`, mapping the string description for rule S1 n
 Updated `source_compiler.py` to force the pipeline to fail loud so that an unhandled dataset shape is properly caught and routed to the pre-registered §6(b) / §6(c) exclusion buckets.
 
 Pilot selection seed-date updated to `20260521` to align with pre-registration freeze date. Selection mechanism unchanged.
+
+## v16: Post-tag amendment
+
+Records the registered artefacts (tag, commit hash, Zenodo DOI, selection seed-date, pilot manifest reference) at the top of the document. Adds reference to `data/pilot_manifest.tsv`, a sorted list of the 1,200 stratified case IDs produced by `tools/select_pilot.py` against `--seed-date 20260521` at commit `443c2789`. The manifest is committed at the `v1.0-prereg` tag to allow third parties to verify the pilot composition without re-executing the selection script. No methodology change; this entry documents the registration metadata only. Hypotheses, sample size, seed, MDE, α_family, exclusion rules, and analysis plan unchanged.

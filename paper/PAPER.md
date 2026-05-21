@@ -1,8 +1,10 @@
 # Auditing LLM-as-Judge Pipelines: A Source-Grounded Instrument for Detecting Strategic-Deception Blindspots
 
-**Pragmatic Preprint, v1.0** · Adrian St. Vaughan
+**Pragmatic Preprint, v1.0** · Adrian St Vaughan
 
 **Keywords:** LLM-as-judge, strategic deception, AI safety, audit, pre-registration, Three Lines of Defence, evaluation reliability, sycophancy
+
+**Pre-registration:** This preprint is accompanied by a public pre-registration of the methodology, hypotheses, sample size, exclusion rules, and analysis plan, deposited prior to pilot execution. The pre-registration document (`paper/PRE_REGISTRATION.md` v16) and the complete frozen pipeline are pinned at git tag `v1.0-prereg`, commit `443c27896e9730caceab268dcf6f223126700a54`, archived at Zenodo under DOI [10.5281/zenodo.20326022](https://doi.org/10.5281/zenodo.20326022). The 1,200 stratified pilot case IDs are committed at that tag as `data/pilot_manifest.tsv`. The repository is at https://github.com/SourceCodeVault/LLM-as-Judge-Deception-Audit.
 
 ---
 
