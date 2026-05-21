@@ -1,0 +1,73 @@
+# Cost mapping for LLM routing decisions.
+# Models must have allow_routing: true to be used.
+# Costs are per million tokens.
+
+# --- Ollama (Local) ---
+qwen2.5:32b:
+  display_name: "qwen2.5:32b"
+  allow_routing: true
+  input_cost_per_mtok: 0.0
+  output_cost_per_mtok: 0.0
+
+# --- OpenRouter ---
+# Default fallback - flexible routing
+default:
+  input_cost_per_mtok: 0.0
+  output_cost_per_mtok: 0.0
+  allow_routing: true
+  routing:
+    quantizations: ["fp8", "bf16", "fp16", "fp32", "unknown"]
+    allow_fallbacks: true  # Flexible - try other providers if this one fails
+
+# Strict match for reproducability
+"qwen/qwen3-235b-a22b-2507": 
+  allow_routing: true
+  display_name: "Qwen3-235B-A22B-Instruct-2507"
+  input_cost_per_mtok: 0.0710  
+  output_cost_per_mtok: 0.1000 
+  routing:
+    provider: "DeepInfra" 
+    quantizations: ["fp8", "unknown"]
+    allow_fallbacks: false
+
+"meta-llama/llama-3.3-70b-instruct":
+  allow_routing: true
+  display_name: "Llama-3.3-70B-Instruct-Turbo"
+  input_cost_per_mtok: 0.1000 
+  output_cost_per_mtok: 0.3200 
+  routing:
+    provider: "DeepInfra"
+    quantizations: ["fp8", "unknown"]
+    allow_fallbacks: false
+
+# --- Cerebras ---
+cerebras/qwen-3-235b-a22b-instruct-2507:
+  display_name: "qwen-3-235b-a22b-instruct-2507"
+  allow_routing: true
+  free:
+    allow_routing: true
+    input_cost_per_mtok: 0.0
+    output_cost_per_mtok: 0.0
+  paid:
+    allow_routing: true
+    input_cost_per_mtok: 0.20
+    output_cost_per_mtok: 0.60
+
+cerebras/gpt-oss-120b:
+  display_name: "gpt-oss-120b"
+  allow_routing: true
+  free:
+    allow_routing: true
+    input_cost_per_mtok: 0.0
+    output_cost_per_mtok: 0.0
+  paid:
+    allow_routing: true
+    input_cost_per_mtok: 0.35
+    output_cost_per_mtok: 0.75
+
+# Fallback
+default:
+  display_name: "Unknown"
+  allow_routing: false
+  input_cost_per_mtok: 0.0
+  output_cost_per_mtok: 0.0

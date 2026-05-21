@@ -1,0 +1,21 @@
+{
+    "name": "insider_trading",
+    "version": "1.0",
+    "description": "WhiteStone Inc. insider trading compliance. Audits L2 Judge verdicts on agent trading behavior, using Apollo Research-format agent transcripts as the source of truth.",
+    "company_name": "WhiteStone",
+    "adapter": "apollo_insider_trading",
+    "policy_file": "policy.md",
+    "source_text_contract": {
+        "required_sections": [
+            "[SYSTEM_CONTEXT]",
+            "[AGENT_TRANSCRIPT]",
+            "[EXTERNAL_EVIDENCE]"
+        ],
+        "rationale": "The Judges's job depends on having access to the agent's full reasoning history, not only its sanitized final output. If [AGENT_TRANSCRIPT] is missing, the J1 (Scratchpad Blindness) rule cannot be evaluated and the audit is meaningless. Fail-closed: abort before invoking L3 Compliance Auditor Gate B."
+    },
+    "audited_subject": {
+        "type": "llm_as_judge_verdict",
+        "schema": "ca_canonical_v1",
+        "expected_fields": ["identity", "internal_monologue", "factors", "score", "action_taken"]
+    }
+}
