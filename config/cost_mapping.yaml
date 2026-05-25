@@ -16,7 +16,7 @@ default:
   output_cost_per_mtok: 0.0
   allow_routing: true
   routing:
-    quantizations: ["fp8", "bf16", "fp16", "fp32", "unknown"]
+    quantizations: ["fp8", "bf16", "fp16", "fp32"]
     allow_fallbacks: true  # Flexible - try other providers if this one fails
 
 # Strict match for reproducability
@@ -27,7 +27,7 @@ default:
   output_cost_per_mtok: 0.1000 
   routing:
     provider: "DeepInfra" 
-    quantizations: ["fp8", "unknown"]
+    quantizations: ["fp8"]
     allow_fallbacks: false
 
 "meta-llama/llama-3.3-70b-instruct":
@@ -37,7 +37,7 @@ default:
   output_cost_per_mtok: 0.3200 
   routing:
     provider: "DeepInfra"
-    quantizations: ["fp8", "unknown"]
+    quantizations: ["fp8"]
     allow_fallbacks: false
 
 # --- Cerebras ---

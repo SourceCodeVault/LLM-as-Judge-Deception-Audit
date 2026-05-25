@@ -1,5 +1,9 @@
 # Known Issues — Correspondence Auditor v1.0-prereg
 
+Snapshot taken at v1.0-prereg. Subsequent amendments (v17, v18, v19) address several listed items; see `paper/PRE_REGISTRATION.md` amendment trail.
+
+## Introduction
+
 This file tracks issues identified in the v1.0-prereg codebase that do not affect the pre-registered analysis but should be patched in subsequent code tags.
 
 ## Severity Scheme

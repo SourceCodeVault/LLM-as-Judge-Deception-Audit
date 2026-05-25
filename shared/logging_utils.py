@@ -87,8 +87,8 @@ def save_raw_trace(run_id, model_id, raw_content, thinking_content="",
             "wire_raw_body": wire_raw_body,
             "openrouter_generation": openrouter_generation,
             "prompt_messages": prompt_messages or [],
-            "raw_content": raw_content[:5000],
-            "thinking_content": (thinking_content or "")[:5000],
+            "raw_content": raw_content,
+            "thinking_content": (thinking_content or ""),
         }, indent=2, default=str), encoding="utf-8")
     except Exception:
         pass

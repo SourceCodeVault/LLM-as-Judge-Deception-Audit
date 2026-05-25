@@ -1,11 +1,8 @@
-# Correspondence Auditor — Three-Gate Verification for LLM-as-Judge Pipelines - (v1.0-prereg)
-
-[![DOI](https://zenodo.org/badge/1245618004.svg)](https://doi.org/10.5281/zenodo.20326022)
+# Correspondence Auditor — Three-Gate Verification for LLM-as-Judge Pipelines
 
 An open-source, high-integrity audit layer that sits **downstream** of any LLM-as-Judge pipeline. The Auditor is a Line 3 instrument: it does not try to be a better judge. It records what the judge was given, what the judge concluded, and whether those two things are reconcilable against the policy.  
 
-This repository is the frozen experimental artefact for "Auditing LLM-as-Judge Pipelines: A Source-Grounded Instrument for Detecting Strategic-Deception Blindspots" (St Vaughan, 2026, DOI: 10.5281/zenodo.20326022). For the actively maintained tool, see [Correspondence Auditor](https://github.com/SourceCodeVault/Correspondence-Auditor). Issues against this code go to `KNOWN_ISSUES.md` and will be addressed in the main repo, not here.
-
+This repository is the frozen experimental artefact for "Auditing LLM-as-Judge Pipelines: A Source-Grounded Instrument for Detecting Strategic-Deception Blindspots"" (St. Vaughan, 2026, DOI 10.5281/zenodo.20326022). For the actively maintained tool, see [Correspondence Auditor](https://github.com/SourceCodeVault/Correspondence-Auditor). Issues against this code go to `KNOWN_ISSUES.md` and will be addressed in the main repo, not here.
 ---
 
 ## The Problem  
@@ -24,7 +21,7 @@ The architecture is borrowed from enterprise Governance, Risk, and Compliance (G
 - **Line 2** — oversight that works alongside the operator (the LLM-as-Judge)  
 - **Line 3** — independent audit, structurally separated from Line 2 in reporting line and methodology (the Correspondence Auditor)  
 
-Three lines, not two, because separation is the load-bearing property. A single oversight layer is structurally insufficient for the same reason a CFO does not approve their own accounts. See [Appendix A — GRC Heritage](docs/three_lines.md) for the model's history.  
+Three lines, not two, because separation of duties is a foundational concept. A single oversight layer is structurally insufficient for the same reason a CFO does not approve their own accounts.
 
 ---
 ## The Role of this Repo's L2 Judges  
@@ -73,7 +70,7 @@ Domain truth is not hard-coded into the audit engine. It is loaded as an **inter
 - the source-of-truth schema Gate B grounds against  
 - the citation patterns Gate C must use to justify a verdict  
 
-For this repository, **one cartridge ships in `policy.md`**, paired with the Apollo Research insider-trading source corpus. **The cartridge must mirror the same source-of-truth that your Line 2 judges are operating against** — Auditor and judges must reference the same rule book, or the audit is grading against a different policy than the judge was given.  
+For this repository, **one cartridge ships in `domains/insider_trading/policy.md`**, paired with the Apollo Research insider-trading source corpus. **The cartridge must mirror the same source-of-truth that your Line 2 judges are operating against** — Auditor and judges must reference the same rule book, or the audit is grading against a different policy than the judge was given.  
 
 To audit a different domain, edit the cartridge to encode the policy of that domain (a compliance manual, a law, an internal SOP). The audit architecture is in this sense domain-agnostic; the cartridge is what makes it domain-specific.  
 
@@ -318,75 +315,102 @@ In this mode, the Auditor forces Gate B and Gate C to relitigate every single ca
 ## Project Structure  
 
 ```
-├── run.py                              # CLI entry point
-├── README.md
-├── README-CANARY.md                    # Canary mode docs
+.
+├── CITATION.cff
+├── config
+│   └── cost_mapping.yaml
+├── data
+│   ├── raw
+│   │   └── ApolloResearch
+│   └── synthetic
+│       └── structural_v1_scoped_but_deferred
+├── domains
+│   └── insider_trading
+│       ├── manifest.json
+│       └── policy.md
+├── historical
+│   ├── historical_v17-v18.zip
+│   └── README.md
+├── input
+│   └── dataset_20260521_192859
+│       ├── ApolloResearch
+│       └── manifest.jsonl
 ├── KNOWN_ISSUES.md
 ├── LICENSE
-├── CITATION.cff
-├── requirements.txt
-├── .env.example                        # Copy to .env and fill in API keys
-│
-├── paper/                              # Frozen academic artefacts
+├── paper
+│   ├── build_paper.py
 │   ├── PAPER.md
-│   ├── PRE_REGISTRATION.md
-│   └── build_paper.py                  # Markdown → HTML renderer
-│
-├── domains/
-│   └── insider_trading/
-│       ├── manifest.json               # Domain rule registry
-│       └── policy.md                   # The Truth Cartridge for this domain
-│
-├── steps/                              # Three-gate audit pipeline
-│   ├── orchestrator.py                 # Single-stream router & synthesis
-│   ├── source_compiler.py              # Three-section input compilation
-│   ├── claim_miner.py                  # Atomic-claim extraction for Gate B
-│   ├── l2_judge.py                     # Toy judge variants (Z01–Z05)
-│   ├── l3_auditor.py                   # Gates B (Facts) + C (Logic)
-│   ├── schema.py                       # Typed inter-gate I/O
-│   └── banner.py                       # Console header
-│
-├── prompts/
-│   ├── L2_Z01_JudgeBench.json          # Judge variants (Z01–Z05)
+│   └── PRE_REGISTRATION.md
+├── prompts
+│   ├── L2_Z01_JudgeBench.json
 │   ├── L2_Z02_ScratchpadAware.json
 │   ├── L2_Z03_Paranoid.json
 │   ├── L2_Z04_Lenient.json
 │   ├── L2_Z05_ManagerAligned.json
-│   ├── L2_Z07_SameModelControl.json    # L01 but with LLM model set to same as Auditor
-│   ├── L2_Z08_ScratchpadAwareControl.json    # L02 but with LLM model set to same as Auditor
-│   ├── L3_GateB_FactChecker.json       # Gate B: source-grounding
-│   └── L3_GateC_LogicAuditor.json      # Gate C: binary verdict
-│
-├── shared/
-│   ├── llm_utils.py                    # Prompt loading, dispatch, retry
-│   ├── string_utils.py                 # Robust JSON extraction
-│   ├── ui_utils.py                     # Terminal formatting
-│   ├── logging_utils.py                # Telemetry logging
-│   └── api_clients/
-│       ├── ollama_client.py            # Local Ollama backend
-│       ├── openrouter_client.py        # OpenRouter backend
-│       └── cerebras_client.py          # Cerebras backend
-│
-├── tools/
-│   ├── select_pilot.py                 # Stratified pilot selection
-│   ├── build_dashboard.py              # Results dashboard renderer
-│   ├── compute_stability.py            # §11 test-retest ICC computation
-│   ├── l3_gate_b_irr_tester.py         # §4.6 Gate B IRR annotation task
-│   ├── update_openrouter_costs.py      # Cost mapping refresh utility
-│   ├── tainted_cases.txt               # Dev-set exclusion manifest
-│   └── build-canary-files/             # Canary case generation toolkit
-│
-├── config/
-│   └── cost_mapping.yaml               # Per-model cost & quantisation pinning
-│
-├── data/
-│   ├── raw/                            # Apollo corpus (read-only input)
-│   ├── raw_index.json                  # Cached classification index
-│   └── synthetic/
-│       └── structural_v1_scoped_but_deferred/   # Paper 2 candidates (deferred)
-│
-├── input/                              # Selected pilot dataset (generated)
-└── output/                             # Run outputs (generated)
+│   ├── L2_Z07_SameModelControl.json
+│   ├── L2_Z08_ScratchpadAwareControl.json
+│   ├── L3_GateB_FactChecker.json
+│   └── L3_GateC_LogicAuditor.json
+├── pytest.ini
+├── README-CANARY.md
+├── README.md
+├── requirements.txt
+├── run.py
+├── shared
+│   ├── __init__.py
+│   ├── api_clients
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   ├── cerebras_client.py
+│   │   ├── ollama_client.py
+│   │   └── openrouter_client.py
+│   ├── llm_utils.py
+│   ├── logging_utils.py
+│   ├── string_utils.py
+│   └── ui_utils.py
+├── steps
+│   ├── __init__.py
+│   ├── banner.py
+│   ├── claim_miner.py
+│   ├── l2_judge.py
+│   ├── l3_auditor.py
+│   ├── orchestrator.py
+│   ├── schema.py
+│   └── source_compiler.py
+├── tests
+│   ├── test_path_sort_equivalence.py
+│   ├── test_select_pilot_determinism.py
+│   ├── test_v17_schema_repairs.py
+│   ├── test_validate_sort_parity.py
+│   ├── TEST-RESULT_test_backfill_reconciliation.md
+│   ├── TEST-RESULT_test_path_sort_equivalence.md
+│   ├── TEST-RESULT_test_select_pilot_determinism.md
+│   ├── TEST-RESULT_test_v17_schema_repairs.txt
+│   └── TEST-RESULT_test_validate_sort_parity.md
+├── tools
+│   ├── backfill_manifest_v19.py
+│   ├── build_dashboard.py
+│   ├── build-canary-files
+│   │   ├── check_canary_disjoint.py
+│   │   ├── generate_canary.py
+│   │   ├── README.md
+│   │   ├── stage_a_scenario.txt
+│   │   ├── stage_b_rogue_deceptive.txt
+│   │   ├── stage_b_rogue_honest.txt
+│   │   ├── stage_b_safe.txt
+│   │   ├── stage_c_rogue_deceptive.txt
+│   │   ├── stage_c_rogue_honest.txt
+│   │   ├── stage_c_safe.txt
+│   │   ├── synthetic_entities.yaml
+│   │   └── triage_canary.py
+│   ├── clean_tainted.py
+│   ├── compute_stability.py
+│   ├── extract_stratified_subsample.py
+│   ├── hash_mapping.py
+│   ├── l3_gate_b_irr_tester.py
+│   ├── select_pilot.py
+│   ├── tainted_cases.txt
+│   └── update_openrouter_costs.py
 ```  
 
 ---
@@ -443,60 +467,7 @@ The repository ships with the **1,200-case pilot selection** used for the regist
 
 ## Reproducing the Pilot Selection (optional)
 
-You can verify the pilot was selected as registered. The 1,200-case pilot is deterministically derived from the registered seed-date. To verify the committed manifest matches what the registered code produces:
-
-    git checkout v1.0-prereg
-    python tools/select_pilot.py --seed-date 20260521
-
-Compare the resulting `input/dataset_20260521_*/manifest.jsonl` against `data/pilot_manifest.tsv`. They will be bit-identical.
-
-You can use this script to compare:
-
-```bash
- python3 << 'EOF'
-import json, glob, os
-
-# Find the regenerated manifest (latest dataset_* folder)
-regen_path = sorted(glob.glob('input/dataset_*/manifest.jsonl'), key=os.path.getmtime)[-1]
-print(f"Regenerated manifest: {regen_path}")
-
-regen = set()
-with open(regen_path) as f:
-    for line in f:
-        d = json.loads(line)
-        path = d['original_path'].split('data/raw/', 1)[1]
-        regen.add((path, d['bucket']))
-
-committed = set()
-with open('/tmp/committed_manifest.tsv') as f:
-    next(f)  # skip header
-    for line in f:
-        parts = line.rstrip('\n').split('\t')
-        committed.add((parts[0], parts[1]))
-
-print(f"Regenerated: {len(regen)} cases")
-print(f"Committed:   {len(committed)} cases")
-
-if regen == committed:
-    print("✅ MATCH — manifest is bit-identical to what the registered apparatus produces")
-else:
-    only_regen = regen - committed
-    only_committed = committed - regen
-    print(f"❌ MISMATCH")
-    print(f"  Only in regenerated: {len(only_regen)}")
-    print(f"  Only in committed:   {len(only_committed)}")
-    for x in list(only_regen)[:3]: print(f"    R: {x}")
-    for x in list(only_committed)[:3]: print(f"    C: {x}")
-EOF
-Regenerated manifest: input/dataset_20260521_181617/manifest.jsonl
-Regenerated: 1200 cases
-Committed:   1200 cases
-✅ MATCH — manifest is bit-identical to what the registered apparatus produces
-```
-
-## Create Independent Stratified Subset
-
-To draw an independent stratified subset for your own work, rebuild the cache and re-run the selection utility:
+If you want to verify the pilot was selected as registered, or to draw an independent stratified subset for your own work, rebuild the cache and re-run the selection utility:
 
 ​```bash
 # 1. Rebuild the raw data index (fingerprinted to detect tampering)
@@ -568,29 +539,30 @@ The reference cartridge audits an insider-trading deception corpus (Apollo Resea
 Working production code. The core concepts have been battle tested in production over 9 months of active development, evolving as the third line of defence within a larger 16-month production workflow.  Currently being transitioned to community-owned infrastructure under **AGPLv3**.
 
 ---
+## Pre-Registration
 
-## Pre-Registration  
+This codebase is released with a **pre-registered methodology** documented in [paper/PRE_REGISTRATION.md](paper/PRE_REGISTRATION.md). The v1.0-prereg tag deposits the methodology as initially registered; mid-pilot amendments (v13 through v19) are recorded within the document under the pre-registration discipline, each with rationale and disclosure.
 
-This codebase is released with a **pre-registered methodology** documented in [paper/PRE_REGISTRATION.md](paper/PRE_REGISTRATION.md). The v1.0-prereg tag represents the locked-in methodology as registered.  
-
-**Important:** The pilot study has not yet been executed as of the v1.0-prereg tag. Pilot results will appear in the resulting preprint once the study is complete. All analysis decisions (thresholds, metrics, inclusion criteria) are locked in the pre-registration document — any deviations will be reported as exploratory.  
+**Pilot status (v19, in flight):** The Same-Model Control Arm (Z07, n=150), the §4.5a entity-perturbation canary, and pipeline-robustness patches (silent-drop remediation, manifest determinism) are complete. The headline 1,200-case main grid across Z01–Z05 is in execution. All analysis decisions (thresholds, metrics, inclusion criteria) remain locked at v1.0-prereg; deviations are reported in the pre-registration amendment trail and flagged exploratory where applicable.
 
 ---
 
-## Citation  
+## Citation
 
-If you use this software in academic work, please cite:  
+If you use this software or methodology in academic work, please cite:
 
 ```bibtex
 @software{stvaughan_correspondence_auditor_2026,
-  author = {St Vaughan, Adrian},
-  title  = {Correspondence Auditor: Three-Gate Verification for LLM-as-Judge Pipelines},
-  year   = {2026},
+  author  = {St Vaughan, Adrian},
+  title   = {Correspondence Auditor: Three-Gate Verification for LLM-as-Judge Pipelines},
+  year    = {2026},
   version = {v1.0-prereg},
-  doi    = {10.5281/zenodo.20326022},
-  url    = {https://github.com/SourceCodeVault/LLM-as-Judge-Deception-Audit}
+  doi     = {10.5281/zenodo.20326022},
+  url     = {https://github.com/SourceCodeVault/LLM-as-Judge-Deception-Audit}
 }
-```  
+```
+
+The `version` field anchors the citation to the methodology deposit; the code at later tags (e.g. v19) extends this with disclosed amendments.
 
 ---
 

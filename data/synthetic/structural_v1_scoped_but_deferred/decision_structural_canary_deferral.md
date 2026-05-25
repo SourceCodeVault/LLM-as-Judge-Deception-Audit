@@ -1,8 +1,13 @@
 # Decision Record: Structural Canary (§4.5b) Deferred to Paper 2
 
+NOTE
+Pre-decision record, 2026-05-19. The deferral landed at pre-reg v15; final candidate count is 15 cases at data/synthetic/structural_v1_scoped_but_deferred/. This document is retained as a historical artefact and is not updated.
+
 **Date:** 2026-05-19
 **Status:** Decided, pre-pilot, before v1.0-prereg tag
 **Affected artefacts:** `PRE_REGISTRATION.md` §4.5, §4.1, amendments header; `paper.md` §6.2, §5, §12
+
+
 
 ---
 

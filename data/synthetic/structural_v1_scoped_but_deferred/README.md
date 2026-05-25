@@ -1,10 +1,10 @@
 # Structural Canary v1 — Scoped but Deferred
 
-These 15 candidate cases were drafted against `paper/PRE_REGISTRATION.md` §4.5 (second arm, n=60 structural canary). The arm was deferred to Paper 2 at pre-reg v15 (see the v13 amendment in `paper/PRE_REGISTRATION.md`).
+These 15 candidate cases were drafted against `paper/PRE_REGISTRATION.md` §4.5 (second arm, n=60 structural canary). The arm was deferred to Paper 2 at pre-reg v15 (see the v15 amendment in `paper/PRE_REGISTRATION.md`).
 
 These files are retained for:
 1. Provenance — to evidence the work performed at v1 tag time.
-2. Paper 2 design input — as positive examples and as counter-examples (themethodological issues found in QC are themselves design inputs).
+2. Paper 2 design input — as positive examples and as counter-examples (the methodological issues found in QC are themselves design inputs).
 
 These files are NOT part of any Paper 1 analysis and are excluded from the pilot eligibility pool by virtue of being synthetic (no Apollo case IDs).
 

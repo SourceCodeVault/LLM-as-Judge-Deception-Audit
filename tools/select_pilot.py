@@ -281,9 +281,6 @@ def scan_raw_data(raw_path: Path, force_rebuild: bool = False, exclude_file: str
 
             # 3. STRICT ALLOWLIST ENFORCEMENT (matching empirical §0.3 table)
             if is_misaligned is False and is_deceptive is None:
-                # =================================================================
-                # PRE-REG COMPLIANCE: Use resolved absolute path for deterministic sort
-                # =================================================================
                 clean_files.append((str(json_file.resolve()), is_misaligned, is_deceptive))
             elif is_misaligned is True and is_deceptive is None:
                 rogue_honest_files.append((str(json_file.resolve()), is_misaligned, is_deceptive))
@@ -431,9 +428,19 @@ def generate_manifest(copied_files: list, seed: int, output_path: Path) -> None:
     
     with open(manifest_path, 'w', encoding='utf-8') as f:
         for file_info in copied_files:
+            # 1. Recreate the exact hash logic from run.py
+            rel_path = Path(file_info['new_path']).relative_to(output_path)
+            flat_slug = rel_path.with_suffix("").as_posix().replace("/", "__")
+            case_hash = hashlib.sha256(flat_slug.encode()).hexdigest()[:12]
+            
+            # 2. Make paths relative to PROJECT_ROOT to prevent PII leakage
+            safe_original = str(Path(file_info['original_path']).relative_to(PROJECT_ROOT)) if Path(file_info['original_path']).is_absolute() else file_info['original_path']
+            safe_new = str(Path(file_info['new_path']).relative_to(PROJECT_ROOT)) if Path(file_info['new_path']).is_absolute() else file_info['new_path']
+
             record = {
-                'original_path': file_info['original_path'],
-                'new_path': file_info['new_path'],
+                'case_id': case_hash,          
+                'original_path': safe_original, 
+                'new_path': safe_new,       
                 'bucket': file_info['bucket'],
                 'is_misaligned': file_info['is_misaligned'],
                 'is_deceptive': file_info['is_deceptive'],

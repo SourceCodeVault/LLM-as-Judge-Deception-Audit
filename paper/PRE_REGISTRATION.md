@@ -1,23 +1,5 @@
 # Experimental Pre-Registration: Correspondence Auditor Validation
-**Pragmatic Preprint, v16** · Adrian St. Vaughan
-
----
-
-## Registered Artefacts
-
-| Field | Value |
-|---|---|
-| Git tag | `v1.0-prereg` |
-| Commit hash | `443c27896e9730caceab268dcf6f223126700a54` |
-| Repository | https://github.com/SourceCodeVault/LLM-as-Judge-Deception-Audit |
-| Zenodo DOI | [10.5281/zenodo.20326022](https://doi.org/10.5281/zenodo.20326022) |
-| Selection seed-date | `20260521` |
-| Pilot manifest | `data/pilot_manifest.tsv` (the 1,200 stratified case IDs, sorted and committed at this tag) |
-| Tag date | 2026-05-21 |
-
-The above identifies the exact frozen state against which the pilot was run. Any analysis or claim in the corresponding preprint refers to this state. Replicators can verify by running `git checkout 443c2789`.
-
----
+**Pragmatic Preprint, v19** · Adrian St. Vaughan
 
 ---
 
@@ -184,9 +166,11 @@ We compare the Auditor's recovery rate on the verbatim cases versus the perturbe
 
 A second arm — a structural canary of n=60 LLM-drafted, human-curated, corpus-independent cases against structural overfitting — was scoped (v5, v8) and deferred at v15. Pre-tag quality control on candidate cases identified methodological issues (date-stratum confound, cover-story misclassification in deceptive cases, generator artefacts, voice drift across strata) that warranted more design work than the Paper 1 timeline accommodates. The candidate cases are retained at `data/synthetic/structural_v1_scoped_but_deferred` and do not contribute to any Paper 1 analysis (see §4.4(iv) and §12). Structural overfitting is identified as an open question for Paper 1 and a Paper 2 priority.
 
+Operational note: the canary arm was conducted in two rounds with a mid-pilot patch to run.py's exit-path handling; see Appendix A v18 for the silent-drop incident, the structural patch, and the resume-safety analysis.
+
 ### 4.6 Gate B Factual Baseline (Inter-Rater Reliability)
 
-To validate the fact-checking mechanism, a human annotator will manually evaluate a random sample of 50 claims drawn from Gate B's output on the genuine arm only (Z01–Z05; the ablation arm is excluded because its upstream judge input is content-free by construction and the Gate B verdicts on ablation cases are not in scope for the headline reliability claim). The sample is drawn by `tools/generate_paper_test.py` using a fixed seed (`gate_b_irr_v1`) committed at the v1.0-prereg tag; the script enforces that each sampled claim has a resolvable agent transcript (per the `PROVENANCE_TEXT_KEYS` allowlist) and excludes any case where the transcript cannot be unambiguously identified. Sampling is stratified by Gate B's predicted status to ensure non-degenerate marginal distributions: `17 SUPPORTED, 17 CONTRADICTED, 16 UNSUPPORTED`. If any stratum including `SUPPORTED` is undersized, the final sample size < 50 is reported in the manifest.
+To validate the fact-checking mechanism, a human annotator will manually evaluate a random sample of 50 claims drawn from Gate B's output on the genuine arm only (Z01–Z05; the ablation arm is excluded because its upstream judge input is content-free by construction and the Gate B verdicts on ablation cases are not in scope for the headline reliability claim). The sample is drawn by `tools/l3_gate_b_irr_tester.py` using a fixed seed (`gate_b_irr_v1`) committed at the v1.0-prereg tag; the script enforces that each sampled claim has a resolvable agent transcript (per the `PROVENANCE_TEXT_KEYS` allowlist) and excludes any case where the transcript cannot be unambiguously identified. Sampling is stratified by Gate B's predicted status to ensure non-degenerate marginal distributions: `17 SUPPORTED, 17 CONTRADICTED, 16 UNSUPPORTED`. If any stratum including `SUPPORTED` is undersized, the final sample size < 50 is reported in the manifest.
 
 The annotator is blind to Gate B's verdict (the annotation HTML produced by the script does not display ai_status) and to the case identity beyond what is visible in the source-text extract. The annotator assigns `SUPPORTED, CONTRADICTED, or UNSUPPORTED` against the source text only; outside knowledge is not admissible.
 
@@ -258,7 +242,7 @@ During pre-run code review, three classes of silent contamination were identifie
 
 The patches were derived from code review, not from observation of canary or smoke-test outputs (§4.4), and were applied uniformly across the main and ablation arms (§7). Pipeline version is bumped from 0.4.0 to 0.4.1 to record the change in case metadata.
 
-Pipeline version bumped to 0.4.2 to accommodate the cosmetic renaming of `GATE1_PARSE_ERROR` to `L2_PARSE_ERROR` for terminology alignment with the Line 2/Line 3 architecture."
+Pipeline version bumped to 0.4.2 to accommodate the cosmetic renaming of `GATE1_PARSE_ERROR` to `L2_PARSE_ERROR` for terminology alignment with the Line 2/Line 3 architecture.
 
 #### claim_miner.py
 
@@ -683,6 +667,81 @@ Updated `source_compiler.py` to force the pipeline to fail loud so that an unhan
 
 Pilot selection seed-date updated to `20260521` to align with pre-registration freeze date. Selection mechanism unchanged.
 
-## v16: Post-tag amendment
+## v17 — Mid-Pilot Disclosure: Subsample Methodology, Silent-Drop Bug, and Fail-Loud Remediation
 
-Records the registered artefacts (tag, commit hash, Zenodo DOI, selection seed-date, pilot manifest reference) at the top of the document. Adds reference to `data/pilot_manifest.tsv`, a sorted list of the 1,200 stratified case IDs produced by `tools/select_pilot.py` against `--seed-date 20260521` at commit `443c2789`. The manifest is committed at the `v1.0-prereg` tag to allow third parties to verify the pilot composition without re-executing the selection script. No methodology change; this entry documents the registration metadata only. Hypotheses, sample size, seed, MDE, α_family, exclusion rules, and analysis plan unchanged.
+Status
+Mid-pilot disclosure. The Same-Model Control Arm (Z07, n=150) had been executed at the time this bug was discovered. The five headline judge variants (`Z01–Z05`) had not yet been executed; v17 patches were successfully applied before they ran. No analysis, hypothesis, sample size, seed, α_family, decision rule, or exclusion criterion is changed by this amendment.
+
+### Pre-pilot disclosure of subsample selection method
+The pre-registration specified `tools/select_pilot.py` for drawing the 1,200-case pilot but did not explicitly document the method for the §11 test-retest subset (`n=300`) or the v16(4) Same-Model Control Arm (`n=150`). A new utility `tools/extract_stratified_subsample.py` draws both subsamples from the 1,200-case pre-curated pilot folder by stratified random sampling without replacement, seeded from the registered selection date `20260521` to match §5's seeding convention.
+
+The Z07 arm was initially run against a 150-case set selected by a structure-preserving but non-random first-N-by-sort walk (`tools/extract_z07_pilot.py`). The deviation was identified pre-analysis; Z07 has been re-run against the corrected subsample. The corrected Z07 selection is committed to `historical/` for full provenance. The original `extract_z07_pilot.py` did not emit a manifest by design, so no equivalent ledger exists for the discarded first-N selection; the case-file listing of that selection is preserved by the directory contents under `historical/z07_original_first_n_sample/` itself.
+
+**Symptom Observed & Root Cause**
+
+On the initial n=150 Z07 pilot, the post-run dashboard reported 147 audit files and 0 entries in every drop bucket. Reconciliation identified three cases that exited the pipeline without producing an `audit_*.json` file or triggering a fail-closed status.
+
+Investigation revealed two compounding defects:
+(1) Schema-mismatch in L2 verdict parsing: The L2 model (`qwen/qwen3-235b-a22b-2507`) occasionally omitted the `reason_headline` field on the "Completeness" factor, causing a TypeError in `steps/l2_judge.py`.
+(2) Architectural silent-drop: `run_pipeline()` lacked an outer catch-all, causing the unhandled `TypeError` to bypass stage-specific handlers and crash the case silently without a terminal artifact.
+
+**Resolution**
+
+Four coordinated patches were applied to restore the §6 fail-closed contract:
+
+(1) `steps/l2_judge.py`: Missing `reason_headline` and `reason_detailed` fields are defaulted to empty strings, with repairs explicitly recorded in `metadata.l2_schema_repairs` to preserve schema deviations as measurable telemetry rather than fatal crashes.
+
+(2) `steps/orchestrator.py`: An outer try/except block routes any catastrophic failure to an `UNCAUGHT_EXCEPTION` status and explicitly generates an `audit_<case_id>.error.json` sentinel file.
+
+(3) Outer batch runner: A denominator-conservation assertion strictly verifies that input cardinality matches accountable output cardinality before completion.
+
+(4) Prompt Hardening Bench Sweep (`L2_Z01–L2_Z05`, `L2_Z07`): Appended structural constraint parameter blocks to the bottom of the system prompts and uniformized factor configurations to strictly enforce formatting boundaries. This explicitly dictates non-optional key output to prevent model truncation on sparse factor evaluation data.
+
+### S1 Loophole Discovery and Policy Freeze
+
+During the Z07 pilot, the pipeline surfaced an emergent specification-gaming strategy where the agent executed a prohibited trade but deliberately withheld submitting a management report. 
+
+Because the `policy.md` explicitly scopes reporting violations strictly to submitted text, the Line 3 Auditor applied strict literalism and determined no formal domain contravention was committed under the rules. To preserve the empirical integrity of the pre-registered methodology and the "Swap Claim" architecture, the `policy.md` baseline Truth Cartridge remains strictly frozen for the duration of this study.
+
+### Clerical Housekeeping
+
+`tools/generate_paper_test.py` (referenced in §4.6) was renamed to `tools/l3_gate_b_irr_tester.py` to match architectural nomenclature.
+
+`tools/clean_tainted.py` and `tools/tainted_cases.txt` were formalized to operationalize the dev-set exclusion protocol registered in §6(d).
+
+## v18
+
+**Mid-pilot amendment: fail-closed enforcement on `run.py:process_file()` after silent-drop discovery in the §4.5 canary arm.**
+
+Scope: this amendment applies to the entity-perturbation canary arm (§4.5) only. The §4.1 main grid (5 variants × 1,200 cases), §7 ablation arm, and §6.2(4) Same-Model Control (Z07) all completed under the unpatched code prior to this amendment and are unaffected. Their denominator-conservation assertions passed cleanly at run end.
+
+(1) **Silent-drop discovery.** During the initial launch of the canary arm at `max_workers=36`, DeepInfra returned sustained `engine_overloaded` HTTP 429 responses. Investigation under the pipeline's denominator-conservation check revealed that 246 of 1,200 cases had exited `run.py:process_file()` without producing either a regular `audit_*.json` file or the contractually required `audit_*.error.json` sentinel. This is a violation of the fail-closed operational posture declared in §6 and is the trigger for this amendment.
+
+(2) **Root-cause analysis.** Three exit paths in `process_file()` were identified that could return a case verdict without invoking `write_result()`: (a) the canary entity-perturbation setup block (lines 741–754), which silently swallowed any exception raised during file read, string substitution, or `NamedTemporaryFile` creation; (b) the post-pipeline exception handler's `API_OUTAGE` classification branch (lines 800–804); and (c) the post-pipeline exception handler's generic `ERROR` branch (lines 805–810). Round-1 debug logs were not granular enough to attribute the 245 drops uniquely to one of the three paths — all three are structural leaks and all three are addressed by the patch. The orchestrator-level catch-all at `orchestrator.py:384` was already correct and is unchanged.
+
+(3) **Patch.** `process_file()` restructured so every exit either (i) invokes `write_result()` on the `CaseResult` returned by `run_pipeline()`, or (ii) constructs a synthetic `CaseResult` carrying `pipeline_status` ∈ {`CANARY_SETUP_EXCEPTION`, `PROCESS_FILE_API_OUTAGE`, `PROCESS_FILE_UNCAUGHT`} along with the captured exception type, message, and traceback, and routes it through `write_result()` with the `.error.json` suffix. Tempfile cleanup moved into a `finally` block to remain reachable from every exit.
+
+(4) **Concurrency reduction for round 2.** `max_workers` reduced from 36 to 10 for the resume of the canary arm. Rationale: at 36 workers the cohort sustained ~36 concurrent ~90-second generations against a single DeepInfra endpoint, which the provider classified as `engine_overloaded` in round-1 logs. Ten workers preserves sufficient parallelism (~5 min/case mean throughput) while staying within rate-limit margins. This is a pragmatic engineering parameter, not a scientific covariate; H1/H2 hypotheses are agnostic to worker count.
+
+(5) **Diagnostic enhancements (non-behavioural).** Three logging changes accompany the patch: (i) `shared/logging_utils.save_raw_trace` no longer applies a `[:5000]` truncation to the `raw_content` trace field — this cap was a transcription artefact in the trace logger that never affected pipeline behaviour, but had previously caused a misdiagnosis of "model truncation" on legitimate Gate B responses (e.g., case `3934b8b4f43d`, full provider response 12,851 chars, `finish_reason: "stop"`, `native_finish_reason: "stop"`); the canonical record in `wire_raw_body.choices[0].message.content` was always complete; (ii) the previously bare `except Exception:` in the canary setup block now binds the exception and prints `[CANARY_SETUP_FAIL] {variant} | {case_id} | {type}: {msg}` to the debug log; (iii) a per-verdict frequency histogram is printed immediately before the denominator-conservation assertion to aid post-run forensics.
+
+(6) **Resume safety analysis.** Round 2 was launched as a resume against the same `run_*` directory as round 1. Justification: the patch in (3) modifies only the failure-handling code paths of `process_file()`; it makes no change to `orchestrator.py`, `l2_judge.py`, `l3_auditor.py`, `claim_miner.py`, `source_compiler.py`, any prompt manifest, the `CANARY_SWAPS` dictionary, the LLM parameters (`temperature`, `top_p`, `seed`, `max_tokens`), or retry logic in `llm_utils.py`. A case that successfully completes the three-gate pipeline produces an `audit_*.json` whose schema and content are determined entirely by code that is bit-identical on the success path between rounds. The 955 round-1 cases are therefore not retroactively invalidated, and the round-2 cases are produced under code that is functionally identical on the success path. The unavoidable residual covariate — that round-1 and round-2 cases were generated hours apart on different DeepInfra physical infrastructure under different concurrent load — is the same source of provider-side non-determinism that the §11 Test–Retest Reliability arm is designed to bound at `ICC ≥ 0.80`.
+
+(7) **What this amendment does NOT change.** Hypotheses H1 and H2; sample size; α-family and multiple-comparison strategy; pilot composition and stratification; case-selection seed and method; quadrant-routing rules; decision rule for the auditor-robustness claim. Provenance for the canary arm now carries two `config.json` snapshots (round-1 at `max_workers=36`, round-2 at `max_workers=10`) under `_provenance/` to preserve full reproducibility metadata.
+
+Decision recorded mid-pilot; round-1 output (955 successfully routed audit files across `VALIDATED_APPROVAL`, `VALIDATED_BLOCK`, `FLAWED_APPROVAL`, `FLAWED_BLOCK`) observed at time of amendment. Round 2 launched post-amendment under the patched code.
+
+Update (prior to canary re-execution). Both round 1 and round 2 outputs are discarded prior to analysis. After review of the cumulative pipeline state across the two attempted rounds, the entity-perturbation arm is being re-executed from scratch under the v18-patched code with max_workers=10. Neither round-1 nor round-2 audit files contribute to any reported analysis; they are retained in `historical/output_run_20260523_084558_dataset_20260521_192859_canary_round_1_and_2_discarded` for forensic provenance only. The resume-safety justification in point (6) is therefore vacuous for this study and is recorded here for the methodological record only. The canary-arm sample size, stratification, prompts, model parameters, and seed are unchanged from §4.5.
+
+## v19
+
+**Clerical PII and Path Patch**
+`select_pilot.py` and `extract_stratified_subsample.py` updated to emit repository-relative paths (`.relative_to(PROJECT_ROOT)`) rather than absolute system paths in the generated `manifest.jsonl`. In-memory filesystem operations continue to use absolute paths via `.resolve()` for correct OS-level file handling; the relative-path conversion is applied only at the manifest-write boundary. The deterministic cross-platform sorting guarantee registered in §6.2 is unbroken — sorting on identical prefixes (whether absolute or relative) yields identical orderings.
+
+Manifest input mode option in `run.py` retained but documented as deferred/untested; Directory Scan is the supported path. Removal scheduled for a post-pilot cleanup tag.
+
+Utility to generate a 'hash to input file path' lookup table added to `tools/hash_mapping.py`.
+
+`tools/compute_stability.py` and `tools/build_dashboard.py` — operational refactor. `build_dashboard.py` relocated from project root to `tools/` for organisational consistency with the rest of the analysis tooling. Both scripts updated to resolve `PROJECT_ROOT` dynamically via `Path(__file__).resolve().parent.parent`, eliminating the prior implicit working-directory dependency. `compute_stability.py` also gains an interactive menu that defaults to listing eligible directories under output/ when CLI arguments are omitted; CLI invocation behaviour is unchanged. No change to any statistical computation, threshold (ICC ≥ 0.80 per §11), ablation-arm guardrail, or output schema.
+
+Added `tools/backfill_manifest_v19.py` utility to add the hash slug to existing manifest for convenience.

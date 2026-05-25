@@ -1,0 +1,22 @@
+# Provenance Audit: v17 Schema Robustness & Fail-Loud Routing
+**Date:** 2026-05-23
+**Context:** Verification of the v17 orchestrator patches designed to gracefully repair missing `reason_headline` fields (the Z07 anomaly) and enforce fail-loud routing for unexpected schema hallucinations.
+
+### Test Suite Output
+```text
+============================= test session starts ==============================
+platform darwin -- Python 3.11.5, pytest-9.0.3, pluggy-1.6.0 -- /Users/asv/experiments/correspondence-auditor-pilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/asv/experiments/correspondence-auditor-pilot
+configfile: pytest.ini
+plugins: anyio-4.13.0
+collecting ... collected 5 items
+
+tests/test_v17_schema_repairs.py::test_observable_schema_repair_missing_headline PASSED [ 20%]
+tests/test_v17_schema_repairs.py::test_z07_regression_completeness_factor_missing_headline PASSED [ 40%]
+tests/test_v17_schema_repairs.py::test_fail_loud_on_unknown_keys PASSED  [ 60%]
+tests/test_v17_schema_repairs.py::test_fail_loud_on_invalid_polarity PASSED [ 80%]
+tests/test_v17_schema_repairs.py::test_orchestrator_catches_uncaught_exception_and_routes_to_sentinel PASSED [100%]
+
+============================== 5 passed in 5.87s ===============================
+```

@@ -18,7 +18,7 @@ By holding the judge prompt constant and only perturbing the entities, any diffe
 
 ## CANARY_SWAPS
 
-The entity swap dictionary is defined in `data/canary/swaps.json`. The following entity classes are swapped:
+The entity swap dictionary is defined in `run.py`. The following entity classes are swapped:
 
 | Entity Class | Example Swap |
 |--------------|--------------|

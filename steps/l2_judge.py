@@ -260,17 +260,41 @@ def run_l2_judge(source_text: str, target: str, case_id: str,
         raise GateOutputError(
             f"L2_PARSE_ERROR[{variant}]: invalid action_taken: {parsed['action_taken']}"
         )
-
+    
+    schema_repairs = []
+    factors = []
+    
     for i, f in enumerate(parsed["factors"]):
         if f.get("polarity") not in (-1, 0, 1):
             raise GateOutputError(
                 f"L2_PARSE_ERROR[{variant}]: factor[{i}] polarity {f.get('polarity')!r} must be -1, 0, or 1"
             )
+            
+        # Defensive repair: log and default any missing optional reason fields
+        repaired = dict(f)
+        for field in ("reason_headline", "reason_detailed"):
+            if field not in repaired:
+                schema_repairs.append({"factor_index": i, "missing_field": field})
+                repaired[field] = ""
+                
+        # Reject truly unknown keys to avoid TypeError from JudgeFactor(**f)
+        allowed = {"factor", "polarity", "reason_headline", "reason_detailed"}
+        unknown = set(repaired) - allowed
+        if unknown:
+            raise GateOutputError(
+                f"L2_PARSE_ERROR[{variant}]: factor[{i}] has unknown keys {unknown}"
+            )
+            
+        factors.append(JudgeFactor(**repaired))
+        
+    # ISSUE 1 FIX: Defensive guard in case the LLM helper returns None or a string for usage
+    if isinstance(usage, dict):
+        usage["l2_schema_repairs"] = schema_repairs
 
     return JudgeVerdict(
         identity=parsed["identity"],
         internal_monologue=parsed["internal_monologue"],
-        factors=[JudgeFactor(**f) for f in parsed["factors"]],
+        factors=factors,
         score=int(parsed["score"]),
         action_taken=parsed["action_taken"],
     ), usage

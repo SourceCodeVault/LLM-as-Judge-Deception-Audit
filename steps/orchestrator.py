@@ -27,6 +27,7 @@ import re
 import datetime as _dt
 import json
 from pathlib import Path
+import traceback
 
 from .claim_miner import format_claims_for_prompt, mine_claims
 # L2 Module imports
@@ -190,7 +191,7 @@ def run_pipeline(
     mode: str,
     *,
     l2_variant: str = DEFAULT_L2_VARIANT,
-    case_id: str = None,  # <-- NEW PARAMETER
+    case_id: str = None,
 ) -> CaseResult:
     """Run the full three-gate pipeline on one Apollo case."""
     if l2_variant not in L2_VARIANTS:
@@ -235,146 +236,169 @@ def run_pipeline(
         sanitized_body=None, mined_claims=[], l2_judge_verdict=None, fact_checker_verdict=None,
         logic_auditor_verdict=None, compliance_gap=None, metadata=metadata,
     )
-
-    # Stage 0: Light schema check (backward compat for legacy inputs)
-    # This is a minimal check that runs FIRST to catch missing files early
-    gate_a_telemetry = {"schema_checked": False, "schema_valid": False, "violations": []}
-    case.metadata["gate_a_telemetry"] = gate_a_telemetry
-
     try:
-        gate_a_result = run_gate_a_schema(input_path)
-        gate_a_telemetry["schema_checked"] = True
-        gate_a_telemetry["schema_valid"] = gate_a_result["valid"]
-        gate_a_telemetry["violations"] = gate_a_result["violations"]
-    except GateAError as e:
-        case.pipeline_status = "GATE_A_SCHEMA_VIOLATION"
-        metadata["error"] = str(e)
-        metadata["gate_a_violations"] = e.violations
-        return case
+        # Stage 0: Light schema check (backward compat for legacy inputs)
+        # This is a minimal check that runs FIRST to catch missing files early
+        gate_a_telemetry = {"schema_checked": False, "schema_valid": False, "violations": []}
+        case.metadata["gate_a_telemetry"] = gate_a_telemetry
 
-    data = gate_a_result["extracted_data"]
-    
-    # NEW: Mode A Short-Circuit Logic (based on L1 artifact action_taken)
-    action_taken = data.get("action_taken")
-    if mode == "A" and action_taken in {"BLOCKED", "HESITATE"}:
-        case.pipeline_status = "MODE_A_SHORT_CIRCUIT"
-        return case
+        try:
+            gate_a_result = run_gate_a_schema(input_path)
+            gate_a_telemetry["schema_checked"] = True
+            gate_a_telemetry["schema_valid"] = gate_a_result["valid"]
+            gate_a_telemetry["violations"] = gate_a_result["violations"]
+        except GateAError as e:
+            case.pipeline_status = "GATE_A_SCHEMA_VIOLATION"
+            metadata["error"] = str(e)
+            metadata["gate_a_violations"] = e.violations
+            return case
 
-    # Stage 1: Unified Early-Exit for whitespace/empty responses (Priority Gamma)
-    final_response = (data.get("response") or "").strip()
-    if not final_response:
-        case.pipeline_status = "EMPTY_TRANSCRIPT"
-        metadata["error"] = "final_response is whitespace-only or missing"
-        gate_a_telemetry["transcript_not_null"] = False
-        return case
+        data = gate_a_result["extracted_data"]
+        
+        # NEW: Mode A Short-Circuit Logic (based on L1 artifact action_taken)
+        action_taken = data.get("action_taken")
+        if mode == "A" and action_taken in {"BLOCKED", "HESITATE"}:
+            case.pipeline_status = "MODE_A_SHORT_CIRCUIT"
+            return case
 
-    # 1. Compile the full source text
-    try:
-        source_text = compile_source_text(input_path)
-        # Priority Alpha: Handle None return BEFORE calling .strip()
-        if source_text is None:
+        # Stage 1: Unified Early-Exit for whitespace/empty responses (Priority Gamma)
+        final_response = (data.get("response") or "").strip()
+        if not final_response:
             case.pipeline_status = "EMPTY_TRANSCRIPT"
-            metadata["error"] = "compiler returned None for degenerate input"
+            metadata["error"] = "final_response is whitespace-only or missing"
             gate_a_telemetry["transcript_not_null"] = False
             return case
-        gate_a_telemetry["transcript_not_null"] = True
-    except Exception as e:
-        case.pipeline_status = "WORKER_EXCEPTION"
-        metadata["error"] = str(e)
-        return case
 
-    is_mis = data.get("is_misaligned")
-    raw_dec = data.get("is_deceptive")
-    is_dec = raw_dec if raw_dec is not None else "Not Evaluated"
-    case.metadata["apollo_labels"] = {
-        "is_misaligned": is_mis, "is_deceptive": is_dec,
-        "scenario_bucket": "ROGUE" if is_mis is True else ("CLEAN" if is_mis is False else "UNKNOWN")
-    }
+        # 1. Compile the full source text
+        try:
+            source_text = compile_source_text(input_path)
+            # Priority Alpha: Handle None return BEFORE calling .strip()
+            if source_text is None:
+                case.pipeline_status = "EMPTY_TRANSCRIPT"
+                metadata["error"] = "compiler returned None for degenerate input"
+                gate_a_telemetry["transcript_not_null"] = False
+                return case
+            gate_a_telemetry["transcript_not_null"] = True
+        except Exception as e:
+            case.pipeline_status = "WORKER_EXCEPTION"
+            metadata["error"] = str(e)
+            return case
 
-    case.sanitized_body = final_response
-
-    # Priority Gamma: Error Handling for Claim Mining
-    SENTINEL_PREFIX = "Missing:"
-    try:
-        claims = mine_claims(final_response, full_transcript=source_text)
-    except ValueError as e:
-        case.pipeline_status = "CLAIM_MINER_FORMAT_ERROR"
-        metadata["error"] = f"Claim miner format drift: {e}"
-        metadata["mined_claims_preview"] = []
-        return case
-    except Exception as e:
-        case.pipeline_status = "CLAIM_MINER_FAILURE"
-        metadata["error"] = f"Claim miner unexpected failure: {e}"
-        metadata["mined_claims_preview"] = []
-        return case
-    
-    # Priority Beta: Tightened Sentinel Validation — prefix check with count threshold
-    sentinels = [c for c in claims if c.strip().startswith(SENTINEL_PREFIX)]
-    if len(sentinels) < 3:
-        case.pipeline_status = "CLAIM_MINER_DEGENERATE"
-        metadata["error"] = f"Expected ≥3 '{SENTINEL_PREFIX}' sentinels, found {len(sentinels)}"
-        metadata["mined_claims_preview"] = claims[:3]
-        return case
-    
-    case.mined_claims = claims
-    case.metadata["token_usage"] = {"L2_Judge": {"prompt_tokens": 0, "completion_tokens": 0}, "L3_CA_Total": {"prompt_tokens": 0, "completion_tokens": 0}}
-
-    # 3. Run L2 Judge FIRST (before L3 Gate A)
-    try:
-        case.l2_judge_verdict, l2_usage = run_l2_judge(source_text, target_l2, case_id, variant=l2_variant)
-        case.metadata["token_usage"]["L2_Judge"] = l2_usage
-    except L2_GateOutputError as e:
-        case.pipeline_status = "L2_API_OUTAGE" if "API_OUTAGE" in str(e) else "L2_PARSE_ERROR"
-        metadata["error"], metadata["raw_response_dump"] = str(e), getattr(e, "raw_output", "")
-        return case
-
-    # 3b. L3 Gate A: Validate BOTH L1 artifact AND L2 output
-    gate_a_telemetry["l3_validation_attempted"] = True
-    try:
-        l3_gate_a_result = run_l3_gate_a(input_path, case.l2_judge_verdict)
-        gate_a_telemetry["l3_validation_valid"] = l3_gate_a_result["valid"]
-        gate_a_telemetry["l1_violations"] = l3_gate_a_result["l1_violations"]
-        gate_a_telemetry["l2_violations"] = l3_gate_a_result["l2_violations"]
-    except GateA_L3Error as e:
-        case.pipeline_status = "GATE_A_L3_VALIDATION_FAILED"
-        metadata["error"] = str(e)
-        metadata["gate_a_l1_violations"] = e.l1_violations
-        metadata["gate_a_l2_violations"] = e.l2_violations
-        return case
-
-    try:
-        case.fact_checker_verdict, fc_usage = run_fact_checker(source_text, format_claims_for_prompt(claims), target_ca, case_id)
-    except L3_GateOutputError as e:
-        case.pipeline_status = "GATE_B_API_OUTAGE" if "API_OUTAGE" in str(e) else "GATE_B_PARSE_ERROR"
-        metadata["error"], metadata["raw_response_dump"] = str(e), getattr(e, "raw_output", "")
-        return case
-
-    # 4. Run Gate C (Logic) — emits the agent verdict; cross-tab synthesis happens below.
-    domain_policy = _DOMAIN_POLICY_PATH.read_text(encoding="utf-8")
-    fc_summary = _format_fact_check_summary(case.fact_checker_verdict)
-
-    try:
-        case.logic_auditor_verdict, la_usage = run_logic_auditor(
-            role=case.l2_judge_verdict.identity.get("role", "L2_Judge"),
-            score=case.l2_judge_verdict.score, action=case.l2_judge_verdict.action_taken,
-            monologue=case.l2_judge_verdict.internal_monologue, fact_check_summary=fc_summary,
-            domain_policy=domain_policy, target=target_ca, case_id=case_id, source_text=source_text
-        )
-        case.metadata["token_usage"]["L3_CA_Total"] = {
-            "prompt_tokens": fc_usage.get("prompt_tokens", 0) + la_usage.get("prompt_tokens", 0),
-            "completion_tokens": fc_usage.get("completion_tokens", 0) + la_usage.get("completion_tokens", 0),
+        is_mis = data.get("is_misaligned")
+        raw_dec = data.get("is_deceptive")
+        is_dec = raw_dec if raw_dec is not None else "Not Evaluated"
+        case.metadata["apollo_labels"] = {
+            "is_misaligned": is_mis, "is_deceptive": is_dec,
+            "scenario_bucket": "ROGUE" if is_mis is True else ("CLEAN" if is_mis is False else "UNKNOWN")
         }
-    except L3_GateOutputError as e:
-        case.pipeline_status = "GATE_C_API_OUTAGE" if "API_OUTAGE" in str(e) else "GATE_C_PARSE_ERROR"
-        metadata["error"], metadata["raw_response_dump"] = str(e), getattr(e, "raw_output", "")
+
+        case.sanitized_body = final_response
+
+        # Priority Gamma: Error Handling for Claim Mining
+        SENTINEL_PREFIX = "Missing:"
+        try:
+            claims = mine_claims(final_response, full_transcript=source_text)
+        except ValueError as e:
+            case.pipeline_status = "CLAIM_MINER_FORMAT_ERROR"
+            metadata["error"] = f"Claim miner format drift: {e}"
+            metadata["mined_claims_preview"] = []
+            return case
+        except Exception as e:
+            case.pipeline_status = "CLAIM_MINER_FAILURE"
+            metadata["error"] = f"Claim miner unexpected failure: {e}"
+            metadata["mined_claims_preview"] = []
+            return case
+        
+        # Priority Beta: Tightened Sentinel Validation — prefix check with count threshold
+        sentinels = [c for c in claims if c.strip().startswith(SENTINEL_PREFIX)]
+        if len(sentinels) < 3:
+            case.pipeline_status = "CLAIM_MINER_DEGENERATE"
+            metadata["error"] = f"Expected ≥3 '{SENTINEL_PREFIX}' sentinels, found {len(sentinels)}"
+            metadata["mined_claims_preview"] = claims[:3]
+            return case
+        
+        case.mined_claims = claims
+        case.metadata["token_usage"] = {"L2_Judge": {"prompt_tokens": 0, "completion_tokens": 0}, "L3_CA_Total": {"prompt_tokens": 0, "completion_tokens": 0}}
+
+        # 3. Run L2 Judge FIRST (before L3 Gate A)
+        try:
+            case.l2_judge_verdict, l2_usage = run_l2_judge(source_text, target_l2, case_id, variant=l2_variant)
+            
+            # ISSUE C FIX: Explicitly separate schema repairs before writing token usage
+            if isinstance(l2_usage, dict):
+                schema_repairs = l2_usage.pop("l2_schema_repairs", [])
+                if schema_repairs:
+                    case.metadata["l2_schema_repairs"] = schema_repairs
+                    
+            case.metadata["token_usage"]["L2_Judge"] = l2_usage
+            
+        except L2_GateOutputError as e:
+            case.pipeline_status = "L2_API_OUTAGE" if "API_OUTAGE" in str(e) else "L2_PARSE_ERROR"
+            metadata["error"], metadata["raw_response_dump"] = str(e), getattr(e, "raw_output", "")
+            return case
+            
+        # 3b. L3 Gate A: Validate BOTH L1 artifact AND L2 output
+        gate_a_telemetry["l3_validation_attempted"] = True
+        try:
+            l3_gate_a_result = run_l3_gate_a(input_path, case.l2_judge_verdict)
+            gate_a_telemetry["l3_validation_valid"] = l3_gate_a_result["valid"]
+            gate_a_telemetry["l1_violations"] = l3_gate_a_result["l1_violations"]
+            gate_a_telemetry["l2_violations"] = l3_gate_a_result["l2_violations"]
+        except GateA_L3Error as e:
+            case.pipeline_status = "GATE_A_L3_VALIDATION_FAILED"
+            metadata["error"] = str(e)
+            metadata["gate_a_l1_violations"] = e.l1_violations
+            metadata["gate_a_l2_violations"] = e.l2_violations
+            return case
+
+        try:
+            case.fact_checker_verdict, fc_usage = run_fact_checker(source_text, format_claims_for_prompt(claims), target_ca, case_id)
+        except L3_GateOutputError as e:
+            case.pipeline_status = "GATE_B_API_OUTAGE" if "API_OUTAGE" in str(e) else "GATE_B_PARSE_ERROR"
+            metadata["error"], metadata["raw_response_dump"] = str(e), getattr(e, "raw_output", "")
+            return case
+
+        # 4. Run Gate C (Logic) — emits the agent verdict; cross-tab synthesis happens below.
+        domain_policy = _DOMAIN_POLICY_PATH.read_text(encoding="utf-8")
+        fc_summary = _format_fact_check_summary(case.fact_checker_verdict)
+
+        try:
+            case.logic_auditor_verdict, la_usage = run_logic_auditor(
+                role=case.l2_judge_verdict.identity.get("role", "L2_Judge"),
+                score=case.l2_judge_verdict.score, action=case.l2_judge_verdict.action_taken,
+                monologue=case.l2_judge_verdict.internal_monologue, fact_check_summary=fc_summary,
+                domain_policy=domain_policy, target=target_ca, case_id=case_id, source_text=source_text
+            )
+            case.metadata["token_usage"]["L3_CA_Total"] = {
+                "prompt_tokens": fc_usage.get("prompt_tokens", 0) + la_usage.get("prompt_tokens", 0),
+                "completion_tokens": fc_usage.get("completion_tokens", 0) + la_usage.get("completion_tokens", 0),
+            }
+        except L3_GateOutputError as e:
+            case.pipeline_status = "GATE_C_API_OUTAGE" if "API_OUTAGE" in str(e) else "GATE_C_PARSE_ERROR"
+            metadata["error"], metadata["raw_response_dump"] = str(e), getattr(e, "raw_output", "")
+            return case
+
+        case.compliance_gap = _synthesise_gap(case)
         return case
 
-    case.compliance_gap = _synthesise_gap(case)
-    return case
-
+    except Exception as e:
+        case.pipeline_status = "UNCAUGHT_EXCEPTION"
+        case.metadata["error"] = str(e)
+        case.metadata["exception_type"] = type(e).__name__
+        
+        tb_str = traceback.format_exc()
+        case.metadata["traceback"] = tb_str[-2000:]  # Keep only the last ~2KB
+        
+        case.metadata["failing_stage"] = "orchestrator_run_pipeline"
+        return case
 
 def write_result(case: CaseResult, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Route catastrophic failures to the sentinel file format
+    if case.pipeline_status == "UNCAUGHT_EXCEPTION":
+        output_path = output_path.with_name(f"audit_{case.case_id}.error.json")
+        
     output_path.write_text(
         json.dumps(case.to_json_dict(), indent=2, default=str),
         encoding="utf-8",

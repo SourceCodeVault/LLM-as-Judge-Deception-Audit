@@ -730,39 +730,83 @@ def main():
             else:
                 expected_filename = f"audit_{variant}__{unique_name}.json"
 
-            # --- TASK 1A: RESUME LOGIC (Optimized: O(1) set lookup) ---
+            # --- UNIVERSAL SENTINEL CHOKEPOINT ---
+            def _emit_sentinel(status, exc=None, stage=""):
+                """Guarantees a failure sentinel file lands on disk."""
+                from steps.schema import CaseResult
+                case = CaseResult(
+                    case_id=unique_name, 
+                    input_path=f.name, 
+                    pipeline_status="UNCAUGHT_EXCEPTION",
+                    sanitized_body=None, 
+                    mined_claims=[], 
+                    l2_judge_verdict=None,
+                    fact_checker_verdict=None, 
+                    logic_auditor_verdict=None,
+                    compliance_gap=None,
+                    metadata={
+                        "failing_stage": stage,
+                        "original_status": status,
+                        "error": str(exc) if exc else "",
+                        "exception_type": type(exc).__name__ if exc else "",
+                        "l2_variant": variant,
+                    },
+                )
+                sentinel_path = run_dir / "GATE_A_AND_SYSTEM_FAILURES" / expected_filename
+                write_result(case, sentinel_path)
+
+            # --- TASK 1A: RESUME LOGIC ---
             if existing_files_set and expected_filename in existing_files_set:
                 return unique_name, variant, "ALREADY_PROCESSED"
             
-            # --- TASK 1B: CANARY MODE ---
             file_to_process = f
             temp_file_path = None
             
-            if canary_mode:
-                try:
-                    with open(f, 'r', encoding='utf-8') as fp:
-                        content = fp.read()
-                    for old_str, new_str in CANARY_SWAPS.items():
-                        if old_str in content:
-                            content = content.replace(old_str, new_str)
-                    temp_file = tempfile.NamedTemporaryFile(mode='w', delete=False, encoding='utf-8', suffix='.json')
-                    temp_file.write(content)
-                    temp_file.close()
-                    file_to_process = Path(temp_file.name)
-                    temp_file_path = file_to_process
-                except Exception:
-                    return unique_name, variant, "ERROR"
-
-            # --- TASK 1C: RUN PIPELINE ---
             try:
-                result = run_pipeline(
-                    input_path=file_to_process,
-                    target_l2=TARGET_L2,
-                    target_ca=TARGET_CA,
-                    l2_variant=variant,
-                    mode=DEPLOYMENT_MODE,
-                    case_id=unique_name
-                )
+                # --- TASK 1B: CANARY MODE ---
+                if canary_mode:
+                    try:
+                        with open(f, 'r', encoding='utf-8') as fp:
+                            content = fp.read()
+                        for old_str, new_str in CANARY_SWAPS.items():
+                            if old_str in content:
+                                content = content.replace(old_str, new_str)
+                        temp_file = tempfile.NamedTemporaryFile(mode='w', delete=False, encoding='utf-8', suffix='.json')
+                        temp_file.write(content)
+                        temp_file.close()
+                        file_to_process = Path(temp_file.name)
+                        temp_file_path = file_to_process
+                    except Exception as e:
+                        import traceback
+                        print(f"\n[CANARY_SETUP_FAIL] {variant} | {unique_name} | {type(e).__name__}: {str(e)[:150]}")
+                        traceback.print_exc()
+                        _emit_sentinel("CANARY_SETUP_EXCEPTION", e, "canary_swap")
+                        return unique_name, variant, "CANARY_SETUP_EXCEPTION"
+
+                # --- TASK 1C: RUN PIPELINE (With 600s Timeout) ---
+                import concurrent.futures
+                
+                inner_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+                try:
+                    future = inner_executor.submit(
+                        run_pipeline,
+                        input_path=file_to_process,
+                        target_l2=TARGET_L2,
+                        target_ca=TARGET_CA,
+                        l2_variant=variant,
+                        mode=DEPLOYMENT_MODE,
+                        case_id=unique_name
+                    )
+                    # 600s = 10 minutes. If it takes longer, kill it.
+                    result = future.result(timeout=600)
+                    
+                except concurrent.futures.TimeoutError as e:
+                    print(f"\n  ⏱️ [TIMEOUT] {variant} | {unique_name} | Exceeded 600s")
+                    _emit_sentinel("TIMEOUT_ERROR", e, "run_pipeline")
+                    return unique_name, variant, "TIMEOUT_ERROR"
+                finally:
+                    # Don't wait for the hung thread to finish before moving on
+                    inner_executor.shutdown(wait=False, cancel_futures=True)
                 
                 # --- DYNAMIC FOLDER ROUTING ---
                 if result.pipeline_status == "OK" and result.compliance_gap:
@@ -776,19 +820,12 @@ def main():
                 final_out_path = final_out_dir / expected_filename
                 
                 write_result(result, final_out_path)
-                
-                if canary_mode and temp_file_path and temp_file_path.exists():
-                    os.remove(temp_file_path)
-                    
                 return unique_name, variant, result.pipeline_status
-                
+                    
             except Exception as e:
                 error_msg = str(e)
                 error_type = type(e).__name__
 
-                # Detect API outage by exception type OR message content.
-                # More robust than substring alone — catches GateOutputError("API_OUTAGE: ..."),
-                # raw ConnectionError bubbling up, and any wrapping that preserves the message.
                 is_api_outage = (
                     isinstance(e, ConnectionError)
                     or "ConnectionError" in error_type
@@ -798,24 +835,22 @@ def main():
                 )
 
                 if is_api_outage:
-                    # Extract just the core reason for a clean one-line log
                     clean_reason = error_msg.split("Last error:")[-1].strip() if "Last error:" in error_msg else error_msg
                     print(f"\n  ⚠️  [API OUTAGE] {variant} | {unique_name} | {clean_reason}")
-                    verdict = "API_OUTAGE"
+                    # LEAK 2 CLOSED
+                    _emit_sentinel("PROCESS_FILE_API_OUTAGE", e, "process_file_outer")
+                    return unique_name, variant, "API_OUTAGE"
                 else:
-                    # Keep full tracebacks for actual unexpected code bugs
                     import traceback
                     print(f"\n[DEBUG] Error in {variant} | Hash: {unique_name} | File: {f.name}")
                     traceback.print_exc()
-                    verdict = "ERROR"
-
+                    # LEAK 3 CLOSED
+                    _emit_sentinel("PROCESS_FILE_UNCAUGHT", e, "process_file_outer")
+                    return unique_name, variant, "ERROR"
+            finally:
                 if canary_mode and temp_file_path and temp_file_path.exists():
                     os.remove(temp_file_path)
-
-                return unique_name, variant, verdict
-
-
-
+                
         # --- VARIANT FILTERING LOGIC ---
         selected_variants = {}
         if CANARY_MODE:
@@ -858,7 +893,11 @@ def main():
             print("\n  → Restricting execution to Z08 Same-Model Control Variant.")
         else:
             if not cli_variants or cli_variants.lower() == "all":
-                selected_variants = L2_VARIANTS
+                # FIX: Exclude Z07 and Z08 from the default main grid run
+                selected_variants = {
+                    k: v for k, v in L2_VARIANTS.items() 
+                    if k not in ["same_model_control", "scratchpad_aware_control"]
+                }
             else:
                 req_vars = [v.strip() for v in cli_variants.split(",")]
                 selected_variants = {k: v for k, v in L2_VARIANTS.items() if k in req_vars}
@@ -981,7 +1020,9 @@ def main():
         # --- EXECUTE TASKS ---
         print(f"\n🚀 Queuing {len(pending_tasks)} pending tasks (out of {len(tasks)} total)...")
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=36) as executor:
+        completed_results = []
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             # Submit only the pending tasks
             futures = [executor.submit(process_file, t, run_dir, CANARY_MODE, existing_files_set) for t in pending_tasks]
             
@@ -1003,6 +1044,9 @@ def main():
                 for future in concurrent.futures.as_completed(futures):
                     unique_name, variant, verdict = future.result()
                     
+                    # RECORD THE VERDICT
+                    completed_results.append((unique_name, variant, verdict))
+
                     if verdict in {"OK", "MODE_A_SHORT_CIRCUIT", "ALREADY_PROCESSED"}:
                         pass # Handled by progress bar updates
                     elif verdict == "API_OUTAGE":
@@ -1017,8 +1061,46 @@ def main():
                 
         print(f"\n✅ Audit complete! Data saved to {run_dir.name}")
         
-        # Interactive Dashboard Trigger
+        # --- DENOMINATOR CONSERVATION ASSERTION ---
+        print("\nVerifying denominator conservation...")
+        
+        # Count all audit_*.json files, strictly ignoring underscored folders (like _archive)
+        actual_outputs = [
+            f for f in run_dir.rglob("audit_*.json")
+            if not any(part.startswith("_") for part in f.relative_to(run_dir).parts[:-1])
+        ]
+        
+        expected_outputs = len(tasks)
+        
+        if len(actual_outputs) != expected_outputs:
+            # Extract just the "{variant}__{hash}[__rerun_XX]" part from the actual files
+            output_names = {f.stem.replace("audit_", "") for f in actual_outputs}
+            
+            # Reconstruct expected names matching the worker logic exactly
+            expected_names = set()
+            for t in tasks:
+                _, raw_unique_name, variant, rerun_idx = t
+                unique_name = hashlib.sha256(raw_unique_name.encode()).hexdigest()[:12]
+                if rerun_idx is not None:
+                    expected_names.add(f"{variant}__{unique_name}__rerun_{rerun_idx:02d}")
+                else:
+                    expected_names.add(f"{variant}__{unique_name}")
+                    
+            missing = expected_names - output_names
+            
+            print(f"\n🚨 [CRITICAL] DENOMINATOR MISMATCH DETECTED!")
+            print(f"   Expected outputs (Tasks): {expected_outputs}")
+            print(f"   Actual output files:      {len(actual_outputs)}")
+            print(f"   Missing count:            {expected_outputs - len(actual_outputs)}")
+            print(f"   Missing instances:        {sorted(missing)}")
+            print(f"   Check your .error.json sentinels and pipeline logs!")
+            sys.exit(1)
+        else:
+            print("✅ Denominator conserved. 100% of tasks accounted for.")
+        # ------------------------------------------
+
         choice = input("📊 Generate dashboard now? (Y/n): ").strip().lower()
+
         if choice != 'n':
             import subprocess
             subprocess.run([sys.executable, "tools/build_dashboard.py"])
