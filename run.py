@@ -25,6 +25,9 @@ import sys
 import builtins
 import threading
 
+# --- EXECUTION ENGINE CONFIGURATION ---
+MAX_WORKERS = 10
+PIPELINE_TIMEOUT_SECONDS = 1200  # 20 minutes runway for slow upstream queues
 
 class BufferedTeeLogger:
     """Buffers console output in memory until a file is assigned, then duplicates to both. Allows terminal progress bars without cluttering debug logs."""
@@ -395,12 +398,12 @@ import resource
 def check_file_descriptor_limit():
     """Warn if FD limit is too low for the configured thread pool."""
     soft_limit, hard_limit = resource.getrlimit(resource.RLIMIT_NOFILE)
-    recommended_min = 512  # Minimum for 36 workers + overhead
+    recommended_min = (MAX_WORKERS * 15) + 100  # Dynamic scaling overhead proxy
     
     if soft_limit < recommended_min:
         print(f"\n⚠️  LOW FILE DESCRIPTOR LIMIT DETECTED")
         print(f"   Current limit: {soft_limit} (hard limit: {hard_limit})")
-        print(f"   Recommended minimum:  {recommended_min}+ for {36} workers")
+        print(f"   Recommended minimum:  {recommended_min}+ for {MAX_WORKERS} workers")
         print(f"   Fix: Run 'ulimit -n {recommended_min}' before this script")
         print(f"   Or add to ~/.zshrc: ulimit -n {recommended_min}\n")
 
@@ -715,7 +718,7 @@ def main():
 
         os.environ["AUDIT_RUN_DIR"] = str(run_dir)
 
-        print(f"\n🚀 Running Audit on {len(target_files)} cases (36 Concurrent Streams).")
+        print(f"\n🚀 Running Audit on {len(target_files)} cases ({MAX_WORKERS} Concurrent Streams).")
         print(f"📂 Outputting to: {run_dir.name}\n")
         
 
@@ -786,7 +789,7 @@ def main():
                 # --- TASK 1C: RUN PIPELINE (With 600s Timeout) ---
                 import concurrent.futures
                 
-                inner_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+                inner_executor = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
                 try:
                     future = inner_executor.submit(
                         run_pipeline,
@@ -797,8 +800,8 @@ def main():
                         mode=DEPLOYMENT_MODE,
                         case_id=unique_name
                     )
-                    # 600s = 10 minutes. If it takes longer, kill it.
-                    result = future.result(timeout=600)
+                
+                    result = future.result(timeout=PIPELINE_TIMEOUT_SECONDS)
                     
                 except concurrent.futures.TimeoutError as e:
                     print(f"\n  ⏱️ [TIMEOUT] {variant} | {unique_name} | Exceeded 600s")
@@ -1022,7 +1025,7 @@ def main():
 
         completed_results = []
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             # Submit only the pending tasks
             futures = [executor.submit(process_file, t, run_dir, CANARY_MODE, existing_files_set) for t in pending_tasks]
             
