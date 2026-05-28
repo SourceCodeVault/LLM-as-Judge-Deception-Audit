@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Stability Report · Test-Retest Reliability</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Inter', sans-serif; color: #000; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.font-mono { font-family: 'Courier Prime', monospace; }
+.page { max-width: 210mm; margin: 2rem auto; padding: 18mm; border: 1px solid #ccc; background: #fff; }
+.section-rule { border-bottom: 3px solid #000; padding-bottom: 6px; margin-bottom: 18px; }
+.section-rule h2 { font-size: 18px; font-weight: 800; color: #000; letter-spacing: -0.5px; }
+table { width: 100%; border-collapse: collapse; page-break-inside: auto; }
+th { border-bottom: 2px solid #000; padding: 8px; text-transform: uppercase; font-size: 10px; font-weight: 800; text-align: left; }
+td { padding: 8px; vertical-align: top; color: #000; font-size: 13px; }
+.metric-card { border: 1px solid #000; padding: 16px; margin-bottom: 12px; }
+.metric-value { font-size: 32px; font-weight: 900; }
+.metric-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.7; }
+.metric-detail { font-size: 12px; margin-top: 4px; }
+</style>
+</head>
+<body>
+<main class="page">
+<header style="border-bottom:3px solid #000;padding-bottom:14px;margin-bottom:24px;">
+<div class="text-xs font-bold uppercase" style="letter-spacing:0.2em;">Stability Report</div>
+<h1 style="font-size:28px;font-weight:900;letter-spacing:-1px;line-height:1;margin-top:4px;">
+Test-Retest Reliability
+</h1>
+<div class="text-sm font-mono" style="margin-top:8px;">Correspondence Auditor · §11 Pre-Registration</div>
+</header>
+
+<section style="margin-bottom:24px;">
+<div class="section-rule"><h2>01 · Summary</h2></div>
+<p class="text-sm text-black" style="margin-bottom:16px;">
+This report computes pre-registered reliability metrics across 6 rerun iterations 
+(297 cases each).
+</p>
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+<div class="metric-card">
+<div class="metric-label">ICC(2,1) — Binary Verdict</div>
+<div class="metric-value">0.979</div>
+<div class="metric-detail">95% CI: [0.980, 0.980]</div>
+<div class="metric-detail" style="margin-top:8px;font-weight:800;font-size:14px;color:green">
+✓ PASS (threshold ≥ 0.80)
+</div>
+</div>
+<div class="metric-card">
+<div class="metric-label">Krippendorff's α — Rules</div>
+<div class="metric-value">0.238</div>
+<div class="metric-detail">MASI distance</div>
+</div>
+<div class="metric-card">
+<div class="metric-label">Cohen's κ — Quadrants</div>
+<div class="metric-value">0.986</div>
+<div class="metric-detail">Mean (10 pairs) · Range: [0.976, 0.995]</div>
+</div>
+<div class="metric-card">
+<div class="metric-label">Cohen's κ — Gate B Baseline</div>
+<div class="metric-value">0.515</div>
+<div class="metric-detail">Human vs. Gate B labels</div>
+</div>
+</div>
+</section>
+
+<section style="margin-bottom:24px;">
+<div class="section-rule"><h2>02 · Interpretation Guide</h2></div>
+<table>
+<thead>
+<tr><th>Metric</th><th>Interpretation</th><th>Acceptable Range</th></tr>
+</thead>
+<tbody>
+<tr style="border-bottom:1px solid #ccc;"><td class="font-mono">ICC(2,1)</td><td>Test-retest reliability for binary verdicts</td><td>≥ 0.80 (excellent)</td></tr>
+<tr style="border-bottom:1px solid #ccc;"><td class="font-mono">Krippendorff's α</td><td>Agreement on rule firings (set-valued)</td><td>≥ 0.80 (acceptable)</td></tr>
+<tr style="border-bottom:1px solid #ccc;">
+    <td class="font-mono">Cohen's κ</td>
+    <td>Quadrant classification stability <br><span style="font-size:10px; font-weight:normal; opacity:0.7;">(Applies to the pre-registered 2×2 quadrants. Captures 8-cell stability inherently, as ground-truth is static per case).</span></td>
+    <td>≥ 0.60 (substantial)</td>
+</tr>
+<tr><td class="font-mono">Cohen's κ (Gate B)</td><td>Human vs. model factual grounding</td><td>≥ 0.60 (substantial)</td></tr>
+</tbody>
+</table>
+</section>
+
+<section style="margin-bottom:24px;">
+<div class="section-rule"><h2>03 · Rule Flicker Diagnostic</h2></div>
+<p class="text-sm text-black" style="margin-bottom:16px;">
+Identifies prompt ambiguity within the Truth Cartridge. High instability percentages (>50%) indicate that the LLM lacks a reliable mental model for the rule's boundaries, leading to stochastic application.
+</p>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Cases Seen</th>
+<th>Unanimous (All Valid Runs)</th>
+<th>Flickering (Partial Runs)</th>
+<th>% Unstable</th>
+</tr>
+</thead>
+<tbody>
+
+        <tr style="border-bottom:1px solid #eee;">
+            <td class="font-mono font-bold">F2</td>
+            <td>197</td>
+            <td>176</td>
+            <td>21</td>
+            <td style="color:green; font-weight:600;">10.7%</td>
+        </tr>
+        
+        <tr style="border-bottom:1px solid #eee;">
+            <td class="font-mono font-bold">S1</td>
+            <td>122</td>
+            <td>96</td>
+            <td>26</td>
+            <td style="color:orange; font-weight:600;">21.3%</td>
+        </tr>
+        
+        <tr style="border-bottom:1px solid #eee;">
+            <td class="font-mono font-bold">U1</td>
+            <td>295</td>
+            <td>211</td>
+            <td>84</td>
+            <td style="color:orange; font-weight:600;">28.5%</td>
+        </tr>
+        
+        <tr style="border-bottom:1px solid #eee;">
+            <td class="font-mono font-bold">F1</td>
+            <td>194</td>
+            <td>91</td>
+            <td>103</td>
+            <td style="color:red; font-weight:600;">53.1%</td>
+        </tr>
+        
+        <tr style="border-bottom:1px solid #eee;">
+            <td class="font-mono font-bold">U3</td>
+            <td>285</td>
+            <td>116</td>
+            <td>169</td>
+            <td style="color:red; font-weight:600;">59.3%</td>
+        </tr>
+        
+        <tr style="border-bottom:1px solid #eee;">
+            <td class="font-mono font-bold">U4</td>
+            <td>285</td>
+            <td>14</td>
+            <td>271</td>
+            <td style="color:red; font-weight:600;">95.1%</td>
+        </tr>
+        
+        <tr style="border-bottom:1px solid #eee;">
+            <td class="font-mono font-bold">H1</td>
+            <td>265</td>
+            <td>13</td>
+            <td>252</td>
+            <td style="color:red; font-weight:600;">95.1%</td>
+        </tr>
+        
+        <tr style="border-bottom:1px solid #eee;">
+            <td class="font-mono font-bold">F3</td>
+            <td>151</td>
+            <td>3</td>
+            <td>148</td>
+            <td style="color:red; font-weight:600;">98.0%</td>
+        </tr>
+        
+        <tr style="border-bottom:1px solid #eee;">
+            <td class="font-mono font-bold">J3</td>
+            <td>65</td>
+            <td>0</td>
+            <td>65</td>
+            <td style="color:red; font-weight:600;">100.0%</td>
+        </tr>
+        
+        <tr style="border-bottom:1px solid #eee;">
+            <td class="font-mono font-bold">J4</td>
+            <td>59</td>
+            <td>0</td>
+            <td>59</td>
+            <td style="color:red; font-weight:600;">100.0%</td>
+        </tr>
+        
+        <tr style="border-bottom:1px solid #eee;">
+            <td class="font-mono font-bold">J1</td>
+            <td>108</td>
+            <td>0</td>
+            <td>108</td>
+            <td style="color:red; font-weight:600;">100.0%</td>
+        </tr>
+        
+        <tr style="border-bottom:1px solid #eee;">
+            <td class="font-mono font-bold">J2</td>
+            <td>84</td>
+            <td>0</td>
+            <td>84</td>
+            <td style="color:red; font-weight:600;">100.0%</td>
+        </tr>
+        
+        <tr style="border-bottom:1px solid #eee;">
+            <td class="font-mono font-bold">J5</td>
+            <td>62</td>
+            <td>0</td>
+            <td>62</td>
+            <td style="color:red; font-weight:600;">100.0%</td>
+        </tr>
+        
+        <tr style="border-bottom:1px solid #eee;">
+            <td class="font-mono font-bold">U2</td>
+            <td>2</td>
+            <td>0</td>
+            <td>2</td>
+            <td style="color:red; font-weight:600;">100.0%</td>
+        </tr>
+        
+</tbody>
+</table>
+</section>
+
+<footer style="margin-top:32px;padding-top:12px;border-top:1px solid #000;font-size:11px;color:#000;opacity:0.7;text-align:center;">
+Generated by compute_stability.py · 2026-05-28T09:15:18.778805 · 297 cases × 6 runs
+</footer>
+</main>
+</body>
+</html>
