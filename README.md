@@ -2,7 +2,7 @@
 
 An open-source, high-integrity audit layer that sits **downstream** of any LLM-as-Judge pipeline. The Auditor is a Line 3 instrument: it does not try to be a better judge. It records what the judge was given, what the judge concluded, and whether those two things are reconcilable against the policy.  
 
-This repository is the frozen experimental artefact for "Auditing LLM-as-Judge Pipelines: A Source-Grounded Instrument for Detecting Strategic-Deception Blindspots"" (St. Vaughan, 2026, DOI 10.5281/zenodo.20326022). For the actively maintained tool, see [Correspondence Auditor](https://github.com/SourceCodeVault/Correspondence-Auditor). Issues against this code go to `KNOWN_ISSUES.md` and will be addressed in the main repo, not here.
+This repository is the frozen experimental artefact for "Auditing LLM-as-Judge Pipelines: A Source-Grounded Instrument for Detecting Strategic-Deception Blindspots" (St. Vaughan, 2026; software deposit DOI 10.5281/zenodo.20326022). For the actively maintained tool, see [Correspondence Auditor](https://github.com/SourceCodeVault/Correspondence-Auditor). Issues against this code go to `KNOWN_ISSUES.md` and will be addressed in the main repo, not here.
 ---
 
 ## The Problem  
@@ -501,11 +501,16 @@ python tools/compute_stability.py
 
 The interactive menu lets you pick the test-retest run directory. The script verifies that all cases are on the ablation arm (per pre-reg §11), computes ICC(2,1), Krippendorff's α, and Cohen's κ, and writes `stability_report.json` plus an HTML one-pager.
 
-For automated use:
+For automated use — the registered §11 workflow uses **k=6 (seed-as-t=0)**, passing the seed pass as the t=0 baseline via `--seed-dir` (see pre-reg v20):
 
 ​```bash
-python tools/compute_stability.py --rerun-dir output/run_<timestamp> --output-dir output/run_<timestamp>
+python tools/compute_stability.py \
+  --rerun-dir output/run_<timestamp>_testretest_reruns \
+  --seed-dir  output/run_<timestamp>_testretest_seed \
+  --output-dir output/stability_k6_report
 ​```
+
+Omitting `--seed-dir` reverts to the k=5-strict computation against the rerun directory only. The `seed_dir` and `k_framing` fields in the emitted `stability_report.json` self-document which framing was used.
 
 ---
 
@@ -518,6 +523,18 @@ python tools/build_dashboard.py
 ​```
 
 The dashboard renders the headline H1/H2 results, quadrant distribution, Psychopathia Machinalis mapping, and the §10 decision rule status.
+
+---
+
+## Validating the Dashboard Payload
+
+After building a dashboard, an independent reproducibility check re-aggregates every headline number directly from the raw per-case telemetry embedded in `dashboard.json` — without re-running the audit pipeline:
+
+​```bash
+python tools/validate_dashboard.py output/run_<timestamp>/dashboard.json
+​```
+
+Exit code `0` confirms the dashboard's per-variant counts, FPR/FNR, base invariants, and Sankey flows all reproduce from the raw rows. A non-zero exit flags an inconsistency to investigate before any number is transcribed into the paper.
 
 ---
 
@@ -541,9 +558,9 @@ Working production code. The core concepts have been battle tested in production
 ---
 ## Pre-Registration
 
-This codebase is released with a **pre-registered methodology** documented in [paper/PRE_REGISTRATION.md](paper/PRE_REGISTRATION.md). The v1.0-prereg tag deposits the methodology as initially registered; mid-pilot amendments (v13 through v19) are recorded within the document under the pre-registration discipline, each with rationale and disclosure.
+This codebase is released with a **pre-registered methodology** documented in [paper/PRE_REGISTRATION.md](paper/PRE_REGISTRATION.md). The v1.0-prereg tag deposits the methodology as initially registered; mid-pilot amendments (v13 through v21) are recorded within the document under the pre-registration discipline, each with rationale and disclosure.
 
-**Pilot status (v19, in flight):** The Same-Model Control Arm (Z07, n=150), the §4.5a entity-perturbation canary, and pipeline-robustness patches (silent-drop remediation, manifest determinism) are complete. The headline 1,200-case main grid across Z01–Z05 is in execution. All analysis decisions (thresholds, metrics, inclusion criteria) remain locked at v1.0-prereg; deviations are reported in the pre-registration amendment trail and flagged exploratory where applicable.
+**Pilot status (v21, reporting-framework lock):** Data collection is complete across all four pre-registered arms — the headline 1,200-case main grid (Z01–Z05), the Z07 same-model control (n=150), the §4.5 entity-perturbation canary, and the §11 test-retest (seed pass + 5 reruns on the ablation arm). The Gate B inter-rater-reliability annotation (§4.6) is complete. The analysis and reporting tooling is locked at this tag (Zenodo `v1.2-reporting-framework`) ahead of extracting the headline §5 numbers into the paper — the timestamp separation between reporting-code lock and results lock is recorded in the v21 amendment. All analysis decisions (thresholds, metrics, inclusion criteria) remain locked at v1.0-prereg; amendments through v21 are reported in the pre-registration amendment trail and flagged exploratory where applicable.
 
 ---
 
@@ -562,7 +579,7 @@ If you use this software or methodology in academic work, please cite:
 }
 ```
 
-The `version` field anchors the citation to the methodology deposit; the code at later tags (e.g. v19) extends this with disclosed amendments.
+The `version` field anchors the citation to the methodology deposit; the code at later tags (e.g. v21 / Zenodo `v1.2-reporting-framework`) extends this with disclosed amendments.
 
 ---
 
@@ -589,4 +606,4 @@ Independent researcher working at the intersection of AI safety and enterprise G
 - **CISA** — Certified Information Systems Auditor (ISACA)  
 - **CAMS** — Certified Anti-Money Laundering Specialist (ACAMS)  
 
-LinkedIn: [Adrian St. Vaughan](https://www.linkedin.com/in/adrianstvaughan/)  
+LinkedIn: [Adrian St. Vaughan](https://www.linkedin.com/in/adrianstvaughan/)

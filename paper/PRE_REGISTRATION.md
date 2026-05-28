@@ -1,5 +1,5 @@
 # Experimental Pre-Registration: Correspondence Auditor Validation
-**Pragmatic Preprint, v19** · Adrian St. Vaughan
+**Pragmatic Preprint, v21** · Adrian St. Vaughan
 
 ---
 
@@ -745,3 +745,111 @@ Utility to generate a 'hash to input file path' lookup table added to `tools/has
 `tools/compute_stability.py` and `tools/build_dashboard.py` — operational refactor. `build_dashboard.py` relocated from project root to `tools/` for organisational consistency with the rest of the analysis tooling. Both scripts updated to resolve `PROJECT_ROOT` dynamically via `Path(__file__).resolve().parent.parent`, eliminating the prior implicit working-directory dependency. `compute_stability.py` also gains an interactive menu that defaults to listing eligible directories under output/ when CLI arguments are omitted; CLI invocation behaviour is unchanged. No change to any statistical computation, threshold (ICC ≥ 0.80 per §11), ablation-arm guardrail, or output schema.
 
 Added `tools/backfill_manifest_v19.py` utility to add the hash slug to existing manifest for convenience.
+
+## v20 — §11 Operationalisation: Two-Step Seed-and-Rerun Workflow
+
+### Status
+Pre-execution disclosure. Documents the operational workflow for the §11 test-retest block as executed against the orchestrator (`run.py`) at the v17 methodology lock, and the corresponding analysis-tooling extension applied to `tools/compute_stability.py`. No change to hypotheses, sample size, seed configuration, α_family, decision rule, ICC threshold, or analysis-plan formulae.
+
+### Background
+§11 specifies that a 300-case stratified subset (100 per scenario stratum, drawn by `tools/extract_stratified_subsample.py` per the v17 amendment) is rerun k=5 times on the ablation arm at the registered T=0.1. The orchestrator's Test-Retest mode (`RUN_TYPE = "test_retest"`) is designed to rerun a case set already present in a prior output directory: it extracts case hashes from filenames in that output dir and resolves the input source via that directory's `_provenance/`. This design enforces a provenance link between the §11 block and a canonical base run.
+
+No prior output directory at the 300-case scope existed at the time §11 was executed. The main-grid §7 ablation arm runs against the full 1,200-case pilot, and the orchestrator does not expose a hash-subset filter that would let Test-Retest mode consume a 300-case slice of that 1,200-case ablation output. Two options were considered:
+
+(a) extend the orchestrator with a `--case-subset` filter for Test-Retest mode, or
+(b) execute the §11 block as a two-step workflow within the existing orchestrator surface: a seed pass on the 300-case subsample folder, followed by Test-Retest pointed at the seed-pass output.
+
+Option (b) was selected. It requires no modification to the v17-locked
+`run.py` and preserves the orchestrator's provenance contract.
+### Workflow
+
+**Step 1 — Seed pass.** Normal (main-grid) run against the 300-case
+subsample folder, restricted to the ablation variant via `--variants`:
+```
+python run.py --mode A --env remote_openrouter --variants ablation_noise
+  → NEW RUN → Normal Run → Scan Directory → test_retest_stratified_300
+```
+
+Produces 300 `audit_ablation_noise__<hash>.json` files in a new output directory with `_provenance/` pointing at `input/test_retest_stratified_300/`. Cost: 300 Auditor calls, 0 Judge calls (L2 verdict synthesised deterministically per the v12 ablation patch).
+
+**Step 2 — Test-Retest pass.** Test-Retest mode pointed at the Step 1
+output directory:
+
+```
+python run.py --mode A --env remote_openrouter
+  → NEW RUN → Test-Retest → <Step 1 output dir>
+```
+
+The orchestrator extracts the 300 case hashes, auto-restricts to `ablation_noise` per §11, multiplies by 5 reruns, and queues 1,500 tasks. Output files are named `audit_ablation_noise__<hash>__rerun_NN.json`.
+
+### Budget reconciliation
+§4.1 lists the §11 line at 1,500 Auditor calls. The two-step workflow totals 1,800 Auditor calls (300 seed + 1,500 reruns). The 300-call surplus is incurred entirely within the ablation arm (0 Judge calls) and is not discarded: the seed-pass audits constitute the t=0 baseline observation for each of the 300 cases, collected under operationally identical conditions to the five reruns (same case set, same batch composition, same seed configuration, same orchestrator invocation parameters).
+
+This is methodologically stronger than anchoring the t=0 observation to the §7 main-grid ablation result, because the §7 ablation cases were processed in interleaved batch order with the full 1,200-case main grid, introducing operational variation that the §11 stability check is designed to control for. The seed pass produces a clean t=0 anchor at the same operating point as the five reruns. Analysis treats observations 1–6 (seed + 5 reruns) as the §11 replicate set; ICC(2,1), Krippendorff's α, and Cohen's κ are computed against this set per the pre-registered §11 analysis plan.
+
+The §4.1 invocation budget is updated from `+1,500` to `+1,800` for the
+§11 line. Total pilot Auditor invocations move from ≈10,050 to ≈10,350.
+
+### Why not patch `run.py`
+A code edit to bypass the Test-Retest output-directory prompt and feed it the 300-case manifest directly was considered and rejected. The output- directory selection is not an oversight — it is the orchestrator's provenance-link enforcement mechanism. Editing it would (i) modify code locked at the v17 methodology tag without a corresponding amendment, (ii) sever the back-pointer from the §11 block to its canonical base run, and (iii) create a `run.py` SHA in `_provenance/` that does not match the registered tag. The two-step workflow achieves the same case set and call budget with the orchestrator unmodified.
+
+### Analysis tooling
+The k=6 framing requires that `tools/compute_stability.py` ingest the seed-pass output directory alongside the test-retest rerun directory and treat the seed observations as the t=0 baseline. Two execution paths were considered:
+
+(a) filesystem manipulation — copy or symlink the seed audits into the rerun output directory with a renamed suffix (e.g., `__rerun_06`) so the existing single-directory ingestion path treats them as a sixth iteration, or
+(b) extend `compute_stability.py` with an explicit `--seed-dir` CLI flag that loads the seed audits at run index 0 and offsets the reruns to indices 1..n.
+
+Option (b) was selected. Filesystem manipulation is error-prone (seed audits and rerun audits share case-hash filenames, creating index-collision risk under the existing parser), creates a non-reproducible analysis artefact (the merged directory is a hand-built object with no provenance link to either source directory), and embeds the k=6 framing into the artefact rather than the code (so any future re-analysis would require reconstructing the merged folder by hand). The CLI flag keeps both source directories immutable, makes the k=6 framing explicit in the invocation, and self-documents in `stability_report.json` via the added `seed_dir` and `k_framing` fields.
+
+The change is a pure additive analysis-tool extension: when `--seed-dir` is omitted, behaviour is identical to the previous version (k=5 strict against the rerun directory only). It modifies no per-case audit JSONs, no prompts, no ground-truth labels, no orchestrator behaviour, and no gate logic. A secondary defensive fix was applied in the same patch to harden the verdict, quadrant, and rule extractors against explicit `null` values in failed-case `compliance_gap` and `metadata` fields (previously a `NoneType` crash; now a correct NaN in the stability matrix, consistent with the §6(b) fail-closed disposition). The §11 invocation is:
+
+```
+python tools/compute_stability.py \
+  --rerun-dir <step-2-output> \
+  --seed-dir  <step-1-output> \
+  --output-dir <stability-report-dir>
+```
+
+### Scope
+This amendment is confined to the §11 execution workflow, the §4.1 budget line, and the additive `tools/compute_stability.py` extension documented above. It touches no per-case audit JSONs, no prompts, no ground-truth labels, no sampling logic, no orchestrator code, no gate behaviour, and no metric formulae. `pipeline_version` is not bumped (the pipeline itself is unchanged). The §11 replicate set count moves from k=5 to k=6 in accordance with the seed-as-t=0 framing; the ICC(2,1) / Krippendorff α / Cohen κ formulae and the ≥0.80 ICC threshold remain as registered.
+
+## v21 — Reporting-Framework Lock
+
+### Status
+Pre-extraction disclosure. This amendment locks the analysis and reporting tooling at the SHA tagged `v1.2-reporting-framework` (Zenodo) / `v21` (git), BEFORE the headline numerical results from the §5 dashboards and the §11 stability report are transcribed into the prose of the paper. No change to hypotheses, sample size, seed configuration, α_family, decision rule, ICC threshold, exclusion rules, or any pre-registered analysis-plan formula. `pipeline_version` is not bumped — the pipeline itself is unchanged and post-v1.1 audit JSONs are interchangeable in interpretation with post-v1.2 audit JSONs.
+
+### Background
+Following the `v1.1-methodology-lock` tag (= v20 amendment in this document), experimental data collection was completed across the four pre-registered arms (main 1,200-case grid, Z07 same-model control, entity-perturbation canary, §11 ablation seed + rerun). The headline analysis tooling — `tools/build_dashboard.py`, `tools/compute_stability.py`, and the Gate B IRR sampling utility — was exercised against the collected data, surfacing three small artefacts of analysis-tool maturity that this amendment records and locks before the §5 prose write-up commences.
+
+The methodological purpose of this amendment is timestamp separation: the reporting framework — the code that turns audit JSONs into the numbers that appear in the paper — is locked, on the public record, before those numbers are transcribed into the manuscript text. Conflation of "reporting code lock" and "results lock" is what makes the §5 numbers defensible; separating them is the substantive content of this tag.
+
+### Changes
+
+**(a) `tools/build_dashboard.py` — cosmetic auto-open bugfix.**
+Line 2360 previously referenced an undefined variable `out` in the convenience auto-browser-open call (`webbrowser.open(f"file://{out.resolve()}")`), where `out_html` was intended. The defect was silently swallowed by the surrounding `try/except`: dashboard files were written correctly to disk, but the post-write auto-open did not fire. The fix is the one-line variable rename. Effect on `dashboard.html` content, `dashboard.json` content, per-case `investigation/FP_*.json` and `investigation/FN_*.json` extracts, any computed statistic, the §10 decision-rule output, or any pre-registered metric: none. Dashboards generated against the `v1.1-methodology-lock` SHA and the `v1.2-reporting-framework` SHA are byte-identical for all on-disk artefacts.
+
+**(b) `tools/validate_dashboard.py` — new independent reproducibility validator.**
+Adds a single-file utility that ingests `dashboard.json` and re-computes, from scratch and without reference to the pipeline that produced it: (i) the base mathematical invariants (`n_clean + n_rogue = n_total` per variant; the eight-cell exploratory taxonomy counts sum to `n_total` per variant); (ii) the per-variant CLEAN and ROGUE counts, the `l3_correct_clean` and `l3_correct_rogue` counts, and the FPR and FNR rates, all recomputed from the raw `full_telemetry` records embedded in the dashboard payload; and (iii) the Sankey flow path counts (`bucket → l2_action → l3_action`). The utility exits with a non-zero status if any recomputed value disagrees with the dashboard's reported summary.
+
+The validator reads only `dashboard.json` and computes only quantities already pre-registered in §4 and §5 — it introduces no new statistical procedure, no new metric, no new threshold, and no new exclusion rule. It applies the same valid-row filter as `build_dashboard.py` (excluding the `ERROR`, `DROPPED_GT_NULL`, and `DROPPED_IMPOSSIBLE` quadrants and non-binary L2/L3 actions, mirroring the pre-registered §6 disposition logic) so its recomputation matches the dashboard's denominator by construction. Its purpose is to provide a reviewer with an independent, runnable check that the dashboard's headline numbers reproduce from the raw per-case telemetry without re-running the audit pipeline.
+
+No per-case audit JSON, prompt, ground-truth label, sampling logic, orchestrator code path, gate behaviour, or threshold is touched.
+
+**(c) `tools/l3_gate_b_irr_tester.py` — Gate B IRR annotation-task generator, archival commit.**
+Adds the previously local-only utility that drew the §4.6 Gate B inter-rater-reliability sample (n=50, stratified ~17/17/16 across SUPPORTED / CONTRADICTED / UNSUPPORTED) to the repository. The script is deterministic: sampling is gated by the fixed string `RNG_SEED = "gate_b_irr_v1"`, drawn against the v1.1-pinned data inputs at `input/dataset_20260521_192859/manifest.jsonl`. The genuine-arm filter (ablation runs rejected) is applied per §4.6. The output `gate_b_answer_key.csv` and the printable annotator HTML (annotator BLIND to `ai_status` per §4.6) are written into the source run directory.
+
+The IRR sample drawn at execution time, against the v1.1 data inputs, is fully deterministic by construction — the same script SHA, the same v1.1-pinned manifest, and the same fixed `RNG_SEED` produce the same sample. The manual annotation phase (carried out by the registered human annotator without sight of Gate B's predicted verdicts) was completed before this tag was cut; the human's filled-in annotation artefact is preserved alongside the regenerable answer key under a distinct filename, so a fresh emit of `gate_b_answer_key.csv` does not collide with the human-marked file. The script is being committed for archival reproducibility, not retroactive sample manipulation: any reviewer at any future SHA can verify which 50 (case_id, claim) tuples constitute the sample by re-running the tool against the v1.1 manifest and inspecting the deterministic columns of the emitted CSV (sample-equivalence, rather than byte-identity, since the annotated artefact carries human marks not present in a fresh emit). The pre-registered Cohen's κ ≥ 0.60 acceptance target is reported from those completed annotations as part of §5.
+
+### Scope
+This amendment is confined to the three changes documented above. It introduces no new computation, no new threshold, no new metric, no new exclusion rule, no new prompt, no new label, no new sampling logic, no new gate behaviour, and no new ground-truth disposition. `pipeline_version` is not bumped. The reporting code that turns archived audit JSONs into the §5 numbers is now locked at `v1.2-reporting-framework`, before the §5 prose write-up commences.
+
+### Acceptance check (reviewer reproducibility procedure)
+A reviewer can verify the integrity of the §5 numbers via the following deterministic sequence:
+
+1. Check out the `v1.2-reporting-framework` tag.
+2. Run `tools/build_dashboard.py` against each archived run directory listed in §5.1 (main grid, Z07 control, canary, ablation).
+3. Run `tools/validate_dashboard.py <run_dir>/dashboard.json` against each resulting payload — exit code `0` is the pass condition.
+4. Run `tools/compute_stability.py --rerun-dir <step-2-output> --seed-dir <step-1-output> --output-dir <stability-report-dir>` against the §11 directories per the v20 invocation. The `seed_dir` and `k_framing` fields in the produced `stability_report.json` self-document the k=6 framing.
+5. Run `tools/l3_gate_b_irr_tester.py` against the v1.1 headline manifest and verify the emitted (Case ID, Claim) tuples in `gate_b_answer_key.csv` match the (Case ID, Claim) tuples in the preserved human-annotated artefact — sample-equivalence (rather than byte-identity, since the annotated artefact carries human marks not present in a fresh emit) is the pass condition.
+
+The headline §5 numbers appearing in the paper are the outputs of steps 2 and 4. Steps 3 and 5 are the independent integrity checks.

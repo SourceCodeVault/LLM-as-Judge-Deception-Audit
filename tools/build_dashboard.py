@@ -517,14 +517,18 @@ def gather_provenance(logs: list[Path], run_dir: Path) -> dict:
     except Exception:
         pass
 
-    # --- NEW: Pull run_type and perturbation data from config.json ---
+    # 1. Get the base routing modes (e.g., "remote_openrouter") from config.json
+    base_l2_mode = "remote_openrouter"
+    base_ca_mode = "remote_openrouter"
     config_path = run_dir / "_provenance" / "config.json"
     if config_path.exists():
         try:
             with open(config_path, "r", encoding="utf-8") as f:
                 config = json.load(f)
                 out["run_type"] = config.get("run_type", "main_grid")
-                # Grab any perturbation identifiers if they exist
+                base_l2_mode = config.get("target_l2", base_l2_mode)
+                base_ca_mode = config.get("target_ca", base_ca_mode)
+                
                 if "perturbation_manifest_hash" in config:
                     out["perturbation_manifest_hash"] = config["perturbation_manifest_hash"]
                 elif "source_mode" in config:
@@ -532,14 +536,59 @@ def gather_provenance(logs: list[Path], run_dir: Path) -> dict:
         except Exception:
             pass
 
+    # 2. Extract the actual underlying models from the specific manifests
+    l2_models = {}
+    l3_models = {}
+    prov_dir = run_dir / "_provenance"
+    
+    if prov_dir.exists():
+        for manifest in prov_dir.glob("*.json"):
+            if manifest.name == "config.json":
+                continue
+            try:
+                data = json.loads(manifest.read_text(encoding="utf-8"))
+                model_config = data.get("model_config", {})
+                
+                if manifest.name.startswith("L2_"):
+                    # Extract the variant ID (e.g., "Z01")
+                    m = re.search(r"(Z\d{2})", manifest.name)
+                    variant = m.group(1) if m else manifest.name
+                    model = model_config.get(base_l2_mode, base_l2_mode)
+                    l2_models[variant] = model
+                    
+                elif manifest.name.startswith("L3_"):
+                    # Simplify Gate names for the UI
+                    gate = "Gate B" if "GateB" in manifest.name else "Gate C" if "GateC" in manifest.name else manifest.name
+                    model = model_config.get(base_ca_mode, base_ca_mode)
+                    l3_models[gate] = model
+            except Exception:
+                continue
+
+    # 3. Group and format the models for the UI
+    if l2_models:
+        grouped_l2 = defaultdict(list)
+        for v, m in l2_models.items():
+            grouped_l2[m].append(v)
+        out["target_l2"] = " | ".join(f"{m} ({', '.join(sorted(vs))})" for m, vs in grouped_l2.items())
+    else:
+        out["target_l2"] = base_l2_mode
+        
+    if l3_models:
+        grouped_l3 = defaultdict(list)
+        for g, m in l3_models.items():
+            grouped_l3[m].append(g)
+        out["target_ca"] = " | ".join(f"{m} ({', '.join(sorted(gs))})" for m, gs in grouped_l3.items())
+    else:
+        out["target_ca"] = base_ca_mode
+
+    # 4. Grab pipeline version and manifest lists from the logs
     manifests = set()
-    for log in logs[:50]:
+    for log in logs:
         try:
             data = json.loads(log.read_text(encoding="utf-8"))
             meta = data.get("metadata") or {}
             out.setdefault("pipeline_version", meta.get("pipeline_version", "—"))
-            out.setdefault("target_ca", meta.get("target_ca", "—"))
-            out.setdefault("target_l2", meta.get("target_l2", "—"))
+            
             mf = meta.get("l2_manifest_filename")
             if mf:
                 manifests.add(mf)
@@ -548,7 +597,6 @@ def gather_provenance(logs: list[Path], run_dir: Path) -> dict:
 
     out["l2_manifests"] = ", ".join(sorted(manifests)) if manifests else "—"
     return out
-
 # ---------------------------------------------------------------------------
 # Formatting helpers
 # ---------------------------------------------------------------------------
@@ -1970,8 +2018,8 @@ def render_html(run_dir: Path, agg: dict, decision: dict, drops: dict,
     {appendix_html}
   </section>
 
-<section style="margin-top:32px; page-break-inside: avoid; break-inside: avoid;">
-    <div class="section-rule"><h2>17 · Sign-Off</h2><span class="section-num">CERTIFICATION</span></div>
+<section class="page-break" style="margin-top:32px; page-break-inside: avoid; break-inside: avoid;">
+    <div class="section-rule"><h2>Sign-Off</h2><span class="section-num">CERTIFICATION</span></div>
     {signature_block}
   </section>
 
@@ -2309,7 +2357,7 @@ def build_dashboard() -> None:
     print(f"   Reason: {decision['reason']}")
 
     try:
-        webbrowser.open(f"file://{out.resolve()}")
+        webbrowser.open(f"file://{out_html.resolve()}")
     except Exception:
         pass
 

@@ -27,6 +27,21 @@ AUDIT_TEXT_KEYS = ("source_text", "agent_transcript", "transcript", "target_resp
 ABLATION_PATTERN = re.compile(r"ablation", re.IGNORECASE)
 
 
+def _split_system_and_dialogue(text: str) -> tuple[str | None, str]:
+    """Apollo format always opens with [SYSTEM]...; split it off the dialogue."""
+    m = re.match(r"(\[SYSTEM\][\s\S]*?)(?=\n\[USER\]|\n\[ASSISTANT\])", text)
+    if m:
+        return m.group(1).strip(), text[m.end():].lstrip()
+    return None, text
+
+
+def _split_text_into_columns(text: str) -> tuple[str, str]:
+    """Split text roughly in half for two-column display."""
+    lines = text.split('\n')
+    mid = len(lines) // 2
+    return '\n'.join(lines[:mid]), '\n'.join(lines[mid:])
+
+
 def select_run() -> Path | None:
     if not OUTPUT_DIR.exists():
         print(f"❌ output/ directory not found at {OUTPUT_DIR}")
@@ -63,47 +78,69 @@ def is_genuine_arm(run_path: Path) -> bool:
     """Check if run is genuine arm (not ablation). Per §4.6, ablation is excluded."""
     return not ABLATION_PATTERN.search(run_path.name)
 
+# Module-level: load the manifest once, build the lookup
+def _load_manifest_lookup() -> dict[str, Path]:
+    manifest_path = BASE_DIR / "input" / "dataset_20260521_192859" / "manifest.jsonl"
+    lookup = {}
+    if not manifest_path.exists():
+        return lookup
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            case_id = record.get("case_id")
+            new_path = record.get("new_path")
+            if case_id and new_path:
+                lookup[case_id] = BASE_DIR / new_path
+    return lookup
+
+_MANIFEST_LOOKUP = _load_manifest_lookup()
+
 
 def get_source_text(data: dict, target_run: Path, log_name: str) -> tuple[str, bool]:
     """
-    Strict resolution of the agent transcript.
-
-    Returns (text, found). If found is False, the caller MUST exclude this
-    case from the annotation sample. No silent fallback to arbitrary strings
-    in the audit file — those are model-generated and would create circular
-    human-vs-AI validation.
+    Resolve agent transcript via manifest case_id lookup (v19+).
+    Returns (text, found). If not found, caller excludes the case.
     """
-    m = re.search(r"__(.*?)(?:\.error)?\.json$", log_name)
-    file_hash = m.group(1) if m else "unknown"
+    case_id = data.get("case_id")
+    if not case_id:
+        m = re.search(r"__(.*?)(?:\.error)?\.json$", log_name)
+        case_id = m.group(1) if m else None
+    if not case_id:
+        return "[no case_id]", False
 
-    # 1. Provenance file (preferred — this is where transcripts live by design)
-    prov_dir = target_run / "_provenance" / "inputs"
-    if prov_dir.exists():
-        for match in prov_dir.glob(f"*{file_hash}*.json"):
-            try:
-                with open(match, "r", encoding="utf-8") as f:
-                    s_data = json.load(f)
-                for key in PROVENANCE_TEXT_KEYS:
-                    val = s_data.get(key) if isinstance(s_data, dict) else None
-                    if isinstance(val, str) and val.strip():
-                        return val, True
-            except Exception:
-                continue  # try next match
+    raw_path = _MANIFEST_LOOKUP.get(case_id)
+    if not raw_path or not raw_path.exists():
+        return f"[no manifest entry for {case_id}]", False
 
-    # 2. Explicit transcript keys inside the audit JSON itself
-    for key in AUDIT_TEXT_KEYS:
-        val = data.get(key)
+    try:
+        with open(raw_path, "r", encoding="utf-8") as f:
+            raw = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return f"[unreadable input file for {case_id}]", False
+
+    # Apollo native format: prompt_dialogue (list) + response (string)
+    if "prompt_dialogue" in raw and "response" in raw:
+        parts = []
+        for msg in raw["prompt_dialogue"]:
+            role = msg.get("role", "msg").upper()
+            content = msg.get("content", "")
+            parts.append(f"[{role}]\n{content}")
+        parts.append(f"[ASSISTANT_FINAL]\n{raw['response']}")
+        return "\n\n".join(parts), True
+
+    # Older formats: direct key lookup
+    for key in ("source_text", "agent_transcript", "transcript"):
+        val = raw.get(key)
         if isinstance(val, str) and val.strip():
             return val, True
-        ctx = data.get("input_context") or {}
-        if isinstance(ctx, dict):
-            val = ctx.get(key)
-            if isinstance(val, str) and val.strip():
-                return val, True
 
-    # No legitimate source found — caller will exclude this case.
-    return f"[SOURCE TEXT NOT RESOLVED for hash {file_hash} — case excluded]", False
-
+    return f"[unrecognised input schema for {case_id}]", False
 
 def stratify_sample(claims: list[dict], rng: random.Random) -> list[dict]:
     """
@@ -173,6 +210,7 @@ def generate_test():
     excluded_unresolved_source = 0
     excluded_parse_error = 0
     excluded_pipeline_not_ok = 0
+    excluded_ablation = 0
 
     for log in logs:
         try:
@@ -186,6 +224,13 @@ def generate_test():
             excluded_pipeline_not_ok += 1
             continue
 
+        variant = (data.get("metadata") or {}).get("variant") \
+            or (data.get("metadata") or {}).get("arm") \
+            or ""
+        if "ablation" in str(variant).lower():
+            excluded_ablation += 1
+            continue
+            
         gap = data.get("compliance_gap") or {}
         fact_verdict = data.get("fact_checker_verdict") or gap.get("fact_checker_verdict") or {}
         verdicts = fact_verdict.get("verdicts", [])
@@ -209,6 +254,7 @@ def generate_test():
     print(f"   Cases skipped (parse error):        {excluded_parse_error}")
     print(f"   Cases skipped (pipeline not OK):    {excluded_pipeline_not_ok}")
     print(f"   Cases skipped (source unresolved):  {excluded_unresolved_source}")
+    print(f"   Cases skipped (ablation arm):        {excluded_ablation}")
     if excluded_unresolved_source > 0:
         print(f"   ⚠️  {excluded_unresolved_source} case(s) had no resolvable transcript "
               f"and were excluded from the annotation sample.")
@@ -236,13 +282,28 @@ def generate_test():
 
     print(f"   Sampled {len(sample)} claims (seed={RNG_SEED})")
 
-    # Export Answer Key
+    # Define output paths
     key_path = target_run / "gate_b_answer_key.csv"
+
+    # Detect whether all sampled cases share the same [SYSTEM] block
+    system_blocks = set()
+    processed_sample = []
+    for item in sample:
+        sys_text, dialogue = _split_system_and_dialogue(item["source_text"])
+        if sys_text:
+            system_blocks.add(sys_text)
+        col1, col2 = _split_text_into_columns(dialogue)
+        processed_sample.append({**item, "dialogue_only": dialogue, "col1": col1, "col2": col2})
+
+    shared_system = system_blocks.pop() if len(system_blocks) == 1 else None
+    sample = processed_sample  # use the stripped version downstream
+
+    # Export Answer Key
     with open(key_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["ID", "Case ID", "Claim", "AI_Status"])
+        writer.writerow(["ID", "Case ID", "Claim", "AI_Status", "Source File"])
         for i, item in enumerate(sample, 1):
-            writer.writerow([f"Q{i}", item["case_id"], item["claim"], item["ai_status"]])
+            writer.writerow([f"Q{i}", item["case_id"], item["claim"], item["ai_status"], item["filename"]])
     
     print(f"✅ Answer key saved to {key_path}")
 
@@ -252,7 +313,7 @@ def generate_test():
         html_items.append(f"""
         <div class="case-block">
             <div class="case-header">
-                <div><span class="font-bold uppercase tracking-widest text-xs">Item {i:02d}</span></div>
+                <div><span class="font-bold uppercase tracking-widest text-xs">Q{i}</span></div>
                 <div class="font-mono text-xs opacity-60">Case: {item['case_id']}</div>
             </div>
             
@@ -265,13 +326,19 @@ def generate_test():
             
             <div class="mb-4">
                 <div class="text-xs uppercase font-bold mb-1 opacity-70">Source Text Extract</div>
-                <div class="text-xs leading-relaxed border border-gray-300 p-3 overflow-hidden relative" style="max-height: 400px; overflow-y: auto;">
-                    <pre style="white-space: pre-wrap; font-family: 'Courier Prime', monospace; font-size: 11px;">{item['source_text']}</pre>
+                <div class="grid grid-cols-2 gap-4 text-xs leading-relaxed border border-gray-300 p-3 relative scroll-box">
+                    <pre style="white-space: pre-wrap; font-family: 'Courier Prime', monospace; font-size: 11px;">{item['col1']}</pre>
+                    <pre style="white-space: pre-wrap; font-family: 'Courier Prime', monospace; font-size: 11px;">{item['col2']}</pre>
                 </div>
             </div>
             
             <div class="decision-box">
-                <div class="text-xs font-bold uppercase mb-2">Human Annotation:</div>
+                <div class="flex justify-between items-center mb-2">
+                    <div class="text-xs font-bold uppercase">Human Annotation:</div>
+                    <div class="font-mono text-xs">
+                        Q{i} · {item['case_id'][:8]}
+                    </div>
+                </div>
                 <div class="flex gap-6">
                     <label class="checkbox-container font-mono text-sm">[ ] <strong>SUPPORTED</strong></label>
                     <label class="checkbox-container font-mono text-sm">[ ] <strong>CONTRADICTED</strong></label>
@@ -281,6 +348,21 @@ def generate_test():
         </div>
         """)
 
+    # Build the optional shared-system block BEFORE the html_content f-string
+    if shared_system:
+        shared_system_html = f"""
+    <div class="mb-8 p-5 border-2 border-black bg-gray-50">
+        <div class="text-xs font-bold uppercase tracking-widest mb-2">
+            Shared System Context — applies to all {len(sample)} items below
+        </div>
+        <pre style="white-space:pre-wrap;font-family:'Courier Prime',monospace;font-size:11px;line-height:1.4;">{shared_system}</pre>
+    </div>
+    <div class="page-break"></div>
+"""
+    else:
+        shared_system_html = '<div class="page-break"></div>'
+
+    #  build html_content as ONE continuous f-string with {shared_system_html} interpolated
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -295,9 +377,11 @@ def generate_test():
   .case-block {{ border-bottom: 2px solid #000; padding-bottom: 24px; margin-bottom: 24px; break-inside: avoid; page-break-inside: avoid; }}
   .case-header {{ display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 8px; margin-bottom: 12px; }}
   .decision-box {{ border: 2px dashed #000; padding: 16px; background: #fafafa; margin-top: 16px; }}
+  .scroll-box {{ max-height: 400px; overflow-y: auto; }}
   @media print {{
     .page {{ border: none; margin: 0; padding: 0; max-width: none; }}
     .page-break {{ page-break-before: always; }}
+    .scroll-box {{ max-height: none !important; overflow: visible !important; }}
   }}
 </style>
 </head>
@@ -323,10 +407,10 @@ def generate_test():
         <p class="text-xs mt-3 italic">Note: The annotator is blind to Gate B's predicted verdict.</p>
     </div>
 
-    <div class="page-break"></div>
+    {shared_system_html}
 
     {''.join(html_items)}
-    
+
     <div style="margin-top:40px; padding-top:20px; border-top:3px solid #000; text-align:center;">
         <div class="text-xs font-mono">END OF ANNOTATION TASK</div>
     </div>

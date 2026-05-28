@@ -13,6 +13,14 @@ The script requires explicit command-line arguments. You run it from your termin
 python compute_stability.py --rerun-dir output/my_stability_test --output-dir output/my_stability_test
 
 (You can also optionally pass --gate-b-key path/to/key.csv if you are computing the Gate B baseline kappa).
+
+When --seed-dir is omitted, behaviour is identical to prior version where (k=5). When provided, seed files load at index 0 (t=0) and the existing reruns shift to indices 1..n, giving k=6 with semantically correct ordering.
+
+python tools/compute_stability.py \
+  --rerun-dir output/run_20260525_234223_arm04b_testretest_reruns_x5_300 \
+  --seed-dir  output/run_20260525_205154_arm04a_testretest_seed_300 \
+  --gate-b-key output/run_20260522_152239_arm01_main_pilot_1200/IRR/gate_b_human_annotations_minimal_FINAL.csv \
+  --output-dir output/stability_k6_report
 """
 from __future__ import annotations
 
@@ -118,52 +126,102 @@ def load_case_json(json_path: Path) -> dict:
     return json.loads(json_path.read_text(encoding="utf-8"))
 
 
-def load_rerun_data(rerun_dirs: list[Path]) -> dict[str, dict]:
+def load_rerun_data(
+    rerun_dirs: list[Path],
+    seed_dir: Path | None = None,
+) -> dict[str, dict]:
     """
     Load all case data across reruns.
     Supports two formats:
       1. Directory-based: run_001/, run_002/, ... subdirectories
       2. Filename-based: audit_xxx__rerun_01.json (flat structure)
+
+    If seed_dir is provided (per v20 §11 seed-as-t=0 framing), seed files
+    load at run index 0 and rerun indices are offset by +1. The seed pass
+    is treated as the t=0 baseline observation.
+
     Returns: dict[case_id] -> {run_index: case_data}
     """
     case_map: dict[str, dict] = {}
-    
-    # Detect which pattern we're dealing with
+
+    # Offset reruns by 1 when a seed pass occupies index 0
+    rerun_offset = 1 if seed_dir is not None else 0
+
+    # Detect which pattern we're dealing with (reruns only)
     is_filename_based, rerun_pattern = detect_rerun_pattern(rerun_dirs)
-    
+
     for run_idx, run_dir in enumerate(rerun_dirs):
         audit_files = sorted(run_dir.rglob("audit_*.json"))
         error_files = sorted(run_dir.rglob("audit_*.error.json"))
         all_files = sorted(set(audit_files + error_files), key=lambda p: str(p))
-        
+
         for file_path in all_files:
             try:
                 data = load_case_json(file_path)
             except (json.JSONDecodeError, OSError):
                 continue
-            
-            # Determine the effective run index
+
             effective_run_idx = run_idx
-            
+
             if is_filename_based and rerun_pattern:
                 match = rerun_pattern.search(file_path.name)
                 if match:
                     # Convert 1-based rerun index to 0-based
                     effective_run_idx = int(match.group(1)) - 1
-            
+
+            # Shift reruns to make room for seed at index 0
+            effective_run_idx += rerun_offset
+
             case_id = data.get("case_id")
             if not case_id:
-                # Derive case_id from filename, stripping the __rerun_XX suffix
                 stem = file_path.stem
                 if is_filename_based and rerun_pattern:
                     stem = rerun_pattern.sub("", stem)
                 case_id = stem
-            
+
             if case_id not in case_map:
                 case_map[case_id] = {}
-            
+
             case_map[case_id][effective_run_idx] = data
-    
+
+    # Load seed pass at index 0 (t=0)
+    if seed_dir is not None:
+        if not seed_dir.exists():
+            raise FileNotFoundError(f"Seed directory not found: {seed_dir}")
+
+        seed_audit = sorted(seed_dir.rglob("audit_*.json"))
+        seed_error = sorted(seed_dir.rglob("audit_*.error.json"))
+        seed_files = sorted(set(seed_audit + seed_error), key=lambda p: str(p))
+
+        if not seed_files:
+            raise ValueError(f"No audit files found in seed directory: {seed_dir}")
+
+        seed_loaded = 0
+        seed_orphans = 0  # seed cases not present in rerun set
+
+        for file_path in seed_files:
+            try:
+                data = load_case_json(file_path)
+            except (json.JSONDecodeError, OSError):
+                continue
+
+            case_id = data.get("case_id")
+            if not case_id:
+                # Seed files have no __rerun suffix to strip
+                case_id = file_path.stem
+
+            if case_id not in case_map:
+                case_map[case_id] = {}
+                seed_orphans += 1
+
+            case_map[case_id][0] = data
+            seed_loaded += 1
+
+        print(f"   ✓ Loaded {seed_loaded} seed-pass cases at run index 0 (t=0)")
+        if seed_orphans:
+            print(f"   ⚠️  {seed_orphans} seed cases had no matching rerun set "
+                  f"(they will appear with t=0 only, NaN for t=1..n)")
+
     return case_map
 
 
@@ -230,7 +288,7 @@ def extract_verdicts(case_map: dict[str, dict], n_runs: int) -> np.ndarray:
         for run_idx in range(n_runs):
             if run_idx in runs_data:
                 data = runs_data[run_idx]
-                gap = data.get("compliance_gap", {})
+                gap = data.get("compliance_gap") or {}
                 action = gap.get("auditor_recommended_action")
                 
                 if action == "BLOCK":
@@ -259,7 +317,7 @@ def extract_quadrants(case_map: dict[str, dict], n_runs: int) -> np.ndarray:
         for run_idx in range(n_runs):
             if run_idx in runs_data:
                 data = runs_data[run_idx]
-                gap = data.get("compliance_gap", {})
+                gap = data.get("compliance_gap") or {}
                 quadrant = gap.get("quadrant")
                 
                 if quadrant in quadrant_to_int:
@@ -284,7 +342,7 @@ def extract_rules(case_map: dict[str, dict], n_runs: int) -> list[list[Optional[
         for run_idx in range(n_runs):
             if run_idx in case_map[case_id]:
                 data = case_map[case_id][run_idx]
-                rules = data.get("metadata", {}).get("rules_fired", [])
+                rules = (data.get("metadata") or {}).get("rules_fired", [])
                 # Empty list = no rules fired (valid observation)
                 # None = missing data (pipeline failure)
                 result[run_idx][col_idx] = frozenset(rules) if rules else frozenset()
@@ -295,46 +353,46 @@ def extract_rules(case_map: dict[str, dict], n_runs: int) -> list[list[Optional[
 # ---------------------------------------------------------------------------
 # Metric Computations
 # ---------------------------------------------------------------------------
-
-
-def compute_icc(verdicts: np.ndarray) -> tuple[float, tuple[float, float]]:
+def compute_icc(verdicts: np.ndarray) -> tuple[tuple[float, tuple[float, float]], int]:
     """
     Compute ICC(2,1) for binary verdicts.
-    Uses pingouin.intraclass_corr.
-    Returns: (point_estimate, (ci_lower, ci_upper))
+    Returns ((icc, ci_lower, ci_upper), n_complete).
     """
     try:
         import pingouin as pg
     except ImportError:
         raise ImportError("pingouin is required: pip install pingouin")
-    
-    n_cases, n_runs = verdicts.shape
-    
-    valid_rows = ~np.all(np.isnan(verdicts), axis=1)
-    valid_verdicts = verdicts[valid_rows]
-    
-    if valid_verdicts.size == 0:
-        return (np.nan, (np.nan, np.nan))
-    
+
+    n_cases_input, n_runs = verdicts.shape
+
+    # Drop incomplete cases for balanced design
+    complete_mask = ~np.isnan(verdicts).any(axis=1)
+    balanced_verdicts = verdicts[complete_mask]
+    n_complete = balanced_verdicts.shape[0]
+    n_dropped = n_cases_input - n_complete
+
+    if n_dropped > 0:
+        print(f"   ℹ️  Dropped {n_dropped} incomplete case(s) for ICC "
+              f"(balanced-design requirement; n_complete = {n_complete})")
+
+    if n_complete < 10:
+        return (np.nan, (np.nan, np.nan)), n_complete
+
+    # Build long-format DataFrame
     records = []
-    for case_idx in range(valid_verdicts.shape[0]):
-        for run_idx in range(valid_verdicts.shape[1]):
-            val = valid_verdicts[case_idx, run_idx]
-            if not np.isnan(val):
-                records.append({
-                    "Observer": f"Run{run_idx}",
-                    "Target": f"Case{case_idx}",
-                    "Rating": int(val)
-                })
-    
-    if len(records) < 10:
-        return (np.nan, (np.nan, np.nan))
-    
+    for case_idx in range(n_complete):
+        for run_idx in range(n_runs):
+            val = balanced_verdicts[case_idx, run_idx]
+            records.append({
+                "Observer": f"Run{run_idx}",
+                "Target": f"Case{case_idx}",
+                "Rating": int(val),
+            })
+
     df = pd.DataFrame(records)
-    
-    # If all valid verdicts are identical across runs for every single case, variance is zero (perfect agreement)
-    if np.nanvar(valid_verdicts, axis=1).sum() == 0:
-        return (1.0, (1.0, 1.0))
+
+    if np.var(balanced_verdicts, axis=1).sum() == 0:
+        return (1.0, (1.0, 1.0)), n_complete
 
     icc_result = pg.intraclass_corr(
         data=df,
@@ -342,24 +400,21 @@ def compute_icc(verdicts: np.ndarray) -> tuple[float, tuple[float, float]]:
         raters="Observer",
         ratings="Rating",
     )
-    
-    icc_row = icc_result[icc_result["Type"] == "ICC2"]
+
+    # ▼ CRITICAL FIX: Pingouin labels ICC(2,1) as "ICC(A,1)"
+    icc_row = icc_result[icc_result["Type"] == "ICC(A,1)"]
     if icc_row.empty:
-        return (np.nan, (np.nan, np.nan))
-    
+        return (np.nan, (np.nan, np.nan)), n_complete
+
     point_est = icc_row["ICC"].values[0]
-    # Fix: Handle both list-of-lists and numpy array for CI95%
-    ci_raw = icc_row["CI95%"].values[0]
+    ci_raw = icc_row["CI95"].values[0]
     if isinstance(ci_raw, (list, np.ndarray)):
         ci_lower, ci_upper = float(ci_raw[0]), float(ci_raw[1])
     else:
-        # Single string format "x, y"
         ci_parts = str(ci_raw).split(",")
-        ci_lower = float(ci_parts[0].strip())
-        ci_upper = float(ci_parts[1].strip())
-    
-    return (point_est, (ci_lower, ci_upper))
+        ci_lower, ci_upper = float(ci_parts[0].strip()), float(ci_parts[1].strip())
 
+    return (point_est, (ci_lower, ci_upper)), n_complete
 
 def compute_krippendorff_alpha(rules_data: list[list[Optional[frozenset]]]) -> float:
     """
@@ -657,6 +712,14 @@ def parse_args() -> argparse.Namespace:
         help="Directory containing 5 rerun subdirectories. If omitted, opens a menu."
     )
     parser.add_argument(
+        "--seed-dir",
+        type=Path,
+        default=None,
+        help="Optional directory containing the seed pass (t=0). When provided, "
+             "seed files load at run index 0 and reruns shift to 1..n, giving k=n+1. "
+             "Per v20 §11 amendment (seed-as-t=0 framing)."
+    )
+    parser.add_argument(
         "--gate-b-key",
         type=Path,
         default=None,
@@ -704,9 +767,8 @@ def main() -> None:
     
     # Detect if we're using filename-based reruns
     is_filename_based, _ = detect_rerun_pattern(rerun_dirs)
-    
+
     if is_filename_based:
-        # For filename-based, count unique rerun indices found
         rerun_indices = set()
         for d in rerun_dirs:
             for f in d.rglob("audit_*.json"):
@@ -715,26 +777,49 @@ def main() -> None:
                     rerun_indices.add(int(match.group(1)))
         n_runs_detected = len(rerun_indices)
         if n_runs_detected < 2:
-            raise ValueError(f"Need at least 2 rerun iterations, found {n_runs_detected} in {rerun_dir}")
+            raise ValueError(
+                f"Need at least 2 rerun iterations, found {n_runs_detected} in {rerun_dir}"
+            )
     else:
         n_runs_detected = len(rerun_dirs)
         if n_runs_detected < 2:
-            raise ValueError(f"Need at least 2 rerun directories, found {n_runs_detected} in {rerun_dir}")
-    
-    
+            raise ValueError(
+                f"Need at least 2 rerun directories, found {n_runs_detected} in {rerun_dir}"
+            )
+
+    # Seed pass adds one observation (t=0) per v20 §11
+    seed_dir = args.seed_dir
+    if seed_dir is not None:
+        print(f"\n📌 Seed-as-t=0 mode enabled (v20 §11 amendment)")
+        print(f"   Seed dir : {seed_dir}")
+        print(f"   Rerun dir: {rerun_dir}")
+        n_runs = n_runs_detected + 1
+    else:
+        n_runs = n_runs_detected if is_filename_based else len(rerun_dirs)
+
     print(f"\n📂 Found {len(rerun_dirs)} rerun directories in {rerun_dir.name}:")
     for d in rerun_dirs:
         print(f"  - {d.name}")
-    
+
     print("\nLoading case data...")
-    case_map = load_rerun_data(rerun_dirs)
-    n_cases = len(case_map)
-    if is_filename_based:
-        n_runs = n_runs_detected
-    else:
-        n_runs = len(rerun_dirs)
+    case_map = load_rerun_data(rerun_dirs, seed_dir=seed_dir)
     
-    print(f"Loaded {n_cases} cases across {n_runs} runs")
+    # --- PRUNE PIPELINE ERRORS ---
+    pruned_cases = []
+    for cid in list(case_map.keys()):
+        sample_data = next(iter(case_map[cid].values()), None)
+        if sample_data and sample_data.get("metadata", {}).get("arm") is None:
+            del case_map[cid]
+            pruned_cases.append(cid)
+            
+    if pruned_cases:
+        print(f"   🧹 Pruned {len(pruned_cases)} cases missing 'arm' metadata (pipeline errors)")
+    # -----------------------------------------------
+
+    n_cases = len(case_map)
+
+    print(f"Loaded {n_cases} cases across {n_runs} runs"
+          f"{' (k=' + str(n_runs) + ', seed-as-t=0)' if seed_dir else ''}")
     
     if n_cases < 10:
         raise ValueError(f"Insufficient cases: {n_cases}")
@@ -757,7 +842,7 @@ def main() -> None:
     rules_data = extract_rules(case_map, n_runs)
     
     print("\nComputing ICC(2,1)...")
-    icc_val, icc_ci = compute_icc(verdicts)
+    (icc_val, icc_ci), n_complete = compute_icc(verdicts)
     print(f"  ICC = {icc_val:.3f} {icc_ci}")
     
     print("Computing Krippendorff's α...")
@@ -801,10 +886,38 @@ def main() -> None:
         "cohen_kappa_quadrant_range": [float(x) for x in metrics.cohen_kappa_quadrant_range] if not np.isnan(metrics.cohen_kappa_quadrant_range[0]) else None,
         "cohen_kappa_gate_b": float(metrics.cohen_kappa_gate_b) if metrics.cohen_kappa_gate_b is not None and not np.isnan(metrics.cohen_kappa_gate_b) else None,
         "n_cases": metrics.n_cases,
+        "n_cases_icc": n_complete,  
         "n_runs": metrics.n_runs,
+        "seed_dir": str(args.seed_dir) if args.seed_dir else None,
+        "k_framing": "seed_as_t0" if args.seed_dir else "k_strict",
         "timestamp": metrics.timestamp
     }
     
+    # DIAGNOSTIC — uncomment for one-time inspection
+    print("\n--- Diagnostic: distribution structure ---")
+    print(f"Verdict matrix shape: {verdicts.shape}")
+    print(f"Cases with full 6/6 observations: "
+        f"{int((~np.isnan(verdicts)).all(axis=1).sum())}")
+    print(f"Cases with any missing observation: "
+        f"{int(np.isnan(verdicts).any(axis=1).sum())}")
+    unique_per_case = [
+        len(np.unique(row[~np.isnan(row)])) for row in verdicts
+    ]
+    print(f"Cases with verdict variation across runs: "
+        f"{sum(1 for u in unique_per_case if u > 1)} / {len(unique_per_case)}")
+    print(f"Overall BLOCK proportion: "
+        f"{np.nansum(verdicts)/np.sum(~np.isnan(verdicts)):.3f}")
+
+    # Rules diagnostic
+    all_empty = sum(
+        1 for case_idx in range(len(rules_data[0]))
+        if all(rules_data[r][case_idx] == frozenset() 
+            for r in range(len(rules_data)) 
+            if rules_data[r][case_idx] is not None)
+    )
+    print(f"Cases with empty rule sets in all observations: "
+        f"{all_empty} / {len(rules_data[0])}")
+        
     json_path.write_text(json.dumps(json_data, indent=2), encoding="utf-8")
     print(f"\nJSON written: {json_path}")
     
