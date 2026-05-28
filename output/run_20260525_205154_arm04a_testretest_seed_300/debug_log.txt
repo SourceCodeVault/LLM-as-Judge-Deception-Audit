@@ -1,0 +1,108 @@
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+ P I P E L I N E   I N I T I A L I Z A T I O N                                                        HOST ASV-MACBOOK-   OS DARWIN 
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+                                      ░█▀▀░█▀█░█▀▄░█▀▄░█▀▀░█▀▀░█▀█░█▀█░█▀█░█▀▄░█▀▀░█▀█░█▀▀░█▀▀
+                                      ░█░░░█░█░█▀▄░█▀▄░█▀▀░▀▀█░█▀▀░█░█░█░█░█░█░█▀▀░█░█░█░░░█▀▀
+                                      ░▀▀▀░▀▀▀░▀░▀░▀░▀░▀▀▀░▀▀▀░▀░░░▀▀▀░▀░▀░▀▀░░▀▀▀░▀░▀░▀▀▀░▀▀▀
+                                                    ░█▀█░█░█░█▀▄░▀█▀░▀█▀░█▀█░█▀▄
+                                                    ░█▀█░█░█░█░█░░█░░░█░░█░█░█▀▄
+                                                    ░▀░▀░▀▀▀░▀▀░░▀▀▀░░▀░░▀▀▀░▀░▀
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+   PROCESS  : CORRAUDT              USER     : ASV                   RUN ID   : A18891E2              DATE     : 2026-05-25         
+   RUNTIME  : PY 3.11.5             PHASE    : PRE-FLIGHT            STATUS   : OK                    TIME     : 20:51:34           
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+SYS.01 SESSION INITIATED BY ASV AT 20:51:34 LOCAL
+ENV.02 ENVIRONMENT: DARWIN ON ASV-MACBOOK- | PY 3.11.5
+APP.03 CORRESPONDENCE AUDITOR V2.0.0 CORE LOADED
+SEC.04 AWAITING RUN CONFIGURATION AND DEPLOYMENT TARGETS...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+🔄 Select Run Mode:
+  [1] NEW RUN (Create fresh output directory)
+  [2] RESUME RUN (Continue an existing partial run)
+  > 1
+  → NEW RUN selected.
+  → Mode A from CLI
+  → Environment remote_openrouter from CLI
+
+Select Run Type:
+  [1] Normal Run (Main Grid - 1200 cases)
+  [2] Canary Run (Perturbation Contamination Test - Z01 only)
+  [3] Test-Retest Run (Instrument Stability - 5 Reruns)
+  [4] Same-Model Control Z07 (Qwen-on-Qwen Blind SOTA)
+  [5] Same-Model Control Z08 (Qwen-on-Qwen Scratchpad-Aware)
+  > 1
+  → Normal run selected
+
+Select Input Mode:
+  [1] Scan Directory (folder in input/)
+  [2] Use Manifest (.jsonl file in input/)
+> 1
+
+Select Dataset to Audit:
+  [1] test_retest_stratified_300
+  [2] OLDtest_retest_stratified_300
+  [3] z07_z08_stratified_150
+  [4] OLDz07_z08_stratified_150
+  [5] dataset_20260521_192859
+> 1
+📦 Provenance sealed in _provenance/
+
+🚀 Running Audit on 300 cases (10 Concurrent Streams).
+📂 Outputting to: run_20260525_205154_test_retest_stratified_300
+
+
+🔍 Running Pre-Flight Checks...
+✅ Pre-flight complete. All dependencies found.
+
+🚀 Running 300 tasks (300 cases × 1 variants)...
+
+🔍 Pre-scanning output directory for resume optimization...
+   Found 0 existing successfully processed files.
+
+🚀 Queuing 300 pending tasks (out of 300 total)...
+[90m[21:17:55][0m     ⚠️   [93m[unknown_run_aba76837-3c94-4a02-8c7a-2d11cdfdf119] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:17:58][0m     ⚠️   [93m[unknown_run_52fb3f9d-c598-4a29-982e-a23251f70f38] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:21:01][0m     ⚠️   [93m[unknown_run_d2089870-923f-4362-a5d3-b293aa0cf556] Model returned malformed JSON. Attempting recovery...[0m
+
+  ⏱️ [TIMEOUT] ablation_noise | 3b907922087a | Exceeded 600s
+  💥 [TIME] ablation_noise | 3b907922087a
+
+  ⏱️ [TIMEOUT] ablation_noise | 3817dde1332f | Exceeded 600s
+  💥 [TIME] ablation_noise | 3817dde1332f
+[90m[21:43:30][0m     ⚠️   [93m[unknown_run_cf34afad-6531-41bd-ad2b-e53778fcef27] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:43:47][0m ❌    [91mUnexpected error: Expecting value: line 547 column 1 (char 3003)[0m
+[90m[21:43:47][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Expecting value: line 547 column 1 (char 3003)[0m
+[90m[21:43:47][0m     ℹ️   [96m   Waiting 11.07s before retrying call to remote_openrouter...[0m
+[90m[21:56:22][0m ❌    [91mUnexpected error: Expecting value: line 381 column 1 (char 2090)[0m
+[90m[21:56:22][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Expecting value: line 381 column 1 (char 2090)[0m
+[90m[21:56:22][0m     ℹ️   [96m   Waiting 11.35s before retrying call to remote_openrouter...[0m
+[90m[21:59:28][0m ❌    [91mUnexpected error: Expecting value: line 297 column 1 (char 1628)[0m
+[90m[21:59:28][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Expecting value: line 297 column 1 (char 1628)[0m
+[90m[21:59:28][0m     ℹ️   [96m   Waiting 10.20s before retrying call to remote_openrouter...[0m
+[90m[22:14:36][0m ❌    [91mUnexpected error: Expecting value: line 2891 column 1 (char 15895)[0m
+[90m[22:14:36][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Expecting value: line 2891 column 1 (char 15895)[0m
+[90m[22:14:36][0m     ℹ️   [96m   Waiting 10.09s before retrying call to remote_openrouter...[0m
+
+  ⏱️ [TIMEOUT] ablation_noise | 16ab5240afd0 | Exceeded 600s
+  💥 [TIME] ablation_noise | 16ab5240afd0
+[90m[22:53:57][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[22:53:57][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[22:53:57][0m     ℹ️   [96m   Waiting 11.29s before retrying call to remote_openrouter...[0m
+[90m[23:13:26][0m     ⚠️   [93m[unknown_run_dc80f67a-9c32-43dc-8609-9c7b755b7e02] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:15:13][0m     ⚠️   [93m[unknown_run_f5bc7679-4952-49d8-89aa-c5b4141d2d6c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:20:17][0m     ⚠️   [93m[unknown_run_c4574683-7303-4eb6-bfc4-8b001378dcf1] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:20:32][0m     ⚠️   [93m[unknown_run_b223b502-5207-4fb8-a652-b8c330ee0a93] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:20:55][0m     ⚠️   [93m[unknown_run_43ead8b7-e74a-4a73-83a3-1fd38eaa5606] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:24:00][0m     ⚠️   [93m[unknown_run_2171abeb-24f6-4e17-b900-65dc47af57c8] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:34:41][0m     ⚠️   [93m[unknown_run_1140e5c6-f1d4-4e52-992b-9bff966baa0a] Model returned malformed JSON. Attempting recovery...[0m
+
+✅ Audit complete! Data saved to run_20260525_205154_test_retest_stratified_300
+
+Verifying denominator conservation...
+✅ Denominator conserved. 100% of tasks accounted for.
+📊 Generate dashboard now? (Y/n): y

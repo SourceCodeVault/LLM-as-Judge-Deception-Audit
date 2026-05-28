@@ -1,0 +1,102 @@
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+ P I P E L I N E   I N I T I A L I Z A T I O N                                                        HOST ASV-MACBOOK-   OS DARWIN 
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+                                      ░█▀▀░█▀█░█▀▄░█▀▄░█▀▀░█▀▀░█▀█░█▀█░█▀█░█▀▄░█▀▀░█▀█░█▀▀░█▀▀
+                                      ░█░░░█░█░█▀▄░█▀▄░█▀▀░▀▀█░█▀▀░█░█░█░█░█░█░█▀▀░█░█░█░░░█▀▀
+                                      ░▀▀▀░▀▀▀░▀░▀░▀░▀░▀▀▀░▀▀▀░▀░░░▀▀▀░▀░▀░▀▀░░▀▀▀░▀░▀░▀▀▀░▀▀▀
+                                                    ░█▀█░█░█░█▀▄░▀█▀░▀█▀░█▀█░█▀▄
+                                                    ░█▀█░█░█░█░█░░█░░░█░░█░█░█▀▄
+                                                    ░▀░▀░▀▀▀░▀▀░░▀▀▀░░▀░░▀▀▀░▀░▀
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+   PROCESS  : CORRAUDT              USER     : ASV                   RUN ID   : 33D641FD              DATE     : 2026-05-25         
+   RUNTIME  : PY 3.11.5             PHASE    : PRE-FLIGHT            STATUS   : OK                    TIME     : 18:25:02           
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+SYS.01 SESSION INITIATED BY ASV AT 18:25:02 LOCAL
+ENV.02 ENVIRONMENT: DARWIN ON ASV-MACBOOK- | PY 3.11.5
+APP.03 CORRESPONDENCE AUDITOR V2.0.0 CORE LOADED
+SEC.04 AWAITING RUN CONFIGURATION AND DEPLOYMENT TARGETS...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+🔄 Select Run Mode:
+  [1] NEW RUN (Create fresh output directory)
+  [2] RESUME RUN (Continue an existing partial run)
+  > 1
+  → NEW RUN selected.
+
+Select Deployment Mode:
+  [A] Mode A: Inline Halt Gate (preventive control)
+       → Quarantines failed cases, blocks downstream consumers
+  [B] Mode B: Retrospective Evidence Generation (detective control)
+       → Logs all results without blocking
+> 1
+  → Mode A selected (preventive control)
+
+Select Execution Environment:
+  [1] remote_openrouter (diverse models)
+  [2] remote_cerebras (fast, metered)
+  [3] local_ollama (local, free)
+  [4] Custom (specify manually)
+> 1
+  → Selected: remote_openrouter
+
+Select Run Type:
+  [1] Normal Run (Main Grid - 1200 cases)
+  [2] Canary Run (Perturbation Contamination Test - Z01 only)
+  [3] Test-Retest Run (Instrument Stability - 5 Reruns)
+  [4] Same-Model Control Z07 (Qwen-on-Qwen Blind SOTA)
+  [5] Same-Model Control Z08 (Qwen-on-Qwen Scratchpad-Aware)
+  > 4
+  → 🐘 Same-Model Control Arm Z07 Active (Qwen Blind SOTA)
+
+Select Input Mode:
+  [1] Scan Directory (folder in input/)
+  [2] Use Manifest (.jsonl file in input/)
+> 1
+
+Select Dataset to Audit:
+  [1] test_retest_stratified_300
+  [2] OLDtest_retest_stratified_300
+  [3] z07_z08_stratified_150
+  [4] OLDz07_z08_stratified_150
+  [5] dataset_20260521_192859
+> 3
+📦 Provenance sealed in _provenance/
+
+🚀 Running Audit on 150 cases (10 Concurrent Streams).
+📂 Outputting to: run_20260525_182516_z07_z08_stratified_150
+
+
+  → Restricting execution to Z07 Same-Model Control Variant.
+
+🔍 Running Pre-Flight Checks...
+✅ Pre-flight complete. All dependencies found.
+
+🚀 Running 150 tasks (150 cases × 1 variants)...
+
+🔍 Pre-scanning output directory for resume optimization...
+   Found 0 existing successfully processed files.
+
+🚀 Queuing 150 pending tasks (out of 150 total)...
+[90m[18:36:10][0m     ⚠️   [93m[unknown_run_c2f3f813-39bf-4009-b3da-1e8bee810d72] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:36:29][0m     ⚠️   [93m[unknown_run_7e47df61-da9c-4b39-b2b7-f3f0e41a289e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:36:49][0m     ⚠️   [93m[unknown_run_4639b44a-ac84-4a08-8894-02f6020e0dee] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:40:32][0m     ⚠️   [93m[unknown_run_dc22a30f-40c2-47a4-9866-239c16a94157] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:50:33][0m ❌    [91mUnexpected error: Expecting value: line 171 column 1 (char 935)[0m
+[90m[18:50:33][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Expecting value: line 171 column 1 (char 935)[0m
+[90m[18:50:33][0m     ℹ️   [96m   Waiting 10.80s before retrying call to remote_openrouter...[0m
+[90m[18:50:38][0m     ⚠️   [93m[unknown_run_3d6bb75b-1e84-4680-b4a6-cf37002c399a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:57:39][0m     ⚠️   [93m[unknown_run_0eab99a1-5257-4e0b-93d8-d749bf6d8a6a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:01:49][0m     ⚠️   [93m[unknown_run_3aa092c5-5553-4a70-8194-e979762e28d9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:09:37][0m     ⚠️   [93m[unknown_run_542b341b-d0fc-42a4-b313-d26c713ffe0e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:11:07][0m     ⚠️   [93m[unknown_run_8b58c574-c4f2-4e83-a224-3964c495aa81] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:16:14][0m     ⚠️   [93m[unknown_run_922d444a-df98-4103-ae60-c9ba4535fa66] Model returned malformed JSON. Attempting recovery...[0m
+
+✅ Audit complete! Data saved to run_20260525_182516_z07_z08_stratified_150
+
+Verifying denominator conservation...
+✅ Denominator conserved. 100% of tasks accounted for.
+📊 Generate dashboard now? (Y/n): y

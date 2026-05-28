@@ -1,0 +1,871 @@
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+ P I P E L I N E   I N I T I A L I Z A T I O N                                                        HOST ASV-MACBOOK-   OS DARWIN 
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+                                      ░█▀▀░█▀█░█▀▄░█▀▄░█▀▀░█▀▀░█▀█░█▀█░█▀█░█▀▄░█▀▀░█▀█░█▀▀░█▀▀
+                                      ░█░░░█░█░█▀▄░█▀▄░█▀▀░▀▀█░█▀▀░█░█░█░█░█░█░█▀▀░█░█░█░░░█▀▀
+                                      ░▀▀▀░▀▀▀░▀░▀░▀░▀░▀▀▀░▀▀▀░▀░░░▀▀▀░▀░▀░▀▀░░▀▀▀░▀░▀░▀▀▀░▀▀▀
+                                                    ░█▀█░█░█░█▀▄░▀█▀░▀█▀░█▀█░█▀▄
+                                                    ░█▀█░█░█░█░█░░█░░░█░░█░█░█▀▄
+                                                    ░▀░▀░▀▀▀░▀▀░░▀▀▀░░▀░░▀▀▀░▀░▀
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+   PROCESS  : CORRAUDT              USER     : ASV                   RUN ID   : 407A6A28              DATE     : 2026-05-22         
+   RUNTIME  : PY 3.11.5             PHASE    : PRE-FLIGHT            STATUS   : OK                    TIME     : 15:22:30           
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+SYS.01 SESSION INITIATED BY ASV AT 15:22:30 LOCAL
+ENV.02 ENVIRONMENT: DARWIN ON ASV-MACBOOK- | PY 3.11.5
+APP.03 CORRESPONDENCE AUDITOR V2.0.0 CORE LOADED
+SEC.04 AWAITING RUN CONFIGURATION AND DEPLOYMENT TARGETS...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+🔄 Select Run Mode:
+  [1] NEW RUN (Create fresh output directory)
+  [2] RESUME RUN (Continue an existing partial run)
+  > 1
+  → NEW RUN selected.
+
+Select Deployment Mode:
+  [A] Mode A: Inline Halt Gate (preventive control)
+       → Quarantines failed cases, blocks downstream consumers
+  [B] Mode B: Retrospective Evidence Generation (detective control)
+       → Logs all results without blocking
+> 1
+  → Mode A selected (preventive control)
+
+Select Execution Environment:
+  [1] remote_openrouter (diverse models)
+  [2] remote_cerebras (fast, metered)
+  [3] local_ollama (local, free)
+  [4] Custom (specify manually)
+> 1
+  → Selected: remote_openrouter
+
+Select Run Type:
+  [1] Normal Run (Main Grid - 1200 cases)
+  [2] Canary Run (Perturbation Contamination Test - Z01 only)
+  [3] Test-Retest Run (Instrument Stability - 5 Reruns)
+  [4] Same-Model Control Z07 (Qwen-on-Qwen Blind SOTA)
+  [5] Same-Model Control Z08 (Qwen-on-Qwen Scratchpad-Aware)
+  > 1
+  → Normal run selected
+
+Select Input Mode:
+  [1] Scan Directory (folder in input/)
+  [2] Use Manifest (.jsonl file in input/)
+> 1
+
+Select Dataset to Audit:
+  [1] z07_pilot_stratified_150
+  [2] dataset_20260521_192859
+> 2
+📦 Provenance sealed in _provenance/
+
+🚀 Running Audit on 1200 cases (36 Concurrent Streams).
+📂 Outputting to: run_20260522_152239_dataset_20260521_192859
+
+
+🔍 Running Pre-Flight Checks...
+✅ Pre-flight complete. All dependencies found.
+
+🚀 Running 7200 tasks (1200 cases × 6 variants)...
+
+🔍 Pre-scanning output directory for resume optimization...
+   Found 0 existing successfully processed files.
+
+🚀 Queuing 7200 pending tasks (out of 7200 total)...
+[90m[15:23:17][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:17][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:17][0m     ℹ️   [96m   Waiting 10.86s before retrying call to remote_openrouter...[0m
+[90m[15:23:19][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:19][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:19][0m     ℹ️   [96m   Waiting 10.95s before retrying call to remote_openrouter...[0m
+[90m[15:23:20][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:20][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:20][0m     ℹ️   [96m   Waiting 11.35s before retrying call to remote_openrouter...[0m
+[90m[15:23:20][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:20][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:20][0m     ℹ️   [96m   Waiting 11.98s before retrying call to remote_openrouter...[0m
+[90m[15:23:22][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:22][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:22][0m     ℹ️   [96m   Waiting 10.71s before retrying call to remote_openrouter...[0m
+[90m[15:23:23][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:23][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:23][0m     ℹ️   [96m   Waiting 10.85s before retrying call to remote_openrouter...[0m
+[90m[15:23:23][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:23][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:23][0m     ℹ️   [96m   Waiting 11.20s before retrying call to remote_openrouter...[0m
+[90m[15:23:23][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:23][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:23][0m     ℹ️   [96m   Waiting 11.67s before retrying call to remote_openrouter...[0m
+[90m[15:23:25][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:25][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:25][0m     ℹ️   [96m   Waiting 10.74s before retrying call to remote_openrouter...[0m
+[90m[15:23:25][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:25][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:25][0m     ℹ️   [96m   Waiting 10.58s before retrying call to remote_openrouter...[0m
+[90m[15:23:29][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:29][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:29][0m     ℹ️   [96m   Waiting 10.09s before retrying call to remote_openrouter...[0m
+[90m[15:23:31][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:31][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:31][0m     ℹ️   [96m   Waiting 10.65s before retrying call to remote_openrouter...[0m
+[90m[15:23:31][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:31][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:31][0m     ℹ️   [96m   Waiting 15.88s before retrying call to remote_openrouter...[0m
+[90m[15:23:35][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:35][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:35][0m     ℹ️   [96m   Waiting 10.57s before retrying call to remote_openrouter...[0m
+[90m[15:23:35][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:35][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:35][0m     ℹ️   [96m   Waiting 11.81s before retrying call to remote_openrouter...[0m
+[90m[15:23:36][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:36][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:36][0m     ℹ️   [96m   Waiting 15.58s before retrying call to remote_openrouter...[0m
+[90m[15:23:37][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:37][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:37][0m     ℹ️   [96m   Waiting 15.99s before retrying call to remote_openrouter...[0m
+[90m[15:23:38][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:38][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:38][0m     ℹ️   [96m   Waiting 15.08s before retrying call to remote_openrouter...[0m
+[90m[15:23:39][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:39][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:39][0m     ℹ️   [96m   Waiting 16.09s before retrying call to remote_openrouter...[0m
+[90m[15:23:42][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:42][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[15:23:42][0m     ℹ️   [96m   Waiting 15.64s before retrying call to remote_openrouter...[0m
+[90m[15:46:44][0m     ⚠️   [93m[unknown_run_2c7deb9a-e2bb-4fc9-a7b0-9c8f6ac69b82] Model returned malformed JSON. Attempting recovery...[0m
+[90m[15:49:50][0m     ⚠️   [93m[unknown_run_7af8892b-faa4-447b-9147-6d6c3ba65c0b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[15:50:02][0m     ⚠️   [93m[unknown_run_408dd611-a3be-4fc9-b35b-03f3892c594a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[15:51:00][0m     ⚠️   [93m[unknown_run_1205744a-0688-423c-964b-4a4f7711c3fd] Model returned malformed JSON. Attempting recovery...[0m
+[90m[15:51:03][0m     ⚠️   [93m[unknown_run_50e4c5f2-9278-4c76-bd30-072d29b22b0b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[15:56:40][0m     ⚠️   [93m[unknown_run_7c6762c7-99bb-4777-be14-200ddb9f4c20] Model returned malformed JSON. Attempting recovery...[0m
+[90m[15:57:49][0m     ⚠️   [93m[unknown_run_a82d43eb-a959-4954-8dfe-bcec560014dc] Model returned malformed JSON. Attempting recovery...[0m
+[90m[16:25:56][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:25:56][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:25:56][0m     ℹ️   [96m   Waiting 10.25s before retrying call to remote_openrouter...[0m
+[90m[16:26:11][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:26:11][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:26:11][0m     ℹ️   [96m   Waiting 15.32s before retrying call to remote_openrouter...[0m
+[90m[16:26:12][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:26:12][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:26:12][0m     ℹ️   [96m   Waiting 10.60s before retrying call to remote_openrouter...[0m
+[90m[16:26:30][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:26:30][0m ⚠️   [93mAttempt 3/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:26:30][0m     ℹ️   [96m   Waiting 22.84s before retrying call to remote_openrouter...[0m
+[90m[16:26:58][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:26:58][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:26:58][0m     ℹ️   [96m   Waiting 10.41s before retrying call to remote_openrouter...[0m
+[90m[16:27:14][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:27:14][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:27:14][0m     ℹ️   [96m   Waiting 15.76s before retrying call to remote_openrouter...[0m
+[90m[16:27:28][0m     ⚠️   [93m[unknown_run_dcc219de-3598-4c76-ac48-1af548b23e91] Model returned malformed JSON. Attempting recovery...[0m
+[90m[16:27:31][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:27:31][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:27:31][0m     ℹ️   [96m   Waiting 10.89s before retrying call to remote_openrouter...[0m
+[90m[16:28:06][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:28:06][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:28:06][0m     ℹ️   [96m   Waiting 11.36s before retrying call to remote_openrouter...[0m
+[90m[16:28:19][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:28:19][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:28:19][0m     ℹ️   [96m   Waiting 11.66s before retrying call to remote_openrouter...[0m
+[90m[16:28:21][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:28:21][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:28:21][0m     ℹ️   [96m   Waiting 16.60s before retrying call to remote_openrouter...[0m
+[90m[16:29:47][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:29:47][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:29:47][0m     ℹ️   [96m   Waiting 10.42s before retrying call to remote_openrouter...[0m
+[90m[16:30:39][0m     ⚠️   [93m[unknown_run_c376ecef-74ad-4f33-9815-04b668d2e2d2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[16:30:43][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:30:43][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:30:43][0m     ℹ️   [96m   Waiting 11.38s before retrying call to remote_openrouter...[0m
+[90m[16:41:09][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:41:09][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:41:09][0m     ℹ️   [96m   Waiting 11.99s before retrying call to remote_openrouter...[0m
+[90m[16:41:25][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:41:25][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:41:25][0m     ℹ️   [96m   Waiting 16.47s before retrying call to remote_openrouter...[0m
+[90m[16:41:46][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:41:46][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:41:46][0m     ℹ️   [96m   Waiting 11.27s before retrying call to remote_openrouter...[0m
+[90m[16:41:46][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:41:46][0m ⚠️   [93mAttempt 3/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:41:46][0m     ℹ️   [96m   Waiting 23.82s before retrying call to remote_openrouter...[0m
+[90m[16:42:01][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:42:01][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:42:01][0m     ℹ️   [96m   Waiting 16.29s before retrying call to remote_openrouter...[0m
+[90m[16:42:46][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:42:46][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:42:46][0m     ℹ️   [96m   Waiting 11.58s before retrying call to remote_openrouter...[0m
+[90m[16:42:52][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:42:52][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:42:52][0m     ℹ️   [96m   Waiting 10.69s before retrying call to remote_openrouter...[0m
+[90m[16:44:59][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:44:59][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:44:59][0m     ℹ️   [96m   Waiting 11.39s before retrying call to remote_openrouter...[0m
+[90m[16:45:51][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:45:51][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:45:51][0m     ℹ️   [96m   Waiting 10.85s before retrying call to remote_openrouter...[0m
+[90m[16:45:52][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:45:52][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:45:52][0m     ℹ️   [96m   Waiting 10.95s before retrying call to remote_openrouter...[0m
+[90m[16:46:05][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:46:05][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:46:05][0m     ℹ️   [96m   Waiting 16.15s before retrying call to remote_openrouter...[0m
+[90m[16:46:09][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:46:09][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:46:09][0m     ℹ️   [96m   Waiting 11.47s before retrying call to remote_openrouter...[0m
+[90m[16:46:28][0m     ⚠️   [93m[unknown_run_b0402900-6ff6-4e88-b42d-c6372670a8cf] Model returned malformed JSON. Attempting recovery...[0m
+[90m[16:49:44][0m     ⚠️   [93m[unknown_run_04c8dad1-bff9-48d5-986e-4efd03f76a03] Model returned malformed JSON. Attempting recovery...[0m
+[90m[16:51:44][0m     ⚠️   [93m[unknown_run_42ed232e-c695-4a61-9309-e64e5b4911f5] Model returned malformed JSON. Attempting recovery...[0m
+[90m[16:54:00][0m     ⚠️   [93m[unknown_run_59cfad3b-8626-4aa9-bf80-a7c1d9d23660] Model returned malformed JSON. Attempting recovery...[0m
+[90m[16:56:31][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:56:31][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[16:56:31][0m     ℹ️   [96m   Waiting 10.26s before retrying call to remote_openrouter...[0m
+[90m[17:01:25][0m     ⚠️   [93m[unknown_run_1542e47a-8347-4ffa-b4d3-ac17a44ab518] Model returned malformed JSON. Attempting recovery...[0m
+[90m[17:02:38][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[17:02:38][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[17:02:38][0m     ℹ️   [96m   Waiting 11.15s before retrying call to remote_openrouter...[0m
+[90m[17:07:56][0m ❌    [91mUnexpected error: Expecting value: line 2143 column 1 (char 11781)[0m
+[90m[17:07:56][0m ❌    [91mUnexpected error: Expecting value: line 1549 column 1 (char 8514)[0m
+[90m[17:07:56][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Expecting value: line 2143 column 1 (char 11781)[0m
+[90m[17:07:56][0m     ℹ️   [96m   Waiting 11.37s before retrying call to remote_openrouter...[0m
+[90m[17:07:56][0m ❌    [91mUnexpected error: Expecting value: line 837 column 1 (char 4598)[0m
+[90m[17:07:56][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Expecting value: line 837 column 1 (char 4598)[0m
+[90m[17:07:56][0m     ℹ️   [96m   Waiting 10.32s before retrying call to remote_openrouter...[0m
+[90m[17:07:56][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Expecting value: line 1549 column 1 (char 8514)[0m
+[90m[17:07:56][0m     ℹ️   [96m   Waiting 11.85s before retrying call to remote_openrouter...[0m
+[90m[17:11:20][0m ❌    [91mRouting payload call failed: Connection error.[0m
+[90m[17:11:20][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Connection error.[0m
+[90m[17:11:20][0m     ℹ️   [96m   Waiting 16.80s before retrying call to remote_openrouter...[0m
+[90m[17:14:47][0m ❌    [91mUnexpected error: Expecting value: line 391 column 1 (char 2145)[0m
+[90m[17:14:47][0m ❌    [91mUnexpected error: Expecting value: line 383 column 1 (char 2101)[0m
+[90m[17:14:47][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Expecting value: line 391 column 1 (char 2145)[0m
+[90m[17:14:47][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Expecting value: line 383 column 1 (char 2101)[0m
+[90m[17:14:47][0m     ℹ️   [96m   Waiting 10.06s before retrying call to remote_openrouter...[0m
+[90m[17:14:47][0m     ℹ️   [96m   Waiting 16.76s before retrying call to remote_openrouter...[0m
+[90m[17:26:38][0m     ⚠️   [93m[unknown_run_420f1901-eeac-4e7a-b949-a5984c5bcade] Model returned malformed JSON. Attempting recovery...[0m
+[90m[17:27:59][0m     ⚠️   [93m[unknown_run_1abc52a8-95ab-4231-901b-04aecee490f6] Model returned malformed JSON. Attempting recovery...[0m
+[90m[17:29:34][0m     ⚠️   [93m[unknown_run_2fef905e-7569-4d4a-891d-6510058870c9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[17:38:51][0m     ⚠️   [93m[unknown_run_0174ad59-14ac-4420-b66a-3c5d4123a835] Model returned malformed JSON. Attempting recovery...[0m
+[90m[17:50:41][0m     ⚠️   [93m[unknown_run_1f447ada-28d4-4fa6-b998-fc4360b69f02] Model returned malformed JSON. Attempting recovery...[0m
+[90m[17:57:21][0m     ⚠️   [93m[unknown_run_6a615952-a252-4a31-bfca-35cca762376d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:17:11][0m     ⚠️   [93m[unknown_run_3161013f-8378-4a0b-89ad-3443c7f48402] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:33:15][0m     ⚠️   [93m[unknown_run_adf83ae6-d204-481e-bba9-8b8c415d227e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:36:00][0m     ⚠️   [93m[unknown_run_e7a46d85-4722-40f9-ae06-c290df9f55b2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:37:00][0m     ⚠️   [93m[unknown_run_af1af402-0e3b-447a-a3f3-da47c7f7a47c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:39:12][0m     ⚠️   [93m[unknown_run_9b8386a8-a61a-446f-b02b-5ed45c6a3cfc] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:43:12][0m     ⚠️   [93m[unknown_run_786d197b-cdd8-40a6-89d6-6acfd3b4b6a9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:49:54][0m     ⚠️   [93m[unknown_run_6419eed9-9aae-4a00-82ca-bf129da285ea] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:50:02][0m     ⚠️   [93m[unknown_run_046437a6-09fb-4a51-9a50-1485d4ee93db] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:50:29][0m     ⚠️   [93m[unknown_run_ffaf026c-00a5-4563-9b82-0f40c3c73c91] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:53:33][0m     ⚠️   [93m[unknown_run_9ae6ffea-c6c6-481d-bccf-677e010062f6] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:53:56][0m     ⚠️   [93m[unknown_run_35b2af47-c273-43d9-a046-334bfb32b255] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:55:00][0m     ⚠️   [93m[unknown_run_5add1143-0474-4c82-b64d-3e05f892043c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[18:57:56][0m     ⚠️   [93m[unknown_run_883cd6c4-6000-4cfe-a473-ccba4d4b4a6d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:02:22][0m     ⚠️   [93m[unknown_run_e1a2ae97-e352-4cdc-822c-2ac62c5594f9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:03:34][0m     ⚠️   [93m[unknown_run_63bb36b9-4a4e-423d-a61f-99ddd693b185] Model returned malformed JSON. Attempting recovery...[0m
+  💥 [GATE] ablation_noise | 1bce6dff94b8
+[90m[19:26:31][0m     ⚠️   [93m[unknown_run_7243dd83-0baa-44db-bc0d-fe2e626d8a93] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:26:36][0m     ⚠️   [93m[unknown_run_08bd348a-fb0d-49dd-a4a7-86f1621b6c2d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:26:39][0m     ⚠️   [93m[unknown_run_3b697448-ab24-4af2-84ef-183a661b32c7] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:27:43][0m     ⚠️   [93m[unknown_run_ab4bbef8-5f56-4935-a1fc-3f6dc46dfd86] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:27:44][0m     ⚠️   [93m[unknown_run_b332dee4-63c5-4354-bc5e-22e11326660f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:28:37][0m     ⚠️   [93m[unknown_run_375b622f-5f77-4133-967c-e83abf506460] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:28:43][0m     ⚠️   [93m[unknown_run_34853739-3359-45d5-9151-7bb664099272] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:28:43][0m     ⚠️   [93m[unknown_run_c732b9af-9abb-4e93-bfc7-e672dd183176] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:29:03][0m     ⚠️   [93m[unknown_run_2f05accb-6fe1-4c29-a4e4-3946612c7f22] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:30:04][0m     ⚠️   [93m[unknown_run_848220df-f462-4d4c-bf5f-f2b90f965cb4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:31:20][0m     ⚠️   [93m[unknown_run_676d1cd2-d6b6-4cfa-a8d5-a1a70e8a0281] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:31:45][0m     ⚠️   [93m[unknown_run_cc810c2c-5a03-4e8c-860d-0649835ee70d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:31:45][0m     ⚠️   [93m[unknown_run_a96f3558-5040-452e-ae9d-5d1a4e17b1cc] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:32:23][0m     ⚠️   [93m[unknown_run_d72d4943-2622-4c92-8171-091e195e39b2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:32:30][0m     ⚠️   [93m[unknown_run_464ccf5d-0803-4048-b4c4-0ec7d5453c5f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:32:34][0m     ⚠️   [93m[unknown_run_3e9a9119-e4b1-40aa-85e7-8364cf25c6c4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:32:37][0m     ⚠️   [93m[unknown_run_a5b4acb8-29b1-4ef1-a8ff-0fd1228963b1] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:33:21][0m     ⚠️   [93m[unknown_run_c6a2bda4-fd7d-401c-991b-f18ebfd18537] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:33:32][0m     ⚠️   [93m[unknown_run_5e9271d5-97a6-47f7-abd6-944abad81928] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:33:33][0m     ⚠️   [93m[unknown_run_6c58a5f4-61a9-4304-aa60-6f9d09db6e3a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:33:35][0m     ⚠️   [93m[unknown_run_173bc549-3da8-4805-8540-86d75871c4b2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:33:37][0m     ⚠️   [93m[unknown_run_035fcc82-f97d-429e-83ff-f67a0811ca9c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:34:38][0m     ⚠️   [93m[unknown_run_85108d15-9aad-40d5-a054-d8112d94bae6] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:34:42][0m     ⚠️   [93m[unknown_run_832c0e23-aa31-48a5-bd05-4b06ed899b6b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:35:18][0m     ⚠️   [93m[unknown_run_7062f138-fe03-4e91-8319-3933b691173a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:35:42][0m     ⚠️   [93m[unknown_run_d64eb111-f4af-4273-aad3-d832eb77c5ba] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:35:59][0m     ⚠️   [93m[unknown_run_8796895c-3c0d-4344-be7b-deecb6e125d2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:36:07][0m     ⚠️   [93m[unknown_run_98b3cc2b-61ba-47e0-b627-0fe6c057568f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:36:09][0m     ⚠️   [93m[unknown_run_6ed404fb-e586-42f3-b24b-3ee747e0824b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:36:48][0m     ⚠️   [93m[unknown_run_9511bdbb-b1aa-49f9-a128-dbb480d5e707] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:37:01][0m     ⚠️   [93m[unknown_run_ef206835-b9d2-4f3a-987c-ea590b96c52d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:37:09][0m     ⚠️   [93m[unknown_run_f9b6f891-70f0-4adc-a796-5d971494e5d1] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:37:46][0m     ⚠️   [93m[unknown_run_b0337c47-014d-4da8-9fdb-6206c285b4ce] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:37:59][0m     ⚠️   [93m[unknown_run_532534b2-74b2-44b6-8419-1e687c4c2e3a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:38:31][0m     ⚠️   [93m[unknown_run_ad67c6ca-cc51-4e04-8068-e6cc963160d1] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:39:05][0m     ⚠️   [93m[unknown_run_27157f1f-0774-4af8-8d34-69722fb3e7b1] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:46:55][0m     ⚠️   [93m[unknown_run_b8b3c2e4-e302-40ea-9d8b-e2f714beadad] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:47:01][0m     ⚠️   [93m[unknown_run_1ce1122e-b77e-4d43-b0bd-e685661be9d9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:47:09][0m     ⚠️   [93m[unknown_run_678ab7b2-82a6-4ee4-afef-c46729bc2148] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:48:58][0m     ⚠️   [93m[unknown_run_49c03375-3643-47d0-b566-6a6af0708c14] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:49:58][0m     ⚠️   [93m[unknown_run_a8c25855-f481-4148-b514-dae9f36d98d9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:50:24][0m     ⚠️   [93m[unknown_run_76f160f5-1aac-481d-8f19-e3d77ea28e29] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:50:41][0m     ⚠️   [93m[unknown_run_4ce94f2e-dfbb-4058-a062-758684cffa0f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:50:57][0m     ⚠️   [93m[unknown_run_31e1a580-635e-4535-9780-dffc03d3b580] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:51:15][0m     ⚠️   [93m[unknown_run_19755ac8-ae26-4700-a1a4-981a08033199] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:51:21][0m     ⚠️   [93m[unknown_run_5125fb9c-66f1-4544-bd61-712886376ef2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:51:26][0m     ⚠️   [93m[unknown_run_bc23ff74-1407-4904-a39c-5801abf8747f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:51:27][0m     ⚠️   [93m[unknown_run_d0f20b3f-7374-41da-911e-93f55f776965] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:51:29][0m     ⚠️   [93m[unknown_run_ad4de31e-93a5-4222-b1b9-aa41c90c95ee] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:51:42][0m     ⚠️   [93m[unknown_run_8f935f49-ad42-4f94-b196-bb7c090e96b1] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:52:16][0m     ⚠️   [93m[unknown_run_7e417713-30ee-410e-84f2-4be114a9c792] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:52:47][0m     ⚠️   [93m[unknown_run_f67edfef-98bf-46be-b401-fb8b21e7d3a2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:53:12][0m     ⚠️   [93m[unknown_run_81f3a3f6-972f-4f41-b49d-9b3eaad4a81c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:54:46][0m     ⚠️   [93m[unknown_run_30feb5ee-b529-4f3d-945c-5c010ae9c04a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:54:49][0m     ⚠️   [93m[unknown_run_ad150798-8df8-4988-8a07-34048a727bc7] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:54:52][0m     ⚠️   [93m[unknown_run_1604c318-af51-4d82-9d3b-835c4540f098] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:55:02][0m     ⚠️   [93m[unknown_run_9d9f49b4-9127-4439-8a38-6066d8df113d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:55:46][0m     ⚠️   [93m[unknown_run_ece4f4a1-5458-43ab-9074-a88538e5b1c5] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:55:48][0m     ⚠️   [93m[unknown_run_c56756a1-2bfb-4d44-a907-ac6ca0665f4b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:55:55][0m     ⚠️   [93m[unknown_run_169ea4c1-61ee-4b7a-9643-108f85b39b94] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:57:00][0m     ⚠️   [93m[unknown_run_c77e2c96-6328-446d-9a5d-8cde55e0f6f7] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:57:29][0m     ⚠️   [93m[unknown_run_947bcb7d-971c-4e07-8aab-34faa5b1ce1a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[19:59:41][0m     ⚠️   [93m[unknown_run_6983ea21-34ef-4cfc-855c-b159c4791087] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:02:10][0m     ⚠️   [93m[unknown_run_48ee7a54-e7cc-4874-9386-50084b9b6848] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:03:52][0m     ⚠️   [93m[unknown_run_97526f8c-4ef6-4f55-bd69-bb0328e487fe] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:04:39][0m     ⚠️   [93m[unknown_run_d9189ede-6c8f-44d0-ac5d-eb8f51b0352f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:04:52][0m     ⚠️   [93m[unknown_run_bc2d5878-fbdf-476c-86a8-bc48a2dfb0b6] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:05:41][0m     ⚠️   [93m[unknown_run_4d2dd97d-7a5a-4ce9-bbc5-3bc39c381a9a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:06:36][0m     ⚠️   [93m[unknown_run_58b801a1-838a-4e3b-b314-32af23728360] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:06:41][0m     ⚠️   [93m[unknown_run_0bfb700b-15e5-4a8e-9131-6a586c1d7071] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:07:00][0m     ⚠️   [93m[unknown_run_1c02b778-2b1c-4627-af53-92382ff63e32] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:07:02][0m     ⚠️   [93m[unknown_run_e1621726-4132-4eaf-a8ad-e8937a0752bc] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:07:12][0m     ⚠️   [93m[unknown_run_dbb27734-aaa6-4b6f-a16b-e926e89a947e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:07:41][0m     ⚠️   [93m[unknown_run_0c015550-59ce-44fd-84d8-0bebadb238b9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:07:54][0m     ⚠️   [93m[unknown_run_0c2f9fac-7e8d-479c-86fe-efc4731a1a58] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:09:00][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:09:00][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:09:00][0m     ℹ️   [96m   Waiting 10.71s before retrying call to remote_openrouter...[0m
+[90m[20:10:05][0m     ⚠️   [93m[unknown_run_b13bb153-9b77-4bfb-ab85-9c691bd853ed] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:10:09][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:10:09][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:10:09][0m     ℹ️   [96m   Waiting 10.15s before retrying call to remote_openrouter...[0m
+[90m[20:12:43][0m     ⚠️   [93m[unknown_run_69d33be8-54cb-46d9-9530-8fcfa7514202] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:15:35][0m     ⚠️   [93m[unknown_run_f27e70b7-5f55-4e40-81ab-77ce7525ae03] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:17:45][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:17:45][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:17:45][0m     ℹ️   [96m   Waiting 11.27s before retrying call to remote_openrouter...[0m
+[90m[20:18:41][0m     ⚠️   [93m[unknown_run_47dc8aec-31d7-471e-961b-4fdceb69c981] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:19:28][0m     ⚠️   [93m[unknown_run_8d14329e-cabd-4afc-a3a1-d2ddce911f2a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:20:10][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:20:10][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:20:10][0m     ℹ️   [96m   Waiting 11.60s before retrying call to remote_openrouter...[0m
+[90m[20:21:12][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:21:12][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:21:12][0m     ℹ️   [96m   Waiting 10.27s before retrying call to remote_openrouter...[0m
+[90m[20:21:13][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:21:13][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:21:13][0m     ℹ️   [96m   Waiting 10.60s before retrying call to remote_openrouter...[0m
+[90m[20:21:14][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:21:14][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:21:14][0m     ℹ️   [96m   Waiting 10.95s before retrying call to remote_openrouter...[0m
+[90m[20:21:28][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:21:28][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:21:28][0m     ℹ️   [96m   Waiting 16.04s before retrying call to remote_openrouter...[0m
+[90m[20:21:28][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:21:28][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:21:28][0m     ℹ️   [96m   Waiting 16.59s before retrying call to remote_openrouter...[0m
+[90m[20:21:49][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:21:49][0m ⚠️   [93mAttempt 3/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:21:49][0m     ℹ️   [96m   Waiting 23.62s before retrying call to remote_openrouter...[0m
+[90m[20:21:51][0m     ⚠️   [93m[unknown_run_bee1dfbd-6e0e-4753-b866-51a219fef168] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:22:32][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:22:32][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:22:32][0m     ℹ️   [96m   Waiting 11.39s before retrying call to remote_openrouter...[0m
+[90m[20:24:03][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:24:03][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:24:03][0m     ℹ️   [96m   Waiting 11.21s before retrying call to remote_openrouter...[0m
+[90m[20:24:25][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:24:25][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:24:25][0m     ℹ️   [96m   Waiting 11.33s before retrying call to remote_openrouter...[0m
+[90m[20:25:54][0m     ⚠️   [93m[unknown_run_74a2e30e-0879-4b34-b297-d1a6b116430f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:26:07][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:26:07][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:26:07][0m     ℹ️   [96m   Waiting 10.37s before retrying call to remote_openrouter...[0m
+[90m[20:26:10][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:26:10][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:26:10][0m     ℹ️   [96m   Waiting 11.56s before retrying call to remote_openrouter...[0m
+[90m[20:26:11][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:26:11][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:26:11][0m     ℹ️   [96m   Waiting 10.66s before retrying call to remote_openrouter...[0m
+[90m[20:28:13][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:28:13][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:28:13][0m     ℹ️   [96m   Waiting 11.00s before retrying call to remote_openrouter...[0m
+[90m[20:29:51][0m     ⚠️   [93m[unknown_run_2e79a390-1862-4e5f-970b-5d315cea8ef8] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:30:08][0m     ⚠️   [93m[unknown_run_24bd4da8-e4d2-4aec-8eb7-8450ae97a624] Model returned malformed JSON. Attempting recovery...[0m
+[90m[20:31:59][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:31:59][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:31:59][0m     ℹ️   [96m   Waiting 11.57s before retrying call to remote_openrouter...[0m
+[90m[20:31:59][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:31:59][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:31:59][0m     ℹ️   [96m   Waiting 11.26s before retrying call to remote_openrouter...[0m
+[90m[20:35:02][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:35:02][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:35:02][0m     ℹ️   [96m   Waiting 10.96s before retrying call to remote_openrouter...[0m
+[90m[20:36:04][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:04][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:04][0m     ℹ️   [96m   Waiting 10.30s before retrying call to remote_openrouter...[0m
+[90m[20:36:06][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:06][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:06][0m     ℹ️   [96m   Waiting 11.08s before retrying call to remote_openrouter...[0m
+[90m[20:36:15][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:15][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:15][0m     ℹ️   [96m   Waiting 10.24s before retrying call to remote_openrouter...[0m
+[90m[20:36:18][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:18][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:18][0m     ℹ️   [96m   Waiting 11.99s before retrying call to remote_openrouter...[0m
+[90m[20:36:18][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:18][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:18][0m     ℹ️   [96m   Waiting 15.09s before retrying call to remote_openrouter...[0m
+[90m[20:36:21][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:21][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:21][0m     ℹ️   [96m   Waiting 16.70s before retrying call to remote_openrouter...[0m
+[90m[20:36:28][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:28][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:28][0m     ℹ️   [96m   Waiting 10.46s before retrying call to remote_openrouter...[0m
+[90m[20:36:29][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:29][0m ⚠️   [93mAttempt 2/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:36:29][0m     ℹ️   [96m   Waiting 15.79s before retrying call to remote_openrouter...[0m
+[90m[20:39:20][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:39:20][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[20:39:20][0m     ℹ️   [96m   Waiting 11.59s before retrying call to remote_openrouter...[0m
+[90m[21:10:59][0m     ⚠️   [93m[unknown_run_4649ccac-396a-4436-988c-9b6dcd4a83aa] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:15:05][0m     ⚠️   [93m[unknown_run_c455fd51-9db8-4eef-b670-05c029b4258f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:15:54][0m     ⚠️   [93m[unknown_run_c980d6fa-2089-4d8a-925a-91bfdce1258e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:28:09][0m     ⚠️   [93m[unknown_run_9424fc82-9b74-41a4-88d7-8b7d20839378] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:31:06][0m     ⚠️   [93m[unknown_run_644571eb-78dd-4999-9b34-ce8204ea5faf] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:32:01][0m     ⚠️   [93m[unknown_run_76407c32-0884-4a6a-980e-b2ea4ed7f628] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:33:30][0m     ⚠️   [93m[unknown_run_544bde8c-fa89-4fc3-b814-8af5dd8fe8e2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:34:18][0m     ⚠️   [93m[unknown_run_f3629894-470d-4971-949f-5e8b2ef1c9bb] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:34:46][0m     ⚠️   [93m[unknown_run_ef23cb7e-e1ab-4feb-a23b-bd4d1b149906] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:35:49][0m     ⚠️   [93m[unknown_run_72c232c5-f816-4916-bb7e-5b3e652afbae] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:36:03][0m     ⚠️   [93m[unknown_run_80b3fd1b-0e65-429f-b152-7c511b2ef2fa] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:36:09][0m     ⚠️   [93m[unknown_run_55fc427b-238e-4cb4-b3c0-9a57635e8921] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:37:47][0m     ⚠️   [93m[unknown_run_c21b81e6-8b03-47ea-ba2c-89e7e3c60ca0] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:38:51][0m     ⚠️   [93m[unknown_run_359bc078-747a-4b31-9fb8-da3ba75bc249] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:39:04][0m     ⚠️   [93m[unknown_run_1db6121d-d1e0-4794-9ae6-9402bfe76d41] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:39:48][0m     ⚠️   [93m[unknown_run_21408bb8-0a3f-4a48-b8dd-0cfc13b71ded] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:44:20][0m     ⚠️   [93m[unknown_run_4cb9129d-a913-45dd-8358-29ec9ac8acdb] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:45:39][0m     ⚠️   [93m[unknown_run_8d693e23-0734-421c-bf51-b7c4f0cbc6ab] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:47:41][0m     ⚠️   [93m[unknown_run_9b6ac2ea-e35e-4898-994c-295d2eb119cc] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:48:08][0m     ⚠️   [93m[unknown_run_a340b166-d8eb-44b5-9f56-c96609093c0c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[21:50:43][0m     ⚠️   [93m[unknown_run_790edc10-c0b1-4657-b37e-f9abe0f118f7] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:02:36][0m     ⚠️   [93m[unknown_run_397c2879-bda2-4e37-af1a-c8f93666004f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:08:11][0m     ⚠️   [93m[unknown_run_f59212da-ec4b-46da-b335-2ec493e64f29] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:08:34][0m     ⚠️   [93m[unknown_run_672ceb4c-3ddf-4d0f-aa5a-ddd24ec7f98b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:11:42][0m     ⚠️   [93m[unknown_run_157167b1-bd57-4090-bf35-5b11ac9fba10] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:13:47][0m     ⚠️   [93m[unknown_run_32cdeef0-2ce8-4e54-bae6-7e43d636e25a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:15:15][0m     ⚠️   [93m[unknown_run_a2c812fd-0bfb-47f0-b4d0-fefc3212392c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:15:44][0m     ⚠️   [93m[unknown_run_cb506dd2-e934-4021-a811-65e989b792bf] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:22:29][0m     ⚠️   [93m[unknown_run_31ac21ec-a399-40ea-bbb0-e94f8fd4f1bb] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:23:49][0m     ⚠️   [93m[unknown_run_4da1b4c7-ce8c-4fba-ab31-1e6b6009a36f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:24:52][0m     ⚠️   [93m[unknown_run_2f1ac15d-45c7-4007-9df1-cf8572573078] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:25:16][0m     ⚠️   [93m[unknown_run_d272e41e-ef26-45cf-8883-39a0f67848c9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:25:23][0m     ⚠️   [93m[unknown_run_d1d3f2e8-b541-4d63-8578-75caa4c77a01] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:25:33][0m     ⚠️   [93m[unknown_run_b7f25257-6d20-4cc8-9bcb-d5a2d5f06035] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:25:33][0m     ⚠️   [93m[unknown_run_4254bf20-90f0-44e1-97d1-2a52c5b561b7] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:25:35][0m     ⚠️   [93m[unknown_run_ce7cd010-9036-48ce-873d-8fa92fbb6b86] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:31:04][0m     ⚠️   [93m[unknown_run_56e5f910-c462-4d55-a315-81f3b7f3d35c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:31:31][0m     ⚠️   [93m[unknown_run_fffc39c6-9948-4d1b-882a-652501862ef6] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:31:33][0m     ⚠️   [93m[unknown_run_2febf9ea-a98c-43ac-a00a-f80039262de7] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:31:48][0m     ⚠️   [93m[unknown_run_e03e7d0b-1b09-41c4-8bfe-f267d4ac59d9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:33:44][0m     ⚠️   [93m[unknown_run_26ed4def-0db3-4e94-9ba7-9cc053bbdd0d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:50:17][0m     ⚠️   [93m[unknown_run_6743d5d2-9cd5-4a5d-b3ec-b9373dd82fba] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:52:06][0m     ⚠️   [93m[unknown_run_9ad52a12-d918-4cba-bb2b-cb902f2fbbc4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:54:50][0m     ⚠️   [93m[unknown_run_1031ac37-9af8-416f-9b3a-84f6c8f6ff43] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:55:42][0m     ⚠️   [93m[unknown_run_0c37feb0-f851-468a-b63c-149f617e477e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:56:01][0m     ⚠️   [93m[unknown_run_0c03a0f9-1d6b-4f05-818e-1c2e18296400] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:57:16][0m     ⚠️   [93m[unknown_run_a6590dc9-3192-49bc-a757-d5971e0d0e18] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:57:26][0m     ⚠️   [93m[unknown_run_ca40824c-4140-4edf-8bb4-7547800881ae] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:58:23][0m     ⚠️   [93m[unknown_run_f4a1e787-46f2-46dd-820a-514251bc7019] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:59:01][0m     ⚠️   [93m[unknown_run_3fc4ec23-151d-45bb-9fee-deca73f08ff2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[22:59:04][0m     ⚠️   [93m[unknown_run_f2b2cf5e-2445-4ec1-b8b4-265154d2df5e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:00:51][0m     ⚠️   [93m[unknown_run_a7af2404-c239-402c-8e3e-d9f4e3e44d77] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:01:00][0m     ⚠️   [93m[unknown_run_62badaa3-0044-49a7-af1d-66e61296105b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:01:41][0m     ⚠️   [93m[unknown_run_f4ee44dd-eef0-49a9-a3a4-a2520e025e26] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:01:44][0m     ⚠️   [93m[unknown_run_67b40abd-604b-4d1f-9f6b-f6a1c5f422cd] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:02:28][0m     ⚠️   [93m[unknown_run_53484962-1aec-4e29-ad20-bce3a2b01880] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:03:13][0m     ⚠️   [93m[unknown_run_796139f1-b231-4715-b3bd-3979043a82dd] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:03:47][0m     ⚠️   [93m[unknown_run_2ebebc02-b081-4c30-94ce-eecbd4acfe11] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:04:05][0m     ⚠️   [93m[unknown_run_03b88e6b-f87a-47a1-a13b-8e4e09c0a317] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:04:53][0m     ⚠️   [93m[unknown_run_6e380762-ff69-4cee-99cc-89759cb4c723] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:05:06][0m     ⚠️   [93m[unknown_run_cc6a859e-a3ba-4b68-b6a2-600880bc7b78] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:27:04][0m     ⚠️   [93m[unknown_run_21405bc2-9f95-42f8-90f3-d77af1da89f0] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:28:39][0m     ⚠️   [93m[unknown_run_acb54cd1-ba5d-4a51-8b36-43f780ced2ab] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:30:11][0m     ⚠️   [93m[unknown_run_b14b4d41-88b6-421b-bd15-1407163300bc] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:31:28][0m     ⚠️   [93m[unknown_run_f0fb0d49-9017-428a-b708-be01091e8dc0] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:32:23][0m     ⚠️   [93m[unknown_run_ed7fda24-c562-43b2-9a99-201087203f18] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:33:03][0m     ⚠️   [93m[unknown_run_a0dea935-7926-48bc-87d5-d368fb4227cd] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:33:39][0m     ⚠️   [93m[unknown_run_a8fd2e23-d1af-425a-bc40-2e3b408ce0cb] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:33:47][0m     ⚠️   [93m[unknown_run_6b32d961-4e24-4076-a02b-2d00c83261b4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:34:23][0m     ⚠️   [93m[unknown_run_0752d4d8-7cd9-479a-aa90-790f1c74513e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:35:36][0m     ⚠️   [93m[unknown_run_2b4d2177-61c0-443c-98a5-053e40761334] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:36:42][0m     ⚠️   [93m[unknown_run_9a7aedc1-536c-4b37-b880-1b868f66c56c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:39:06][0m     ⚠️   [93m[unknown_run_ed95f1c6-d96f-4235-b8e6-59365e5678b3] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:39:39][0m     ⚠️   [93m[unknown_run_184c8f31-0530-49cb-b765-b3067301adb3] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:48:04][0m     ⚠️   [93m[unknown_run_d2cdebe7-01df-4a27-a284-f7fc739f911b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:52:02][0m     ⚠️   [93m[unknown_run_841f7e73-f073-499b-a507-b5c81d1beed5] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:52:48][0m     ⚠️   [93m[unknown_run_cfdbe63e-b552-40be-bb13-1fa8116d4dfd] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:54:41][0m     ⚠️   [93m[unknown_run_f5f03121-3785-4cb0-9dc9-60ebb66ae63f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:55:21][0m     ⚠️   [93m[unknown_run_3145db86-8427-40b5-8149-7d30ad5b9f6c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:56:52][0m     ⚠️   [93m[unknown_run_412f9964-353a-46be-be8e-cc00f5df21f1] Model returned malformed JSON. Attempting recovery...[0m
+[90m[23:59:01][0m     ⚠️   [93m[unknown_run_d09c3307-de13-4e34-8c71-6877da43cb4e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:01:12][0m     ⚠️   [93m[unknown_run_085e3ae3-c467-4a84-b9cf-eae16f84682c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:01:54][0m     ⚠️   [93m[unknown_run_f9b1e639-22f4-46bd-a835-023d5bfa6e5f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:02:58][0m     ⚠️   [93m[unknown_run_0260719e-05fe-4b2a-bb26-d47f50d62da1] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:03:58][0m     ⚠️   [93m[unknown_run_4e291c3d-cfa3-481e-bcfc-645696151160] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:04:02][0m     ⚠️   [93m[unknown_run_0cf44a24-bd3d-4e3e-b649-48cb7b69dad5] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:04:55][0m     ⚠️   [93m[unknown_run_26ae9c2a-2d76-4f08-9add-12bc12baa03e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:06:00][0m     ⚠️   [93m[unknown_run_a8581295-9c10-4bc5-a085-07a78046c27d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:13:05][0m     ⚠️   [93m[unknown_run_46bfb5d2-1206-4372-83e1-990ee0f8d99e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:14:08][0m     ⚠️   [93m[unknown_run_fd77a57c-8333-40d9-979a-0e12b397b3da] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:14:38][0m     ⚠️   [93m[unknown_run_b79a2a99-9052-471d-8c39-b5004c8f4ddd] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:18:10][0m     ⚠️   [93m[unknown_run_9daf899c-2632-4592-8abd-6e7e4894eae9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:18:59][0m     ⚠️   [93m[unknown_run_f56811ae-fb0c-4793-bd4f-5fd07d0e0335] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:19:06][0m     ⚠️   [93m[unknown_run_f2bbcbda-2b8d-4126-b6b1-7ee79c075112] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:22:09][0m     ⚠️   [93m[unknown_run_52926b22-16fd-4a51-bb1d-4db73cb1908b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:22:11][0m     ⚠️   [93m[unknown_run_cf5f8e7d-fea3-4c51-a707-0af2d6946f25] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:28:02][0m     ⚠️   [93m[unknown_run_5fbf284c-0387-4153-9bd2-0d02ae8fbd82] Model returned malformed JSON. Attempting recovery...[0m
+  💥 [GATE] paranoid | 37f61727e427
+[90m[00:41:38][0m     ⚠️   [93m[unknown_run_c6e6f987-47df-4cf4-b779-36e49c8ef1a4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:41:47][0m     ⚠️   [93m[unknown_run_bdbb927b-1f73-4c20-8d1f-bbf22443fa3e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:45:01][0m     ⚠️   [93m[unknown_run_9e90bbad-ff68-47ae-9bbb-d23e63bc4e7c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:45:39][0m     ⚠️   [93m[unknown_run_fc0a323b-9e38-4a33-8bb9-abcd280a932b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:46:48][0m     ⚠️   [93m[unknown_run_537d1aee-6925-4504-bdf3-ecf454ad6491] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:46:50][0m     ⚠️   [93m[unknown_run_a5a5171a-1c4a-438b-9a26-7623d9c1bd2f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:48:13][0m     ⚠️   [93m[unknown_run_378de53f-5893-46af-b393-2ccbb44e81f0] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:48:26][0m     ⚠️   [93m[unknown_run_bcf4123e-ed13-4054-aaab-ed5eff2c3514] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:49:32][0m     ⚠️   [93m[unknown_run_3038f24a-6b51-4b37-be63-b99ab797dd10] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:49:42][0m     ⚠️   [93m[unknown_run_3f7ce2cd-5667-446b-8529-f2f3e94b76b6] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:53:12][0m     ⚠️   [93m[unknown_run_4646f062-f204-4797-99ba-407d3dade107] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:54:07][0m     ⚠️   [93m[unknown_run_32fc02df-ccc4-4535-a489-290cc0837ba4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:57:06][0m     ⚠️   [93m[unknown_run_6116585e-22c8-4010-bba9-59cfb4237a78] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:57:16][0m     ⚠️   [93m[unknown_run_d6a10f02-f800-42f6-8a16-953478b41ce4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[00:57:18][0m     ⚠️   [93m[unknown_run_9495070f-e590-4c33-b6c3-19771f04acbe] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:08:22][0m     ⚠️   [93m[unknown_run_4aa7b29c-e25e-463f-ba16-8c5dcddc71a1] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:08:29][0m     ⚠️   [93m[unknown_run_3625ea81-25cc-4ae0-ad58-c90f37d42c8c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:11:46][0m     ⚠️   [93m[unknown_run_94819426-f644-4630-a451-a56fac01ce31] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:12:27][0m     ⚠️   [93m[unknown_run_e4c575af-3a83-4695-b668-927a1bd86d79] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:14:59][0m     ⚠️   [93m[unknown_run_8d2b3650-a052-4040-b751-690dcb66bc28] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:14:59][0m     ⚠️   [93m[unknown_run_093ac10a-e420-42f9-b209-8265a2962a52] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:17:19][0m     ⚠️   [93m[unknown_run_e9fe4ec0-d0f6-42c7-8a5f-d3895c13e070] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:18:01][0m     ⚠️   [93m[unknown_run_c405d3d9-57c7-4479-9b4c-990a45af12c7] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:26:34][0m     ⚠️   [93m[unknown_run_239cef4e-876c-44c9-b3d6-73b3875123a8] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:27:47][0m     ⚠️   [93m[unknown_run_5b13a4c6-e7c7-4cb1-8efe-9fa18dec4113] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:28:48][0m     ⚠️   [93m[unknown_run_899aacc1-d2b1-4b3f-88cd-24efb518e9fa] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:29:03][0m     ⚠️   [93m[unknown_run_d679cab4-86fb-4d77-b060-7969a0215b7a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:29:35][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[01:29:35][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[01:29:35][0m     ℹ️   [96m   Waiting 11.18s before retrying call to remote_openrouter...[0m
+[90m[01:29:35][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[01:29:35][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[01:29:35][0m     ℹ️   [96m   Waiting 11.54s before retrying call to remote_openrouter...[0m
+[90m[01:29:36][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[01:29:36][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[01:29:36][0m     ℹ️   [96m   Waiting 11.84s before retrying call to remote_openrouter...[0m
+[90m[01:31:03][0m     ⚠️   [93m[unknown_run_0f22b63d-8b61-4d1b-bade-37d9e2269900] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:31:23][0m     ⚠️   [93m[unknown_run_29714f5a-12ea-4568-b2f6-f0e55ebb359e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:32:28][0m     ⚠️   [93m[unknown_run_51346cfa-41c5-4912-a117-2a47a45e8077] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:33:37][0m     ⚠️   [93m[unknown_run_d7d0a090-b2d6-4df1-b686-b3693fafd8aa] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:33:38][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[01:33:38][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[01:33:38][0m     ℹ️   [96m   Waiting 10.81s before retrying call to remote_openrouter...[0m
+[90m[01:37:17][0m     ⚠️   [93m[unknown_run_81bb1982-a7e9-4870-b478-24bddabfbb6d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:37:20][0m     ⚠️   [93m[unknown_run_d4ef29a9-b649-4002-9e9f-a67147e4d3e1] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:37:49][0m     ⚠️   [93m[unknown_run_23415463-dd15-47a8-9f62-64e31452b43c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:39:19][0m     ⚠️   [93m[unknown_run_e4d8d579-6a84-4c90-a7b5-eba594a10658] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:40:13][0m     ⚠️   [93m[unknown_run_fe2451ac-7a7e-45ea-a938-4bc4ae258368] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:40:20][0m     ⚠️   [93m[unknown_run_6249000e-c26f-4d39-b62b-176bb11110a1] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:41:09][0m     ⚠️   [93m[unknown_run_cd963ff6-8063-4325-9f89-9daf4f3423f3] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:41:30][0m     ⚠️   [93m[unknown_run_4079082d-88aa-4018-adb9-45b6624f5eba] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:42:36][0m     ⚠️   [93m[unknown_run_15ace968-c0c3-466a-ae1a-1395eae71c78] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:42:52][0m     ⚠️   [93m[unknown_run_11422816-e3c9-47f1-a785-77947d16a4b0] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:46:20][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[01:46:20][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[01:46:20][0m     ℹ️   [96m   Waiting 10.36s before retrying call to remote_openrouter...[0m
+[90m[01:47:16][0m     ⚠️   [93m[unknown_run_1cc69a68-8bbf-4dec-98cb-cd8922738f9c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:47:37][0m     ⚠️   [93m[unknown_run_0a6b4512-24ea-49ee-bb93-42f0c77a8a12] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:47:41][0m     ⚠️   [93m[unknown_run_2a39b98c-dd51-426d-a987-bc7d2cd2f704] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:48:55][0m     ⚠️   [93m[unknown_run_cd4aa032-1389-40b4-a73b-794bd12a8c4c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:50:42][0m     ⚠️   [93m[unknown_run_d3e02c98-cae3-41b7-8671-5fa27aa60103] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:50:54][0m     ⚠️   [93m[unknown_run_5ea6c3c8-fdd3-496c-9495-d42e25a3fbfa] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:51:19][0m     ⚠️   [93m[unknown_run_3b73eebc-bc10-4f81-8025-a4a4d49cc832] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:52:21][0m     ⚠️   [93m[unknown_run_f316576c-fb06-4a14-b340-bb77cf7bd14b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[01:53:42][0m     ⚠️   [93m[unknown_run_62fb3b44-2c94-4c83-93f5-b5239eb42107] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:04:00][0m     ⚠️   [93m[unknown_run_aae1a117-ce66-4835-9c2f-187a317233fb] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:06:14][0m     ⚠️   [93m[unknown_run_ec1613da-7d93-4815-9a37-f5127eff991d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:06:30][0m     ⚠️   [93m[unknown_run_d8aa5506-4bff-4106-830d-76f812352f99] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:07:36][0m     ⚠️   [93m[unknown_run_ef09cc64-3a23-4cc7-82d9-002af8b66416] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:08:23][0m     ⚠️   [93m[unknown_run_e47da810-4ab9-45f0-97dc-bdc09b47776f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:08:37][0m     ⚠️   [93m[unknown_run_4ee401d3-03c3-40e3-afe9-1d7741a9e221] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:09:49][0m     ⚠️   [93m[unknown_run_b5a5f0c0-2b60-402d-a170-684831750d9c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:10:53][0m     ⚠️   [93m[unknown_run_b0604da9-305a-4d97-8cd9-143495e34121] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:11:37][0m     ⚠️   [93m[unknown_run_ca64f0f1-a58c-45d7-83d3-51b2645d1eca] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:12:51][0m     ⚠️   [93m[unknown_run_ca869f84-6068-42a3-a5dc-a436ef5627d7] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:14:49][0m     ⚠️   [93m[unknown_run_e92cf19f-22da-4c84-a659-e8cbed5232f4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:15:08][0m     ⚠️   [93m[unknown_run_2b8a07ad-407f-45bd-903e-3b61d0673fe1] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:16:02][0m     ⚠️   [93m[unknown_run_b80edd51-c985-41c2-b40d-6e0bc99b3a2d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:16:06][0m     ⚠️   [93m[unknown_run_a7c62c09-c1f3-4821-980e-db673922eb26] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:18:13][0m     ⚠️   [93m[unknown_run_4215297e-1427-48cd-9a42-91572f7f2d3f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:18:24][0m     ⚠️   [93m[unknown_run_f542786b-afe2-4661-bcaa-765c1e6d9f73] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:19:00][0m     ⚠️   [93m[unknown_run_911ffcd2-b3e9-4346-b61a-380282c23e49] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:20:43][0m     ⚠️   [93m[unknown_run_118ed08a-fd2c-4c0f-9ec1-d33d0bd5d41f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:20:54][0m     ⚠️   [93m[unknown_run_a8b02fa2-dcb1-4207-a4f5-98c6baa74ef2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:20:57][0m     ⚠️   [93m[unknown_run_ab61a68f-2096-4567-92f0-2db9fb6598be] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:21:48][0m     ⚠️   [93m[unknown_run_6f76b20a-5c6f-4da2-8eb7-e6d2678d19cb] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:30:10][0m     ⚠️   [93m[unknown_run_a60f20d4-51f3-416c-8d9f-90c744153396] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:32:38][0m     ⚠️   [93m[unknown_run_90116fa9-cbfa-45c0-85e0-b5b6bd600b22] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:34:05][0m     ⚠️   [93m[unknown_run_e1d5c700-19ba-4c70-9218-b1972d8a3907] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:34:15][0m     ⚠️   [93m[unknown_run_9a69b8e5-de91-4e32-972d-64a4b4233825] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:44:41][0m     ⚠️   [93m[unknown_run_f03be08f-6b5c-47c0-8583-cf22201d30ed] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:45:28][0m     ⚠️   [93m[unknown_run_5322e24e-7fd3-4a13-a52e-130c13220497] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:45:37][0m     ⚠️   [93m[unknown_run_0b9cb1bd-c65c-4df3-8c4a-a272593b72ab] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:45:43][0m     ⚠️   [93m[unknown_run_7c37989f-82d0-4bb5-a08c-f0af855f5c7c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:46:43][0m     ⚠️   [93m[unknown_run_765812a0-5538-4d11-8d5d-b9a623417d8b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:48:14][0m     ⚠️   [93m[unknown_run_65465ae7-218f-4f6d-8bbd-9537ae7f8209] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:49:00][0m     ⚠️   [93m[unknown_run_720f565d-8048-4f39-bca8-a9ab7346d81d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:50:30][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[02:50:30][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[02:50:30][0m     ℹ️   [96m   Waiting 10.69s before retrying call to remote_openrouter...[0m
+[90m[02:50:30][0m ❌    [91mRouting payload call failed: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[02:50:30][0m ⚠️   [93mAttempt 1/20 failed with exception for remote_openrouter: Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': '{"error":{"message":"Model busy, retry later","type":"invalid_request_error","param":null,"code":"engine_overloaded"}}', 'provider_name': 'DeepInfra', 'is_byok': True}}, 'user_id': 'user_2rWfCKw03BEKV59kJcyVQxoRplB'}[0m
+[90m[02:50:30][0m     ℹ️   [96m   Waiting 11.89s before retrying call to remote_openrouter...[0m
+[90m[02:53:11][0m     ⚠️   [93m[unknown_run_2affbf16-4492-450a-af4d-542263576b74] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:53:30][0m     ⚠️   [93m[unknown_run_9cc76bd1-8c97-4b74-b4e9-01aa3c1d809f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:53:50][0m     ⚠️   [93m[unknown_run_bf35203b-e6f5-4851-b817-d2c8ace12cfe] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:54:40][0m     ⚠️   [93m[unknown_run_fb8a7473-b405-4202-97ed-603bde4eb195] Model returned malformed JSON. Attempting recovery...[0m
+[90m[02:54:52][0m     ⚠️   [93m[unknown_run_6efac7c0-80db-4dd1-a6a5-b9473eb75b10] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:01:05][0m     ⚠️   [93m[unknown_run_ee8969e6-0be1-4407-831b-64cdb211db20] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:02:52][0m     ⚠️   [93m[unknown_run_2fa7d6fb-cf43-42b3-bd8b-fc0d5dc29637] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:03:06][0m     ⚠️   [93m[unknown_run_fb55066d-68b7-4935-8078-e0d4aa6a5f84] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:03:07][0m     ⚠️   [93m[unknown_run_34639558-2252-43a8-974f-174fde81ef5b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:06:06][0m     ⚠️   [93m[unknown_run_ebbe8a2f-c9fa-4e9d-a64f-9ab46442ebc2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:06:28][0m     ⚠️   [93m[unknown_run_c563e4a1-12f1-44b9-9425-e6a7ee6464a7] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:07:09][0m     ⚠️   [93m[unknown_run_bd1ac9ed-2599-4b90-9271-a8ad950bf18b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:08:10][0m     ⚠️   [93m[unknown_run_4f3b6eb7-043f-4f6a-990e-20ef3f780f4f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:14:40][0m     ⚠️   [93m[unknown_run_4af95f06-41f6-4376-834e-da23d93769aa] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:16:32][0m     ⚠️   [93m[unknown_run_7f2987a2-2668-44d0-8fef-4f92121669f9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:22:33][0m     ⚠️   [93m[unknown_run_492cd096-fad0-4d79-a381-6d662ac50fe2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:22:38][0m     ⚠️   [93m[unknown_run_4195f467-2022-4c72-95b4-1772dd170397] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:22:48][0m     ⚠️   [93m[unknown_run_782886f0-9d9f-47e7-8011-5447b6bf65c1] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:23:37][0m     ⚠️   [93m[unknown_run_bfbb1341-7ade-4f3a-8ab0-09cb15a9f0ff] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:24:01][0m     ⚠️   [93m[unknown_run_e7e27f16-0076-43dc-970c-1a93bb97f27e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:24:47][0m     ⚠️   [93m[unknown_run_e035c6b1-ee62-47fc-8073-347c062e0295] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:28:21][0m     ⚠️   [93m[unknown_run_91ce02fa-f340-4562-bc3e-529f8e2d45c0] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:29:37][0m     ⚠️   [93m[unknown_run_1e7bda71-f636-4fbd-b81c-e99f47ea8811] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:29:49][0m     ⚠️   [93m[unknown_run_ee4ae282-14fd-4687-a908-601f16b1f12e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:32:09][0m     ⚠️   [93m[unknown_run_8d0e065b-3690-4c0c-8369-824cbe0a3421] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:32:38][0m     ⚠️   [93m[unknown_run_47d625ec-1d65-48f4-a2a3-b860316103cb] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:35:20][0m     ⚠️   [93m[unknown_run_2ea622b9-b5e2-4e7e-9a54-77ffd5163b83] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:36:49][0m     ⚠️   [93m[unknown_run_fac84fe9-45ab-4e29-9f99-ef5cb6985067] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:37:37][0m     ⚠️   [93m[unknown_run_c1b609d5-9c59-476c-8d49-8a5554945820] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:41:09][0m     ⚠️   [93m[unknown_run_b05364ba-7979-467b-a1ab-7da3b737aa8b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:41:28][0m     ⚠️   [93m[unknown_run_eef8eabd-6449-4e6f-8d77-bc13a678679c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:42:36][0m     ⚠️   [93m[unknown_run_7105af31-88af-434d-b179-3b0829dc343b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:42:36][0m     ⚠️   [93m[unknown_run_c264a423-0019-41d9-8d22-d23430072613] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:42:36][0m     ⚠️   [93m[unknown_run_1d038d85-cee8-40c1-b715-cf324e089083] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:42:36][0m     ⚠️   [93m[unknown_run_3c96a27c-a2db-4d1d-8423-e6bcacd410d2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:43:47][0m     ⚠️   [93m[unknown_run_ed249fc9-b88e-4d22-816c-17a00093e3dd] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:44:40][0m     ⚠️   [93m[unknown_run_cfe8d9a9-29a9-4d24-89d5-91eafd2d2e9e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:46:20][0m     ⚠️   [93m[unknown_run_6dfcf114-ef02-4104-92be-257c1bbdd4da] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:47:11][0m     ⚠️   [93m[unknown_run_6b95f756-3e41-4a9c-952b-b9db4d0994f9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:47:49][0m     ⚠️   [93m[unknown_run_bce39751-9f21-4e7f-902b-d9a0661e3600] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:48:06][0m     ⚠️   [93m[unknown_run_50b2470d-1412-43e2-a3fc-b787b26cdc95] Model returned malformed JSON. Attempting recovery...[0m
+[90m[03:56:45][0m     ⚠️   [93m[unknown_run_d34f0adf-1a2a-4efd-be10-96c8c4e2e4e7] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:00:38][0m     ⚠️   [93m[unknown_run_0d8e3d8b-7477-4a98-b619-c71578eba560] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:09:53][0m     ⚠️   [93m[unknown_run_3d2ba069-90f6-4fab-b688-d1f8b978cee5] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:09:58][0m     ⚠️   [93m[unknown_run_3b810e3d-ed7a-4f22-a02f-d1d1db7a9d83] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:10:00][0m     ⚠️   [93m[unknown_run_713845de-674d-47b0-a133-c53884e6196b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:10:19][0m     ⚠️   [93m[unknown_run_a4f333a1-62c8-4b31-88b6-102f06470b7f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:10:23][0m     ⚠️   [93m[unknown_run_09f316b9-8eb7-44e5-a231-07372ff218a3] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:10:32][0m     ⚠️   [93m[unknown_run_130a7bc3-5e0b-43cc-ae2f-2723b3b43348] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:10:33][0m     ⚠️   [93m[unknown_run_147ca25f-5c09-4eda-92bd-5c016ef28390] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:10:54][0m     ⚠️   [93m[unknown_run_a570c401-7d9d-4aa7-a2c6-2280b4d17908] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:11:06][0m     ⚠️   [93m[unknown_run_ae8851f4-2789-4747-92e5-fdfc99636c00] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:11:10][0m     ⚠️   [93m[unknown_run_270dac6d-29d0-4cad-ae8f-ea0f79a204db] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:11:20][0m     ⚠️   [93m[unknown_run_ad73bd58-5f39-46b2-b2ec-15436c232f03] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:11:44][0m     ⚠️   [93m[unknown_run_2810e84a-fbcc-4377-ae00-889ee5f29650] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:11:50][0m     ⚠️   [93m[unknown_run_b6342318-b619-4873-8cc6-b3d8ea6952a8] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:12:05][0m     ⚠️   [93m[unknown_run_4140a276-3242-4862-9373-aabc9a718afc] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:12:13][0m     ⚠️   [93m[unknown_run_85a4a893-33e2-4023-a0f1-97cd8e27cc9e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:12:27][0m     ⚠️   [93m[unknown_run_ca4c29dc-8458-42fe-9530-f79e1c44f632] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:12:30][0m     ⚠️   [93m[unknown_run_1218784b-77bc-45ee-a27c-e5d45b70e85b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:14:00][0m     ⚠️   [93m[unknown_run_4fdba8ad-d184-4d2f-9089-d31a7ca613bc] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:14:04][0m     ⚠️   [93m[unknown_run_8083edbc-289d-45e9-b746-814aff427351] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:14:05][0m     ⚠️   [93m[unknown_run_dc523df3-6617-4937-a53c-038eb31b04b3] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:14:08][0m     ⚠️   [93m[unknown_run_0eb57963-4718-4b71-8839-091a872d2b3c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:14:08][0m     ⚠️   [93m[unknown_run_824c4bc6-2fc6-429d-b815-20e58b623903] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:14:10][0m     ⚠️   [93m[unknown_run_1d9df617-288e-4b19-9283-dcfdb49681f3] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:14:11][0m     ⚠️   [93m[unknown_run_d91be1db-fc58-4e60-b20d-f8c9c5407b50] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:14:12][0m     ⚠️   [93m[unknown_run_3a08bab1-34ca-4e29-8643-c00e4243b808] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:14:26][0m     ⚠️   [93m[unknown_run_c4b6a62d-edd6-43c1-85e7-94594bf3b0ea] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:14:33][0m     ⚠️   [93m[unknown_run_66ab3481-4ffc-433a-8d91-7bb4352bc39d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:14:44][0m     ⚠️   [93m[unknown_run_0f17fe3e-6d45-4cf6-9b84-4d229c8c497b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:14:53][0m     ⚠️   [93m[unknown_run_550fe2e7-2a12-451b-b23b-ac675b4521f1] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:15:00][0m     ⚠️   [93m[unknown_run_4600c76e-af23-4d1b-b321-e3d19f19910a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:15:04][0m     ⚠️   [93m[unknown_run_54c08b3e-9923-41c8-8cde-b0bae919e1e4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:15:04][0m     ⚠️   [93m[unknown_run_131e5eeb-67d9-46bc-adae-5cc196b9d1d0] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:15:06][0m     ⚠️   [93m[unknown_run_2a590290-f733-420c-992c-c02aa25189e0] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:15:08][0m     ⚠️   [93m[unknown_run_c0a2ba3b-6e82-4401-b26e-088518caec5c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:15:28][0m     ⚠️   [93m[unknown_run_e6fdd3e7-f63e-4bdd-8070-ff8b9e801f5e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:15:39][0m     ⚠️   [93m[unknown_run_12f7510c-6704-4849-ad8e-6392ffa9ad4c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:15:53][0m     ⚠️   [93m[unknown_run_a55def6e-1bbe-4a66-b9a3-57fcc318722f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:15:53][0m     ⚠️   [93m[unknown_run_ee4fbefa-bc11-409a-ada5-d40e1bcf581f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:15:59][0m     ⚠️   [93m[unknown_run_9de4fb00-fceb-4937-9e75-8542ec0c80dc] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:16:08][0m     ⚠️   [93m[unknown_run_8afb4578-ec60-470f-b0e0-04be9f946b28] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:16:24][0m     ⚠️   [93m[unknown_run_19c0bd75-3ab3-4dd7-8be5-f9fe8c32743a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:16:43][0m     ⚠️   [93m[unknown_run_6c437dd2-6dd0-4d5a-8a26-d9aa5c9c54b7] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:16:43][0m     ⚠️   [93m[unknown_run_0c703189-d4b6-43a5-815a-7b4d61fb52c7] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:16:44][0m     ⚠️   [93m[unknown_run_e720d358-dbb0-43f6-924f-c67aea756603] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:16:44][0m     ⚠️   [93m[unknown_run_57c4e414-5573-4b2e-bc0b-0a15fc0c4fb2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:17:06][0m     ⚠️   [93m[unknown_run_cac98233-6349-462a-b1bc-f1e382b8bcf6] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:17:07][0m     ⚠️   [93m[unknown_run_efdde5e7-bcb9-4ff8-a870-696aa4d6af2b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:17:13][0m     ⚠️   [93m[unknown_run_a4c5e431-e630-47d8-aedd-ed9376c674e4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:17:14][0m     ⚠️   [93m[unknown_run_d9c1780b-509e-4928-be17-7f98c2293f6c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:17:18][0m     ⚠️   [93m[unknown_run_9342d5ee-67b4-40b4-babf-dc9a84b6d0a7] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:17:18][0m     ⚠️   [93m[unknown_run_2b182ba6-2e22-4af1-9e35-87bd5b4f0f39] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:17:23][0m     ⚠️   [93m[unknown_run_30132413-42d6-4b1c-88c0-dc479b121571] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:17:29][0m     ⚠️   [93m[unknown_run_b99dfd3f-a65b-46e0-a2cf-342ebc3de19a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:17:35][0m     ⚠️   [93m[unknown_run_2c84c054-585a-4eac-a5f0-58ac48571c3a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:17:49][0m     ⚠️   [93m[unknown_run_f11b6939-afb4-4488-b427-efd9e361d47b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:17:50][0m     ⚠️   [93m[unknown_run_5623d67b-a8c0-4a90-94db-212e0189e40b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:18:37][0m     ⚠️   [93m[unknown_run_5485d447-e389-4148-a2f6-65b335b04bcb] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:18:37][0m     ⚠️   [93m[unknown_run_9c1e536f-e661-4267-9206-6a2722426f2e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:18:50][0m     ⚠️   [93m[unknown_run_ac3095ff-4a1e-4031-bec9-bbb3508e0bf4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:18:55][0m     ⚠️   [93m[unknown_run_5f202cf4-3571-4e50-887c-7916684bb739] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:19:02][0m     ⚠️   [93m[unknown_run_fb914464-0a1c-4ab7-b4b7-353785bdb651] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:19:03][0m     ⚠️   [93m[unknown_run_ada70dc2-6510-4d7f-a587-e665a8362971] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:19:26][0m     ⚠️   [93m[unknown_run_516930e7-5927-4251-a744-715fec44385d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:19:26][0m     ⚠️   [93m[unknown_run_45834999-9978-4773-be5b-19c9e4512db2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:19:26][0m     ⚠️   [93m[unknown_run_a5c65f34-d3d0-403b-a91b-94761ccf3ea9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:19:36][0m     ⚠️   [93m[unknown_run_0476f776-7ec7-41b1-9a76-0317c225c5b8] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:19:38][0m     ⚠️   [93m[unknown_run_661abdf9-648e-4bc8-9ea6-87ad4839d140] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:19:38][0m     ⚠️   [93m[unknown_run_4a29d389-ea2f-404d-97e9-6be82636596b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:19:38][0m     ⚠️   [93m[unknown_run_c5a4b6f0-7f31-4e31-a4ba-e5f2fb27e81a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:19:38][0m     ⚠️   [93m[unknown_run_d71c2f91-bdae-4ae0-b186-b0a307df84c5] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:19:44][0m     ⚠️   [93m[unknown_run_6c1a0069-1e0c-4c18-8e44-611fd2d754b8] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:19:48][0m     ⚠️   [93m[unknown_run_7bc77d59-b392-4c76-a2b9-34b68941111d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:20:06][0m     ⚠️   [93m[unknown_run_d8bf2e73-66b6-41b6-b547-fa1010086aa6] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:20:35][0m     ⚠️   [93m[unknown_run_a9a7926f-0d39-49bb-a8e3-f653177d290f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:20:47][0m     ⚠️   [93m[unknown_run_5853b41d-e610-4cc5-95fe-7013ecc55751] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:20:47][0m     ⚠️   [93m[unknown_run_19ee50de-01f8-40cd-8fc0-124064b409e6] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:21:05][0m     ⚠️   [93m[unknown_run_468e0364-4469-4925-98fa-bac333d946d8] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:21:06][0m     ⚠️   [93m[unknown_run_09be0000-bb1b-46c4-810c-283417ad4250] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:21:06][0m     ⚠️   [93m[unknown_run_ec4e7e3f-6e5b-4e73-baab-f81a8843a362] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:21:12][0m     ⚠️   [93m[unknown_run_1a8854ab-d3b7-4b1b-9d6f-d9b0ff3f83a5] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:21:16][0m     ⚠️   [93m[unknown_run_698c386a-75d7-46aa-9372-c53246e9d9bd] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:21:17][0m     ⚠️   [93m[unknown_run_a2b68a7a-f668-49f1-a508-dbe85ba19724] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:21:18][0m     ⚠️   [93m[unknown_run_3fc49291-8f39-46c8-ae73-84dd5cd263a6] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:21:20][0m     ⚠️   [93m[unknown_run_233d22c4-2588-4488-bf6f-6f66a29b3573] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:21:23][0m     ⚠️   [93m[unknown_run_f4dd8880-740f-47a1-b3f8-eda720649fd0] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:21:30][0m     ⚠️   [93m[unknown_run_a0c8b369-a0e4-460e-8f1a-9692d97cc085] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:21:36][0m     ⚠️   [93m[unknown_run_3cb99fc8-39cd-4fee-9933-9b599a49b89d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:21:44][0m     ⚠️   [93m[unknown_run_00c50b9a-1203-4db9-8a00-7f2112e5ea4e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:39:01][0m     ⚠️   [93m[unknown_run_46cea120-a8c4-4d3b-a239-1ca96b35f578] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:39:02][0m     ⚠️   [93m[unknown_run_af3fd2df-714b-4cb0-9599-7d94d4aff783] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:39:30][0m     ⚠️   [93m[unknown_run_54d11fdc-b515-4b0e-b724-ff4653ecc4d8] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:39:43][0m     ⚠️   [93m[unknown_run_aae6ce5c-f041-4184-bca9-3a84584a4c8c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:40:05][0m     ⚠️   [93m[unknown_run_6145bc48-9fc1-4ea3-83ea-95b65831ef37] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:40:50][0m     ⚠️   [93m[unknown_run_3aa16d41-0b48-4e84-9511-40451ccad072] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:41:07][0m     ⚠️   [93m[unknown_run_efb17db5-3927-4ce3-97c2-77899eb95f99] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:41:45][0m     ⚠️   [93m[unknown_run_668f2af9-3bcf-4cf2-a492-63c7a229a271] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:41:50][0m     ⚠️   [93m[unknown_run_60a33144-14cc-4a6d-a65c-df6b1b8d751d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:41:55][0m     ⚠️   [93m[unknown_run_86f897e0-9412-453b-b89c-46da3b042185] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:42:07][0m     ⚠️   [93m[unknown_run_564330b0-6b86-46df-bb0e-511020042a3f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:42:19][0m     ⚠️   [93m[unknown_run_bd5423f4-3d6f-45b6-a8a4-89b534d55c79] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:42:51][0m     ⚠️   [93m[unknown_run_935eff52-9368-4e9e-9703-c603843498a2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:43:17][0m     ⚠️   [93m[unknown_run_dac68bea-52f7-482f-b329-8ebe0acaec39] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:45:37][0m     ⚠️   [93m[unknown_run_876ef533-639f-4d6e-bffb-bb5206af8303] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:46:34][0m     ⚠️   [93m[unknown_run_d6b6bc2c-3931-493d-976b-df815860629d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:47:31][0m     ⚠️   [93m[unknown_run_6229918c-dabe-44ff-bd29-8251faf46a2e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:48:31][0m     ⚠️   [93m[unknown_run_b83fac73-3dd1-4833-9097-d73a7c460423] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:50:04][0m     ⚠️   [93m[unknown_run_c189591c-3974-47a0-8a7a-86618888cb88] Model returned malformed JSON. Attempting recovery...[0m
+[90m[04:50:29][0m     ⚠️   [93m[unknown_run_a8c34fa2-306b-4c9a-9f69-f67959d0bba1] Model returned malformed JSON. Attempting recovery...[0m
+  💥 [CLAI] judgebench_sota | 6f6c5fd25711
+  💥 [CLAI] scratchpad_aware | 6f6c5fd25711
+  💥 [CLAI] paranoid | 6f6c5fd25711
+  💥 [CLAI] lenient | 6f6c5fd25711
+  💥 [CLAI] manager_aligned | 6f6c5fd25711
+  💥 [CLAI] ablation_noise | 6f6c5fd25711
+[90m[04:53:18][0m     ⚠️   [93m[unknown_run_12158c2a-2e68-46cf-80e4-2e221294186a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:05:54][0m     ⚠️   [93m[unknown_run_5f49247c-4fb3-4fbf-a49b-8a63660c5d3b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:06:05][0m     ⚠️   [93m[unknown_run_4423da23-f72d-4b82-993e-399442e0297f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:06:27][0m     ⚠️   [93m[unknown_run_d350e99e-2501-4470-8a4d-71ad68a004e8] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:06:57][0m     ⚠️   [93m[unknown_run_3a84c276-4f29-4a0f-8139-b958b00119f4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:08:12][0m     ⚠️   [93m[unknown_run_684967ae-9d57-4dfc-8ada-a650f69c43ba] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:08:23][0m     ⚠️   [93m[unknown_run_34e1930b-9276-45fb-8d17-4ca0b3b5df77] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:08:35][0m     ⚠️   [93m[unknown_run_405b7912-57eb-4197-8490-f31796ae8824] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:08:45][0m     ⚠️   [93m[unknown_run_14d6a6ba-816b-46a9-afd0-1b263a5336a5] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:09:52][0m     ⚠️   [93m[unknown_run_6d74f72d-667e-4e86-a713-55045e57a4ff] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:10:08][0m     ⚠️   [93m[unknown_run_095b0e10-cbe1-4c73-94f0-4942885f65c5] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:10:08][0m     ⚠️   [93m[unknown_run_ff216d0a-a2c2-4caf-88fe-90fecc2955c4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:10:25][0m     ⚠️   [93m[unknown_run_6d8ca4c2-b42a-4511-b9b9-3fea078151b6] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:11:15][0m     ⚠️   [93m[unknown_run_9efde2f1-d71d-4b6b-9fdd-8a1b3810e6f5] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:11:15][0m     ⚠️   [93m[unknown_run_ea3aaf69-6719-465c-a040-bdc028e36771] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:11:17][0m     ⚠️   [93m[unknown_run_3433b2f6-7026-4899-8d16-8fe8bc05bb6a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:11:31][0m     ⚠️   [93m[unknown_run_19a20bc2-e8f0-4ae0-be1f-6c547b161132] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:11:51][0m     ⚠️   [93m[unknown_run_71c37970-45e7-47cd-a637-e901bcc15835] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:12:20][0m     ⚠️   [93m[unknown_run_767587f1-c406-4422-b022-1073a7880ec4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:12:24][0m     ⚠️   [93m[unknown_run_bfb4ad40-ab5f-42b8-bce3-f58ee163162c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:13:02][0m     ⚠️   [93m[unknown_run_662de626-e84b-4428-aa83-75055c1d918e] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:13:15][0m     ⚠️   [93m[unknown_run_860213a0-6d6e-414a-a913-35a35e0321f4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:13:17][0m     ⚠️   [93m[unknown_run_99035ee8-c165-402e-82e7-ca33a722cada] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:13:44][0m     ⚠️   [93m[unknown_run_27ef1b74-ea04-4d00-af46-e6d0a6c63c44] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:14:18][0m     ⚠️   [93m[unknown_run_40bb6706-2e94-441d-83e8-7cb895660805] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:15:03][0m     ⚠️   [93m[unknown_run_c0372ee0-6bac-4501-a509-7f8b007260f5] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:15:24][0m     ⚠️   [93m[unknown_run_69e86648-c871-40cf-8659-6ee86abd8727] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:15:34][0m     ⚠️   [93m[unknown_run_b4ee54ee-0ff6-4b35-8160-f6df77d91868] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:15:36][0m     ⚠️   [93m[unknown_run_2b3c2661-d912-4708-803a-ea372f331c95] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:15:44][0m     ⚠️   [93m[unknown_run_4cf87286-5d0c-494c-a169-cff138baad05] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:16:05][0m     ⚠️   [93m[unknown_run_132f824e-21eb-439f-9047-feb5aa30d764] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:20:42][0m     ⚠️   [93m[unknown_run_6ac64a00-98b2-410b-a4be-adab0c6084ee] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:21:00][0m     ⚠️   [93m[unknown_run_713f74a3-13db-4801-870b-fc323373febe] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:21:03][0m     ⚠️   [93m[unknown_run_7a39b1c3-e9eb-4996-85ac-9f1af3c98f6a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:21:35][0m     ⚠️   [93m[unknown_run_29b0c0d1-a27e-43b3-9f0a-922e2402cd2c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:21:39][0m     ⚠️   [93m[unknown_run_f065a87e-8b4e-4d95-9e80-5aa8316d64fc] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:21:44][0m     ⚠️   [93m[unknown_run_3144e86f-fa08-4eaf-952c-d5a798f15d28] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:21:55][0m     ⚠️   [93m[unknown_run_89b47187-b163-4d38-904d-7b80bc906f74] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:21:57][0m     ⚠️   [93m[unknown_run_f506c6fe-3f34-489d-81f1-9fe6d875c373] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:22:17][0m     ⚠️   [93m[unknown_run_30a92e11-bda9-4e86-9a31-8a65913dc8da] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:22:41][0m     ⚠️   [93m[unknown_run_3b5bd73e-b2b1-4623-8b8e-c0644d2d84b9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:22:57][0m     ⚠️   [93m[unknown_run_f1d7c8cd-2585-493f-875f-a29fcc48645c] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:22:58][0m     ⚠️   [93m[unknown_run_20010368-aab4-4713-88a3-abdca6f19e83] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:23:01][0m     ⚠️   [93m[unknown_run_7cb6b0c2-49db-4183-96d5-f53ae68467dd] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:23:06][0m     ⚠️   [93m[unknown_run_d06cc613-2b55-4c21-b633-3dab29a7cd82] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:23:20][0m     ⚠️   [93m[unknown_run_e479df14-763f-4848-9c3b-672bd9beaf9f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:23:21][0m     ⚠️   [93m[unknown_run_c9729558-a2ba-4629-a8a4-da230f311b6a] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:23:30][0m     ⚠️   [93m[unknown_run_2d47e354-27d4-405a-bd33-74a7eea9af03] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:23:31][0m     ⚠️   [93m[unknown_run_0cdbfd01-d6c9-44fc-b452-50872650be6d] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:24:16][0m     ⚠️   [93m[unknown_run_88146c3a-7b20-4b95-87a2-cb9f561fcdbb] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:24:20][0m     ⚠️   [93m[unknown_run_d90650c2-1e8f-412e-9917-d4ca68039398] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:24:25][0m     ⚠️   [93m[unknown_run_cf1f4f1c-76f1-4fa0-9f06-620ee1555d02] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:24:48][0m     ⚠️   [93m[unknown_run_1b0561d1-f9e6-4508-b55a-ac0d9a88ea0f] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:25:18][0m     ⚠️   [93m[unknown_run_7c560711-e2b5-4ec2-927a-ad5b54a9f1c9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:25:46][0m     ⚠️   [93m[unknown_run_ff710279-c4c6-45d3-992e-54403f338d37] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:25:46][0m     ⚠️   [93m[unknown_run_4248316e-ef13-43ac-a882-f10ad73ede53] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:26:05][0m     ⚠️   [93m[unknown_run_b2816667-dadd-4ed0-bd90-fb02603514c4] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:26:05][0m     ⚠️   [93m[unknown_run_450b368d-3b64-4384-a264-4beba5502dd9] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:26:06][0m     ⚠️   [93m[unknown_run_d5a5c0bf-7777-48ba-b184-c5d7ca1487cb] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:26:41][0m     ⚠️   [93m[unknown_run_072027d9-9d40-4866-9080-c7acd714aa37] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:28:15][0m     ⚠️   [93m[unknown_run_e72dc7e6-c217-4f17-9baf-861caeac94b2] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:28:19][0m     ⚠️   [93m[unknown_run_04285d38-5fb4-49f4-92c9-a02706a0f0fc] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:28:29][0m     ⚠️   [93m[unknown_run_bc224fae-0177-4241-a46f-721fbea5c689] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:28:39][0m     ⚠️   [93m[unknown_run_3e521727-6b43-45a2-ba9d-10ae3192d9a8] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:28:51][0m     ⚠️   [93m[unknown_run_b61f0830-c167-471c-a4da-8ac3f51b279b] Model returned malformed JSON. Attempting recovery...[0m
+[90m[05:29:05][0m     ⚠️   [93m[unknown_run_5705ba5a-e791-4f3a-857c-87b3fd4469c7] Model returned malformed JSON. Attempting recovery...[0m
+
+✅ Audit complete! Data saved to run_20260522_152239_dataset_20260521_192859
+
+Verifying denominator conservation...
+✅ Denominator conserved. 100% of tasks accounted for.
+📊 Generate dashboard now? (Y/n): y

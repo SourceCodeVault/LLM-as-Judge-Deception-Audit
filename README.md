@@ -461,7 +461,7 @@ This study uses the Apollo Research insider-trading deception corpus as Line 1 s
 git clone https://github.com/ApolloResearch/insider-trading data/raw/ApolloResearch
 ​```
 
-The repository ships with the **1,200-case pilot selection** used for the registered pilot (`data/raw_index.json` plus the manifest in `input/`). To reproduce the pilot run, you do not need to regenerate the selection — it is deterministically committed at the v1.0-prereg tag.
+The repository ships with the **1,200-case pilot selection** used for the registered pilot (`data/raw_index.json` is rebuildable via `select_pilot.py --rebuild-index` command, plus the manifests stored in the subfolders within `input/`). To reproduce the pilot run, you do not need to regenerate the selection — it is deterministically committed at the v1.0-prereg tag.
 
 ---
 
