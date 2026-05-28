@@ -868,6 +868,18 @@ The NLTK AnnotationTask library, used to compute `Krippendorff's α` via MASI di
 
 Consequently, the library attempted to measure agreement between the cases rather than between the runs, resulting in total observed disagreement and collapsing the $\alpha$ calculation to zero.The tuple mapping was corrected to properly designate the runs as coders and the cases as items. 
 
-Upon rerunning the script with the corrected mapping, Krippendorff's α successfully computed the actual rule-set agreement 
+Upon rerunning the script with the corrected mapping, Krippendorff's α computed the actual rule-set agreement: α = 0.238 (MASI distance, k = 6, n = 297). A note on the set-valued metric: the MASI wrapper scores two empty rule-sets as identical (distance 0), so cases in which no rule fired in any run are counted as agreement. This convention can only raise α, so the reported value is an upper bound on rule-citation agreement and the low-agreement finding it supports is not inflated by it.
 
 This bug was strictly limited to the post-hoc analytical script used to measure `Krippendorff's alpha`. It did not affect the pipeline execution, the LLM inferences, the prompt templates, or the resulting raw JSON data. The correction simply ensures that the reporting metrics accurately reflect the empirical reality of the generated dataset.
+
+#### Additional disclosure: post-hoc Rule Flicker Diagnostic (exploratory)
+
+The same patch that corrected the α tuple mapping also added a post-hoc diagnostic to `tools/compute_stability.py`: a per-rule "flicker" tabulation (`compute_rule_flicker`), surfaced as section 03 of `stability_report.html` and as the `rule_flicker_stats` block of `stability_report.json`. For each policy rule it records, across the `k = 6` test-retest observations, the number of cases in which the rule fired in every valid run (unanimous) versus a strict subset (flickering), and the resulting per-rule instability percentage.
+
+This diagnostic is exploratory and was not pre-registered. 
+
+It defines no acceptance threshold, enters no decision rule, and tests no pre-registered hypothesis (H1, H2, or the §11 ICC ≥ 0.80 gate). It is a descriptive decomposition of the same rules_fired data already used by the pre-registered `Krippendorff's α`, provided to characterise which rules drive the low rule-citation agreement. 
+
+Any use in the manuscript is confined to discussion and labelled post-hoc; the headline reliability claim rests solely on the pre-registered `ICC`, `Krippendorff's α`, and `Cohen's κ`.
+
+The flicker code was present in the reporting framework locked at `v1.2-reporting-framework (git v22)` but was not exercised there; the diagnostic is first computed and reported in the `v1.3-pilot-results` deposit, and is disclosed here alongside that first use, so that a non-pre-registered metric does not appear in a deposited artefact without a corresponding entry in this amendment log.
