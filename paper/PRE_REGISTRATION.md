@@ -1,5 +1,5 @@
 # Experimental Pre-Registration: Correspondence Auditor Validation
-**Pragmatic Preprint, v21** · Adrian St. Vaughan
+**Pragmatic Preprint, v22** · Adrian St. Vaughan
 
 ---
 
@@ -853,3 +853,21 @@ A reviewer can verify the integrity of the §5 numbers via the following determi
 5. Run `tools/l3_gate_b_irr_tester.py` against the v1.1 headline manifest and verify the emitted (Case ID, Claim) tuples in `gate_b_answer_key.csv` match the (Case ID, Claim) tuples in the preserved human-annotated artefact — sample-equivalence (rather than byte-identity, since the annotated artefact carries human marks not present in a fresh emit) is the pass condition.
 
 The headline §5 numbers appearing in the paper are the outputs of steps 2 and 4. Steps 3 and 5 are the independent integrity checks.
+
+## v22 — Stability Script Correction
+
+### Status
+
+During the execution of the pre-registered test-retest reliability protocol, an anomaly was identified in the post-hoc evaluation scripts (`compute_stability.py`). While the binary outcome metrics (`ICC(2,1`) and `Cohen's κ`) returned expected values indicating high stability, `Krippendorff's α` (measuring rule-citation stability) returned exactly `-0.000`.
+
+#### Investigation and Resolution
+
+A diagnostic review confirmed that the underlying data was not degenerate; rule variations were actively occurring across runs. The error was traced to a data-formatting mismatch in the Python evaluation script. 
+
+The NLTK AnnotationTask library, used to compute `Krippendorff's α` via MASI distance, strictly expects input tuples formatted as (`coder, item, label`). The initial script incorrectly passed the tuples as (`item, coder, label`)—transposing the "runs" and the "cases".
+
+Consequently, the library attempted to measure agreement between the cases rather than between the runs, resulting in total observed disagreement and collapsing the $\alpha$ calculation to zero.The tuple mapping was corrected to properly designate the runs as coders and the cases as items. 
+
+Upon rerunning the script with the corrected mapping, Krippendorff's α successfully computed the actual rule-set agreement 
+
+This bug was strictly limited to the post-hoc analytical script used to measure `Krippendorff's alpha`. It did not affect the pipeline execution, the LLM inferences, the prompt templates, or the resulting raw JSON data. The correction simply ensures that the reporting metrics accurately reflect the empirical reality of the generated dataset.
