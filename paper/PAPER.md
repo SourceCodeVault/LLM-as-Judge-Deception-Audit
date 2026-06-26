@@ -10,6 +10,9 @@ https://doi.org/10.5281/zenodo.20427241
 v1.3-pilot-results
 https://doi.org/10.5281/zenodo.20427306
 
+v2.0-preprint
+https://doi.org/10.5281/zenodo.20921659
+
 ---
 
 ## 1. Abstract

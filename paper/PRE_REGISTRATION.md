@@ -856,7 +856,7 @@ The headline §5 numbers appearing in the paper are the outputs of steps 2 and 4
 
 ## v22 - Post-Hoc Disclosures
 
-### Status
+### Test-retest Reliability
 
 During the execution of the pre-registered test-retest reliability protocol, an anomaly was identified in the post-hoc evaluation scripts (`compute_stability.py`). While the binary outcome metrics (`ICC(2,1`) and `Cohen's κ`) returned expected values indicating high stability, `Krippendorff's α` (measuring rule-citation stability) returned exactly `-0.000`.
 
@@ -872,7 +872,7 @@ Upon rerunning the script with the corrected mapping, Krippendorff's α computed
 
 This bug was strictly limited to the post-hoc analytical script used to measure `Krippendorff's alpha`. It did not affect the pipeline execution, the LLM inferences, the prompt templates, or the resulting raw JSON data. The correction simply ensures that the reporting metrics accurately reflect the empirical reality of the generated dataset.
 
-## Additional disclosure: post-hoc Rule Flicker Diagnostic (exploratory)
+### Additional disclosure: post-hoc Rule Flicker Diagnostic (exploratory)
 
 The same patch that corrected the α tuple mapping also added a post-hoc diagnostic to `tools/compute_stability.py`: a per-rule "flicker" tabulation (`compute_rule_flicker`), surfaced as section 03 of `stability_report.html` and as the `rule_flicker_stats` block of `stability_report.json`. For each policy rule it records, across the `k = 6` test-retest observations, the number of cases in which the rule fired in every valid run (unanimous) versus a strict subset (flickering), and the resulting per-rule instability percentage.
 
@@ -884,7 +884,7 @@ Any use in the manuscript is confined to discussion and labelled post-hoc; the h
 
 The flicker code was present in the reporting framework locked at `v1.2-reporting-framework (git v22)` but was not exercised there; the diagnostic is first computed and reported in the `v1.3-pilot-results` deposit, and is disclosed here alongside that first use, so that a non-pre-registered metric does not appear in a deposited artefact without a corresponding entry in this amendment log.
 
-## Additional disclosure: H1 Family Whitelist Enforcement & Integrity Validation
+### Additional disclosure: H1 Family Whitelist Enforcement & Integrity Validation
 
 *Scope:* `tools/build_dashboard.py` and `tools/validate_dashboard.py`
 
@@ -897,7 +897,7 @@ The flicker code was present in the reporting framework locked at `v1.2-reportin
 
 This patch touches no pipeline execution logic and modifies no raw telemetry; it simply enforces the pre-registered statistical scope at the reporting layer.
 
-## Additional disclosure: Analysis & Reporting Tools
+### Additional disclosure: Analysis & Reporting Tools
 
 **tools/score_gate_b_irr.py**
 
