@@ -20,7 +20,9 @@ python tools/compute_stability.py \
   --rerun-dir output/run_20260525_234223_arm04b_testretest_reruns_x5_300 \
   --seed-dir  output/run_20260525_205154_arm04a_testretest_seed_300 \
   --gate-b-key output/run_20260522_152239_arm01_main_pilot_1200/IRR/gate_b_human_annotations_minimal_FINAL.csv \
-  --output-dir output/stability_k6_report
+  --output-dir output/run_20260522_152239_arm01_main_pilot_1200
+
+
 
 """
 from __future__ import annotations

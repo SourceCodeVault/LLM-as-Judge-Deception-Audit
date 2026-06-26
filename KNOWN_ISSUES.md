@@ -1,6 +1,6 @@
 # Known Issues — Correspondence Auditor v1.0-prereg
 
-Snapshot taken at v1.0-prereg. Subsequent amendments (v17, v18, v19) address several listed items; see `paper/PRE_REGISTRATION.md` amendment trail.
+Snapshot taken at v1.0-prereg. Subsequent amendments (including v17, v18, v19, and v22) address several listed items; see `paper/PRE_REGISTRATION.md` amendment trail for the final resolutions.
 
 ## Introduction
 
@@ -72,9 +72,9 @@ All critical issues identified pre-tag were resolved per pre-reg §6.1 (see `pap
 **M8. Granular sub-rule citation jitter (Krippendorff's α anomaly) under noise**
 
 * **Location:** `compute_stability.py` outputs under `ABLATION_NOISE` arm
-* **Issue:** Test-retest evaluations yield perfect macro-stability ($\text{ICC} = 1.000$, Cohen's $\kappa = 1.000$) but flatline at Krippendorff's $\alpha \approx -0.010$. This is a metric pathology driven by granular citation drift: while the LLM's final categorical judgments and quadrant assignments are completely stable across reruns, the specific permutations of underlying sub-rules used to construct the text justification display high jitter when processing noisy inputs.
-* **Fix:** Document behavioral limitations in the final report template. Adjust the framework to favor macro-quadrant groupings over specific sub-rule distributions for headline hypothesis testing.
-* **Will be addressed in:** v1.1
+* **Issue:** Test-retest evaluations initially flatlined at Krippendorff's α ≈ -0.000. 
+* **Fix (Applied in v22):** This was diagnosed not as a metric pathology, but as a data-formatting mismatch in the NLTK library (passing `item, coder, label` instead of the required `coder, item, label`). The tuple mapping was corrected in the v22 methodology amendment, successfully resolving the metric to its true upper bound (α = 0.238).
+* **Status:** Resolved in post-hoc analysis (`v1.2-reporting-framework`).
 
 **M9. Lack of explicit thread-safety block on `log_token_cost` appends**
 

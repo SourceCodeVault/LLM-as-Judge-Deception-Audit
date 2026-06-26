@@ -2,7 +2,14 @@
 
 An open-source, high-integrity audit layer that sits **downstream** of any LLM-as-Judge pipeline. The Auditor is a Line 3 instrument: it does not try to be a better judge. It records what the judge was given, what the judge concluded, and whether those two things are reconcilable against the policy.  
 
-This repository is the frozen experimental artefact for "Auditing LLM-as-Judge Pipelines: A Source-Grounded Instrument for Detecting Strategic-Deception Blindspots" (St. Vaughan, 2026; software deposit DOI 10.5281/zenodo.20326022). For the actively maintained tool, see [Correspondence Auditor](https://github.com/SourceCodeVault/Correspondence-Auditor). Issues against this code go to `KNOWN_ISSUES.md` and will be addressed in the main repo, not here.
+This repository is the frozen experimental artefact for "Auditing LLM-as-Judge Pipelines: A Source-Grounded Instrument for Detecting Strategic-Deception Blindspots" (St. Vaughan, 2026; methodology deposit DOI 10.5281/zenodo.20326022). **This codebase represents the v2.0 release.**
+
+**Permanent Archive Links:**
+* v1.2-reporting-framework: https://doi.org/10.5281/zenodo.20427241
+* v1.3-pilot-results: https://doi.org/10.5281/zenodo.20427306
+
+For the actively maintained tool, see [Correspondence Auditor](https://github.com/SourceCodeVault/Correspondence-Auditor). Issues against this code go to `KNOWN_ISSUES.md` and will be addressed in the main repo, not here.
+
 ---
 
 ## The Problem  
@@ -215,14 +222,14 @@ When running **Test-Retest** mode, the pipeline generates a `stability_report.js
    ```bash
    ls output/
    # Example output:
-   # run_20250601_main_grid/        <- Main run (1200 cases)
-   # run_20250603_test_retest/     <- Test-retest run (300 cases × 5)
+   # run_20260522_main_grid/        <- Main run (1200 cases)
+   # run_20260523_test_retest/     <- Test-retest run (300 cases × 5)
    ```
 
 3. **Copy the stability report to the main run directory:**
    ```bash
-   cp output/run_20250603_test_retest/stability_report.json \
-      output/run_20250601_main_grid/stability_report.json
+   cp output/run_20260523_test_retest/stability_report.json \
+      output/run_20260522_main_grid/stability_report.json
    ```
 
 4. **Generate the dashboard:**
@@ -560,7 +567,9 @@ Working production code. The core concepts have been battle tested in production
 
 This codebase is released with a **pre-registered methodology** documented in [paper/PRE_REGISTRATION.md](paper/PRE_REGISTRATION.md). The v1.0-prereg tag deposits the methodology as initially registered; mid-pilot amendments (v13 through v21) are recorded within the document under the pre-registration discipline, each with rationale and disclosure.
 
-**Pilot status (v21, reporting-framework lock):** Data collection is complete across all four pre-registered arms — the headline 1,200-case main grid (Z01–Z05), the Z07 same-model control (n=150), the §4.5 entity-perturbation canary, and the §11 test-retest (seed pass + 5 reruns on the ablation arm). The Gate B inter-rater-reliability annotation (§4.6) is complete. The analysis and reporting tooling is locked at this tag (Zenodo `v1.2-reporting-framework`) ahead of extracting the headline §5 numbers into the paper — the timestamp separation between reporting-code lock and results lock is recorded in the v21 amendment. All analysis decisions (thresholds, metrics, inclusion criteria) remain locked at v1.0-prereg; amendments through v21 are reported in the pre-registration amendment trail and flagged exploratory where applicable.
+**Pilot status (Finalized):** Data collection is complete across all four pre-registered arms—the headline 1,200-case main grid (Z01–Z05), the Z07 same-model control (n=150), the §4.5 entity-perturbation canary, and the §11 test-retest (seed pass + 5 reruns on the ablation arm). The Gate B inter-rater-reliability annotation (§4.6) is complete. The analysis and reporting tooling is locked (Zenodo `v1.2-reporting-framework`), and the final results have been deposited (Zenodo `v1.3-pilot-results`). 
+
+All analysis decisions (thresholds, metrics, inclusion criteria) remain locked at v1.0-prereg. Amendments through **v22 (Post-Hoc Disclosures)** are reported in the pre-registration amendment trail. Notably, v22 documents a critical tuple-mapping correction for the `Krippendorff's α` diagnostic, ensuring that rule-set stability metrics accurately reflect empirical agreement boundaries.
 
 ---
 
@@ -579,7 +588,9 @@ If you use this software or methodology in academic work, please cite:
 }
 ```
 
-The `version` field anchors the citation to the methodology deposit; the code at later tags (e.g. v21 / Zenodo `v1.2-reporting-framework`) extends this with disclosed amendments.
+The `version` field anchors the citation to the methodology deposit. To explicitly cite the finalized reporting framework or the final pilot results, reference the subsequent Zenodo deposits:
+* `v1.2-reporting-framework` (DOI: 10.5281/zenodo.20427241)
+* `v1.3-pilot-results` (DOI: 10.5281/zenodo.20427306)
 
 ---
 

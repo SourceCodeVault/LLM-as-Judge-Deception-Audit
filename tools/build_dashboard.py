@@ -284,9 +284,10 @@ def aggregate(records: list[dict]) -> dict:
     variant_names = {r["variant"]: r.get("variant_name", "") for r in records}
 
     # H1/H2 are pre-registered over the 5 judge variants only.
-    # The ablation arm is reported separately (see §7 of pre-reg).
-    ABLATION_LABELS = {"ABLATION_NOISE", "ABLATION"}
-    variants_main = [v for v in variants if v not in ABLATION_LABELS]
+    # We enforce a strict whitelist so stray runs (Z07, canary) do not silently
+    # inflate the Holm-Bonferroni denominator.
+    H1_WHITELIST = {"Z01", "Z02", "Z03", "Z04", "Z05"}
+    variants_main = [v for v in variants if v in H1_WHITELIST]
 
     by_variant: dict[str, dict] = {}
     for v in variants:
@@ -1078,7 +1079,7 @@ def render_h1_table(h1_pairs: dict, alpha: float = ALPHA) -> str:
                 <th class="text-right">Diff adj p</th>
                 <th class="text-right">TOST raw p</th>
                 <th class="text-right">TOST adj p</th>
-                <th class="text-center">Decision (α={alpha:.2f})</th>
+                <th class="text-center">Decision (α={alpha:.3f})</th>
             </tr></thead>
             <tbody>{''.join(rows)}</tbody>
         </table>
@@ -1354,8 +1355,8 @@ def render_pathology_matrix(records: list[dict], variants: list[str]) -> str:
         <strong>Matrix Guide:</strong> Absolute count of rule firings. The percentage in parentheses represents the rule's share of that specific variant's total errors.
     </p>
     <div class="mt-4 p-3" style="background:#fff; border:1px solid #ddd; font-size:11px; line-height:1.5; color:#333; page-break-inside: avoid; break-inside: avoid;">
-        <strong>Limitation:</strong> In this section, we map our Truth Cartridge rule firings (J, F, U, H rules) to the <em>Psychopathia Machinalis v2.1 </em> nine-axis  taxonomy. This is a light, interpretive treatment designed to align readers on the structural synergy between diagnostic theory and operational telemetry, not a manifesto or definitive classification. The J1/J2/J3 cluster corresponds to syndrome 4.3 (Strategic Compliance) on the Alignment axis; F2 corresponds to syndrome 2.4 (Spurious Pattern Hyperconnection) on the Epistemic axis; and the broader judge-level blindspot the Auditor addresses corresponds to syndrome 3.10 (Leniency Bias). Syndrome references are stable to <em>Psychopathia Machinalis</em> v2.1; full mapping validation requires the scale-up replication.<br><br>
-        <strong>Normative Reference:</strong> <em>Psychopathia Machinalis</em>, Nell Watson &amp; Ali Hessami, 2025.
+        <strong>Limitation:</strong> In this section, we map our Truth Cartridge rule firings (J, F, U, H rules) to the <em>Psychopathia Machinalis v2.2</em> framework. This is a light, interpretive treatment designed to align readers on the structural synergy between diagnostic theory and operational telemetry, not a manifesto or definitive classification. The J1/J2/J3 cluster corresponds to Strategic Compliance (syndrome 4.3, Alignment axis); F2 corresponds to Spurious Pattern Hyperconnection (syndrome 2.4, Epistemic axis); and the broader judge-level blindspot the Auditor addresses corresponds to Leniency Bias (syndrome 4.10, Alignment axis). Syndrome references follow <em>Psychopathia Machinalis</em> v2.2; full mapping validation requires the scale-up replication.<br><br>
+        <strong>Normative Reference:</strong> <em>Psychopathia Machinalis</em>, Nell Watson &amp; Ali Hessami, 2025b.
     </div>
     """
 

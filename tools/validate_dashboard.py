@@ -140,11 +140,43 @@ class DashboardValidator:
         if not discrepancy:
             self._log_pass("Raw flow counts perfectly map to expected Sankey diagram inputs.")
 
+    def check_h1_family_integrity(self):
+        """Cross-check 4: Ensure H1 family strictly contains only the 10 pre-registered pairs."""
+        print(f"\n{Colors.BOLD}--- Running H1 Family Integrity Check ---{Colors.ENDC}")
+        
+        h1_pairs = self.data.get("h1_pairs", {})
+        expected_variants = {"Z01", "Z02", "Z03", "Z04", "Z05"}
+        
+        for bucket in ["CLEAN", "ROGUE"]:
+            pairs = h1_pairs.get(bucket, [])
+            
+            # Assert exactly 10 pairs ( C(5,2) = 10 )
+            if len(pairs) != 10:
+                self._log_error(f"[H1 {bucket}] Found {len(pairs)} pairs instead of the pre-registered 10. The Holm-Bonferroni denominator has been compromised.")
+                
+            # Check that no rogue variants slipped in
+            variants_seen = set()
+            for p in pairs:
+                variants_seen.add(p.get("v1"))
+                variants_seen.add(p.get("v2"))
+                
+            unexpected = variants_seen - expected_variants
+            if unexpected:
+                self._log_error(f"[H1 {bucket}] Unexpected variants found in the equivalence family: {unexpected}")
+                
+            missing = expected_variants - variants_seen
+            if missing:
+                self._log_error(f"[H1 {bucket}] Missing pre-registered variants from the equivalence family: {missing}")
+
+        if not self.errors:
+            self._log_pass("H1 family strictly locked to 10 pairs across Z01-Z05.")
+
     def run_all(self):
         print(f"{Colors.BOLD}Validating Dashboard: {self.json_path.name}{Colors.ENDC}")
         self.check_base_invariants()
         self.check_telemetry_recalculation()
         self.check_sankey_flows()
+        self.check_h1_family_integrity()
         
         print(f"\n{Colors.BOLD}--- Validation Summary ---{Colors.ENDC}")
         if self.errors:

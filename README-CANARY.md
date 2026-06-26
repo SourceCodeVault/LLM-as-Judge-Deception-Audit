@@ -14,7 +14,7 @@ The canary mode compares two runs on the same judge prompt:
 
 By holding the judge prompt constant and only perturbing the entities, any difference in verdict is attributable to the model having seen the original entities during training. The comparison is Z01-verbatim vs Z01-perturbed.
 
-> **Note:** This is distinct from the *structural canary*, which is deferred to a future release. See `paper/PRE_REGISTRATION.md` §4.5 for the registered rationale.
+> **Note:** This is distinct from the *structural canary*, which was formally deferred to Paper 2 following pre-tag quality control. See `paper/PRE_REGISTRATION.md` §4.5 (Amendment v15) for the registered rationale.
 
 ## CANARY_SWAPS
 
