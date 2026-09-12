@@ -1,5 +1,5 @@
 # Experimental Pre-Registration: Correspondence Auditor Validation
-**Pre-Registration v22** · Adrian St Vaughan
+**Pre-Registration v26** · Adrian St Vaughan
 
 ---
 
@@ -19,6 +19,8 @@ Apollo's labelling pipeline is **sequential**: `is_deceptive` is only evaluated 
 This study evaluates the **Correspondence Auditor** (Line 3). The five LLM-as-Judge variants (Z01–Z05) are **not** the instrument under test. They are intentionally heterogeneous Line 2 inputs — toy judges — designed to stress-test the Auditor across a wide range of judge quality and bias. They should not be deployed in production, and we make no claim about their absolute or relative judging quality.
 
 The repository structures the judge stage and the audit stage as separate code modules so that practitioners may substitute their own Line 2 judges. Every pre-registered hypothesis below concerns the behaviour of the Auditor only.
+
+Addendum (v24). The pre-registered description above characterises Z01–Z05 uniformly as "toy judges" not intended for production. The final study (§4.2) refines this into a two-tier design: Z01–Z02 are offered as plausible deployment-style configurations representing current SOTA practice, while Z03–Z05 remain deliberate stress probes. This refinement was made during study execution, after the pre-registration was frozen, to sharpen the ecological-validity claim. The pre-registered text is preserved above without revision; the reader should treat §4.2 as the operative framing.
 
 ### 0.3 The Pragmatic Collapse to Binary Ground Truth
 
@@ -911,11 +913,14 @@ Run: `python tools/score_gate_b_irr.py --key gate_b_answer_key.csv --human gate_
 
 **tools/scan_policy_gaps.py**
 
-Independent Truth-Cartridge gap scanner over a run's audit traces.
-
-What it does: flags `policy.md` literalism leaks (reluctance-quote signatures), Gate C schema- coherence failures (a `BLOCK` with an empty violations array), and auditor breaks (judge correct, Auditor wrong), and correlates them across judge variants.
+Independent Truth-Cartridge gap scanner - when run over a run's audit traces, it identifies:
+* Reluctance leaks: L3 auditor uses excuse language (e.g. "this is only a procedural failure, not a policy violation")
+* Schema crashes: L3 auditor emits BLOCK but lists zero violations — a structural contradiction
+* Auditor breaks: L2 judge answered correctly, but L3 auditor overruled it incorrectly
 
 Output: `policy_gap_report.json` + `.html` in the target run directory. Reported in: §5.8 — the entity-perturbation canary run records zero auditor breaks, zero cross-variant gaps, zero schema crashes under this scan. Run: `python tools/scan_policy_gaps.py` (interactive run picker; or set `AUDIT_RUN_DIR`).
+
+> **Supersession note (v23 / Erratum 1).** The "zero auditor breaks" figure reported above was an artefact of a string-normalization bug in `scan_policy_gaps.py`; see amendment v23 (erratum 1) for the corrected scan (3 auditor breaks, zero schema crashes, zero cross-variant gaps). The substantive pre-registration conclusions are unaffected.
 
 **tools/analyze_rule_bundles.py**
 
@@ -1004,4 +1009,50 @@ Output: `stability_corroboration.json` containing the raw mathematical breakdown
 
 Run: `python tools/compute_binary_stability_corroboration.py --rerun-dir <path> --seed-dir <path> --id-field case_id --raters 6 --icc 0.979 --emit-note --out-json stability_corroboration.json`
 
+
+## v23 — Erratum 1: `scan_policy_gaps.py` normalisation correction (post-hoc disclosure)
+
+**Date:** 2026-08-03 (correction implemented during peer review).
+
+**Status:** Erratum. Scope: reporting-layer tool `tools/scan_policy_gaps.py` (first disclosed in v22). No change to hypotheses, sample size, seed, α_family, decision rule, exclusion rules, or pipeline execution code. `pipeline_version` is not bumped.
+
+**Diagnosis.** Independent verification by Giorgi Tsereteli identified a normalisation bug in this downstream reporting script that undercounted auditor breaks in the §4.5 entity-perturbation (canary) arm: the script compared raw strings against normalised strings, so genuine auditor breaks were missed by the scan. The v22 disclosure of this tool stated "zero auditor breaks ... zero schema crashes under this scan"; the first clause was an artefact of the bug. The primary instrument (`build_dashboard.py`) was unaffected.
+
+**Resolution.** The normalisation logic was corrected, and the corrected scan was re-run over the existing 1,200 perturbed canary audit files: it now reports **3 auditor breaks** (matching the primary dashboard output) and **zero schema crashes and zero cross-variant gaps**. The correction is confined to the reporting layer — the audit pipeline was not re-run and no LLM inference was re-executed. H1 and H2 are unaffected. Paper §5.8 and §6 (Discussion) carry the corrected count; paper §3.12 documents the correction and credits Tsereteli with the catch. Full details: `paper/supplementary/erratum_1_20260803.md`.
+
+## v24 Amendment
+
+Post-hoc disclosure: supplementary analysis provenance and verification test harnesses.
+
+Two deterministic test suites were added to the repository alongside Supplementary S1 (Tsereteli, 2026). These verify the correctness and provenance chain of the rule-incidence and rule-redundancy analysis reported in that supplementary. They do not execute the audit pipeline, re-run any LLM inference, or modify any audit JSON.
+
+`tests/test_rra_provenance_chain.py` — Provenance chain tests. Verifies that the raw audit JSONs from the test-retest seed pass (`run_20260525_205154_arm04a_testretest_seed_300`) and the five test-retest reruns (`run_20260525_234223_arm04b_testretest_reruns_x5_300`), when processed through Tsereteli's `analyze_rule_incidence.py` script, produce 14-rule incidence matrices that are observation-level and value-identical to the golden CSV (`rulebook-redundancy-analysis/data/rule_incidence_seed_and_reruns_available.csv`). Also verifies that the `natural_tight` compression specification applied to the golden incidence CSV yields `α ≈ 0.278` — the figure reported in §5.5 and Supplementary S1 — and that maximum J-family coarsening collapses the agreement further below the reported bound.
+
+`tests/test_rulebook_redundancy_analysis.py` — Unit and integration tests for Tsereteli's analysis scripts (`compute_compressed_alpha.py`, `evaluate_compressed_rulebook.py`, `measure_cluster_flicker.py`). Validates: (i) the custom MASI distance implementation against NLTK's `nltk.metrics.distance.masi_distance` at relative tolerance 2×10⁻³ (accounting for literal-constant rounding differences between implementations); (ii) the `compress_row` function against synthetic data including missing-key and integer-type edge cases; (iii) the `summarize_cluster_flicker` function against synthetic unanimous and flickering cases; (iv) `krippendorff_alpha_masi` against perfect-agreement and total-disagreement synthetic inputs; and (v) the full compress → alpha pipeline end-to-end.
+
+Both suites require the LLM-free golden data files to be present under `rulebook-redundancy-analysis/` and are marked `@pytest.mark.slow` where they exercise the full incidence pipeline. The tests confirm that the reported `α ≈ 0.278` is reproducible from the published artefacts and that Tsereteli's MASI implementation agrees with NLTK to within the stated tolerance.
+
+Post-hoc disclosure: §0.2 judge characterisation. The pre-registered §0.2 characterises Z01–Z05 uniformly as "toy judges" not intended for production. This characterisation is overbroad; the final study (§4.2) supersedes it with a two-tier design in which Z01–Z02 are offered as plausible deployment-style configurations representing current SOTA practice, while Z03–Z05 remain deliberate stress probes. The pre-registered text in §0.2 is preserved without revision; §4.2 is the operative framing.
+
+`pipeline_version` is not bumped. Hypotheses, sample size, seed, MDE, α_family, decision rule, ICC threshold, and exclusion rules are unchanged.
+
+## v25 Amendment
+
+Naming and numbering was disambiguated — rule codes (e.g., S1, the schema rule) and supplementary numbering are distinct; the supplementary is never abbreviated 'S1' in this paper. Supplementary 1, Supplementary 2, and Erratum 1 are named in full throughout to mitigate any future rule code naming collisions.
+
+Post-hoc disclosure: Tsereteli (2026) status. Section 6.2(a)–(b) and §7 were updated to reflect that Giorgi Tsereteli's supplementary analysis (Supplementary 1) has been approved as publishable.
+
+Post-hoc disclosure: §5.9 (specification-gaming boundary). The second policy-boundary paragraph was amended to disclose that the specification-gaming gap was found by manual trace review during the Z07 pilot, not by the instrument. A placeholder §5.9.1 was added for case-scope enumeration pending completion.
+
+`pipeline_version` is not bumped. Hypotheses, sample size, seed, MDE, α_family, decision rule, ICC threshold, and exclusion rules are unchanged.
+
+## v26 Amendment
+
+Literature additions and future-work scoping (framing only; no change to the registered experiment).
+
+1. **Literature additions (§7 only).** Nisbett & Wilson (1977) and Johansson et al. (2005, 2006) added to Related Work, situating a planned counterfactual- manipulation study in the confabulation and choice-blindness literature. No change to study design, hypotheses, measures, sample, or results.
+3. **Future work.** §6.2 gains item (f): citation responsiveness under counterfactual manipulation; internal scoping note 3 v2.1. §6.1 gains one limitation bullet ("citation stability does not establish citation validity").
+4. **Naming.** The internal study code "S3" is retained in the scoping note only; the paper refers to the study descriptively ("counterfactual citation- responsiveness study") to preserve the v25 disambiguation between rule codes and supplementary numbering. No "Supplementary 3" designation is claimed — the study is unexecuted and unregistered at time of writing.
+
+`pipeline_version` is not bumped. Hypotheses, sample size, seed, MDE, α_family, decision rule, ICC threshold, and exclusion rules are unchanged.
 
