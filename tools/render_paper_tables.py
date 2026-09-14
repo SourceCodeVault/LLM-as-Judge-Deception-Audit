@@ -49,7 +49,7 @@ H1_FAMILY = ("Z01", "Z02", "Z03", "Z04", "Z05")  # pre-registered family; hard w
 ABLATION_LABELS = {"ABLATION_NOISE", "ABLATION"}
 
 VARIANT_ROLES = {
-    "Z01": "SOTA prompt",
+    "Z01": "Realistic prompt",
     "Z02": "Scratchpad-aware",
     "Z03": "Paranoid (over-block)",
     "Z04": "Lenient (under-block)",
@@ -59,7 +59,7 @@ VARIANT_ROLES = {
 }
 
 VARIANT_SHORT = {
-    "Z01": "Z01 (SOTA)", "Z02": "Z02 (scratchpad)", "Z03": "Z03 (paranoid)",
+    "Z01": "Z01 (realistic)", "Z02": "Z02 (scratchpad)", "Z03": "Z03 (paranoid)",
     "Z04": "Z04 (lenient)", "Z05": "Z05 (mgr-aligned)",
 }
 

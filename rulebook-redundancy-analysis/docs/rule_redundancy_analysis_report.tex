@@ -1,0 +1,715 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=0.8in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xurl}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{amsmath}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  urlcolor=blue,
+  citecolor=blue
+}
+
+\setlength{\parskip}{0.55em}
+\setlength{\parindent}{0pt}
+\renewcommand{\arraystretch}{1.15}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+\title{Rule Redundancy and Stability Analysis Report}
+\date{}
+
+\begin{document}
+\maketitle
+
+This report documents the exploratory statistical analysis performed after extracting the LLM Auditor rule-citation telemetry from the v2 preprint repository snapshot.
+
+The central object is a case-pass-rule incidence matrix:
+
+\begin{verbatim}
+case_id x pass_id x rule -> 0/1 fired
+\end{verbatim}
+
+The goal was to test whether strongly correlated rule citations could support a smaller, more reproducible rulebook, and whether the low reported rationale reliability, originally \texttt{Krippendorff alpha \textasciitilde= 0.238}, improves under natural rule clustering.
+
+\section*{Data And Matrix Construction}
+
+The source data came from the v2 preprint zip:
+
+\begin{verbatim}
+LLM-as-Judge-Deception-Audit-v2.0-preprint.zip
+\end{verbatim}
+
+The relevant test-retest telemetry is the ablation-arm rerun output:
+
+\begin{verbatim}
+output/run_20260525_234223_arm04b_testretest_reruns_x5_300/
+\end{verbatim}
+
+The seed pass used for the paper's k=6 stability report is:
+
+\begin{verbatim}
+output/run_20260525_205154_arm04a_testretest_seed_300/
+\end{verbatim}
+
+The matrix builder is:
+
+\href{../scripts/analyze_rule_incidence.py}{\path{analyze_rule_incidence.py}}
+
+It reads audit JSON files, keeps only successful ablation-arm observations, and extracts:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \texttt{case\_id}
+  \item \texttt{pass\_id}
+  \item \texttt{ground\_truth}
+  \item Auditor \texttt{verdict}
+  \item \texttt{quadrant}
+  \item \texttt{rules\_fired}
+\end{itemize}
+
+The operational rule vocabulary observed in telemetry is:
+
+\begin{verbatim}
+F1 F2 F3 H1 J1 J2 J3 J4 J5 S1 U1 U2 U3 U4
+\end{verbatim}
+
+The main rerun-only balanced panel is:
+
+\begin{longtable}{L{0.55\textwidth} R{0.35\textwidth}}
+\toprule
+Quantity & Value \\
+\midrule
+\endhead
+Available rerun cases & 297 \\
+Available rerun observations & 1,484 \\
+Complete balanced rerun cases & 296 \\
+Complete balanced rerun observations & 1,480 \\
+Missing observation & case \texttt{fe8426218b1e}, missing \texttt{rerun\_05} \\
+\bottomrule
+\end{longtable}
+
+The seed+rerun k=6 frame is:
+
+\begin{longtable}{L{0.55\textwidth} R{0.35\textwidth}}
+\toprule
+Quantity & Value \\
+\midrule
+\endhead
+Available seed+rerun cases & 297 \\
+Available observations & 1,781 \\
+Complete balanced seed+rerun cases & 296 \\
+Complete balanced observations & 1,776 \\
+\bottomrule
+\end{longtable}
+
+Main matrix outputs:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \href{../data/rule_incidence_reruns.csv}{\path{rule_incidence_reruns.csv}}
+  \item \href{../data/rule_incidence_reruns_available.csv}{\path{rule_incidence_reruns_available.csv}}
+  \item \href{../data/rule_incidence_seed_and_reruns.csv}{\path{rule_incidence_seed_and_reruns.csv}}
+  \item \href{../data/rule_incidence_seed_and_reruns_available.csv}{\path{rule_incidence_seed_and_reruns_available.csv}}
+\end{itemize}
+
+\section*{Step 1: Pass-Level Co-Firing, Implication, And Boolean Equivalence}
+
+Motivation: Before modeling, we checked whether individual rule citations fire together in the same pass. This is the simplest redundancy screen: if two rules almost always co-fire, they may share a precondition or represent overlapping concepts.
+
+Script:
+
+\href{../scripts/analyze_rule_incidence.py}{\path{analyze_rule_incidence.py}}
+
+Outputs:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \href{../results/pairwise_cofiring_reruns.csv}{\path{pairwise_cofiring_reruns.csv}}
+  \item \href{../results/rule_implications_reruns.csv}{\path{rule_implications_reruns.csv}}
+  \item \href{../results/combination_equivalence_reruns.csv}{\path{combination_equivalence_reruns.csv}}
+\end{itemize}
+
+Top pass-level co-firing pairs:
+
+\begingroup
+\small
+\begin{longtable}{L{0.12\textwidth} R{0.09\textwidth} R{0.10\textwidth} R{0.10\textwidth} R{0.09\textwidth} R{0.08\textwidth} R{0.09\textwidth} R{0.09\textwidth}}
+\toprule
+Pair & Co-fire & Support A & Support B & Jaccard & Phi & P(B\textbar A) & P(A\textbar B) \\
+\midrule
+\endhead
+\texttt{J3-J4} & 68 & 78 & 68 & 0.872 & 0.930 & 0.872 & 1.000 \\
+\texttt{U1-U3} & 1076 & 1317 & 1080 & 0.815 & 0.559 & 0.817 & 0.996 \\
+\texttt{F1-F2} & 786 & 800 & 964 & 0.804 & 0.754 & 0.983 & 0.815 \\
+\texttt{J4-J5} & 61 & 68 & 70 & 0.792 & 0.878 & 0.897 & 0.871 \\
+\texttt{J3-J5} & 65 & 78 & 70 & 0.783 & 0.873 & 0.833 & 0.929 \\
+\texttt{F2-U3} & 885 & 964 & 1080 & 0.764 & 0.580 & 0.918 & 0.819 \\
+\texttt{J1-J2} & 99 & 132 & 99 & 0.750 & 0.856 & 0.750 & 1.000 \\
+\texttt{J2-J5} & 68 & 99 & 70 & 0.673 & 0.807 & 0.687 & 0.971 \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+Strong directional implications:
+
+\begin{longtable}{L{0.35\textwidth} R{0.15\textwidth} R{0.15\textwidth} R{0.15\textwidth}}
+\toprule
+Implication & Confidence & Support & Misses \\
+\midrule
+\endhead
+\texttt{F3 => F2} & 1.000 & 318 & 0 \\
+\texttt{J2 => J1} & 1.000 & 99 & 0 \\
+\texttt{J4 => J3} & 1.000 & 68 & 0 \\
+\texttt{F3 => F1} & 0.991 & 318 & 3 \\
+\texttt{F1 => F2} & 0.983 & 800 & 14 \\
+\texttt{J5 => J1} & 0.971 & 70 & 2 \\
+\texttt{J5 => J2} & 0.971 & 70 & 2 \\
+\bottomrule
+\end{longtable}
+
+Best Boolean-equivalence candidates:
+
+\begin{longtable}{L{0.30\textwidth} R{0.10\textwidth} R{0.12\textwidth} R{0.12\textwidth} L{0.25\textwidth}}
+\toprule
+Candidate & F1 Score & Accuracy & Mismatches & Note \\
+\midrule
+\endhead
+\texttt{F2 \textasciitilde= U1 AND NOT S1} & 0.981 & 0.976 & 36 & Strong empirically, semantically broad \\
+\texttt{U1 \textasciitilde= H1 OR U4} & 0.977 & 0.960 & 59 & Mostly reflects common \texttt{U1} behavior \\
+\texttt{U1 \textasciitilde= U3 OR U4} & 0.960 & 0.932 & 101 & Broad universal cluster \\
+\texttt{J4 \textasciitilde= J2 AND J3} & 0.956 & 0.996 & 6 & Cleanest J-rule equivalence candidate \\
+\bottomrule
+\end{longtable}
+
+Interpretation: The strongest early signal was the \texttt{J3/J4/J5} cluster, the \texttt{J1/J2} pair, and the \texttt{F1/F2/F3} factual hierarchy.
+
+\section*{Step 2: Sparse Predictive Models With L1 Logistic Regression}
+
+Motivation: Pairwise co-firing can miss multivariate redundancy. We fit one sparse logistic model per rule:
+
+\begin{verbatim}
+target_rule ~ all_other_rules
+\end{verbatim}
+
+The model used L1 regularization to select a sparse set of predictors. Cross-validation was grouped by \texttt{case\_id} so reruns from the same case did not split across train and test folds. Since \texttt{scikit-learn} was unavailable, a direct proximal-gradient L1 logistic solver was implemented.
+
+Script:
+
+\href{../scripts/fit_l1_rule_models.py}{\path{fit_l1_rule_models.py}}
+
+Outputs:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \href{../results/l1_logistic_rule_models_reruns.csv}{\path{l1_logistic_rule_models_reruns.csv}}
+  \item \href{../results/l1_logistic_rule_coefficients_reruns.csv}{\path{l1_logistic_rule_coefficients_reruns.csv}}
+  \item \href{../results/l1_logistic_cv_path_reruns.csv}{\path{l1_logistic_cv_path_reruns.csv}}
+\end{itemize}
+
+Top sparse models:
+
+\begingroup
+\small
+\begin{longtable}{L{0.09\textwidth} R{0.09\textwidth} R{0.08\textwidth} R{0.08\textwidth} R{0.08\textwidth} R{0.08\textwidth} L{0.35\textwidth}}
+\toprule
+Target & Support & CV F1 & Full F1 & Accuracy & Nonzero & Selected Features \\
+\midrule
+\endhead
+\texttt{F2} & 964 & 0.985 & 0.985 & 0.980 & 6 & \texttt{S1 + F3 + U3 + F1 + U4 + J4} \\
+\texttt{U1} & 1317 & 0.982 & 0.982 & 0.968 & 8 & \texttt{U4 + H1 + U3 + J2 + F1 + J3 + F3 + J5} \\
+\texttt{S1} & 514 & 0.973 & 0.974 & 0.982 & 10 & \texttt{F2 + F1 + U3 + U4 + H1 + J5 + J3 + J1 + U1 + J4} \\
+\texttt{J4} & 68 & 0.932 & 0.932 & 0.993 & 1 & \texttt{J3} \\
+\texttt{J3} & 78 & 0.932 & 0.932 & 0.993 & 2 & \texttt{J4 + J5} \\
+\texttt{J1} & 132 & 0.890 & 0.880 & 0.980 & 2 & \texttt{J2 + J3} \\
+\texttt{J2} & 99 & 0.867 & 0.857 & 0.978 & 1 & \texttt{J1} \\
+\texttt{J5} & 70 & 0.861 & 0.878 & 0.988 & 2 & \texttt{J3 + J2} \\
+\texttt{F3} & 318 & 0.568 & 0.574 & 0.685 & 12 & diffuse, not sparse \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+Interpretation: Sparse modeling again highlighted a compact J-rule dependency structure. \texttt{J4} was predicted by \texttt{J3}; \texttt{J3} by \texttt{J4 + J5}; \texttt{J1} by \texttt{J2 + J3}; \texttt{J2} by \texttt{J1}. \texttt{F3} did not become a clean sparse target.
+
+\section*{Step 3: Stability-Aware Case-Level Redundancy}
+
+Motivation: The 1,480 rerun rows are repeated measures, not independent cases. To avoid treating every rerun as an independent observation, we collapsed to case-level fire rates:
+
+\begin{verbatim}
+fire_rate(rule, case) = fired_passes / observed_passes
+\end{verbatim}
+
+Each rule became a continuous vector over cases, for example:
+
+\begin{verbatim}
+J3 = [0.0, 0.2, 1.0, ...]
+J4 = [0.0, 0.2, 1.0, ...]
+\end{verbatim}
+
+Script:
+
+\href{../scripts/analyze_rule_stability_profiles.py}{\path{analyze_rule_stability_profiles.py}}
+
+Outputs:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \href{../results/case_rule_fire_rates_reruns.csv}{\path{case_rule_fire_rates_reruns.csv}}
+  \item \href{../results/stability_profile_pairs_reruns.csv}{\path{stability_profile_pairs_reruns.csv}}
+  \item \href{../results/stability_profile_implications_reruns.csv}{\path{stability_profile_implications_reruns.csv}}
+\end{itemize}
+
+Top case-level stability-profile matches:
+
+\begingroup
+\small
+\begin{longtable}{L{0.12\textwidth} R{0.08\textwidth} R{0.08\textwidth} R{0.09\textwidth} R{0.08\textwidth} R{0.08\textwidth} R{0.08\textwidth} R{0.09\textwidth} R{0.09\textwidth}}
+\toprule
+Pair & Active A & Active B & Both Active & Pearson & Spearman & MAE & Exact Same & Within 20pp \\
+\midrule
+\endhead
+\texttt{J3-J4} & 57 & 50 & 50 & 0.949 & 0.927 & 0.007 & 0.970 & 0.997 \\
+\texttt{J3-J5} & 57 & 52 & 50 & 0.913 & 0.904 & 0.012 & 0.943 & 0.997 \\
+\texttt{J4-J5} & 50 & 52 & 48 & 0.907 & 0.925 & 0.011 & 0.953 & 0.993 \\
+\texttt{J1-J2} & 92 & 71 & 71 & 0.908 & 0.861 & 0.022 & 0.895 & 0.993 \\
+\texttt{J2-J5} & 71 & 52 & 52 & 0.875 & 0.839 & 0.022 & 0.895 & 0.993 \\
+\texttt{J2-J4} & 71 & 50 & 49 & 0.845 & 0.799 & 0.025 & 0.885 & 0.993 \\
+\texttt{J2-J3} & 71 & 57 & 53 & 0.832 & 0.803 & 0.026 & 0.878 & 0.993 \\
+\texttt{F1-F2} & 194 & 197 & 193 & 0.884 & 0.815 & 0.120 & 0.669 & 0.841 \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+Interpretation: The J-rule cluster remained strong even after collapsing reruns to case-level fire rates. \texttt{F1-F2} is correlated, but less redundancy-like because its MAE is larger and exact profile match is much lower.
+
+\section*{Step 4: Conditional Redundancy By Verdict, Ground Truth, And Quadrant}
+
+Motivation: Some rules may only be redundant in a particular region of the task space. We repeated the case-level profile analysis within strata:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item Auditor verdict: \texttt{APPROVE}, \texttt{BLOCK}
+  \item Ground truth: \texttt{CLEAN}, \texttt{ROGUE}
+  \item Quadrant: \texttt{FLAWED\_APPROVAL}, \texttt{FLAWED\_BLOCK}, \texttt{VALIDATED\_APPROVAL}, \texttt{VALIDATED\_BLOCK}
+\end{itemize}
+
+Script:
+
+\href{../scripts/analyze_conditional_rule_redundancy.py}{\path{analyze_conditional_rule_redundancy.py}}
+
+Outputs:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \href{../results/conditional/conditional_redundancy_summary_reruns.csv}{\path{conditional_redundancy_summary_reruns.csv}}
+  \item \href{../results/conditional/conditional_stability_profile_pairs_reruns.csv}{\path{conditional_stability_profile_pairs_reruns.csv}}
+  \item \href{../results/conditional/conditional_stability_profile_implications_reruns.csv}{\path{conditional_stability_profile_implications_reruns.csv}}
+\end{itemize}
+
+Robust conditional matches, requiring both rules active in at least 20 cases:
+
+\begingroup
+\small
+\begin{longtable}{L{0.24\textwidth} L{0.12\textwidth} R{0.07\textwidth} R{0.08\textwidth} R{0.08\textwidth} R{0.09\textwidth} R{0.08\textwidth} R{0.07\textwidth}}
+\toprule
+Stratum & Pair & Cases & Active A & Active B & Both Active & Pearson & MAE \\
+\midrule
+\endhead
+\texttt{verdict=BLOCK} & \texttt{J3-J4} & 198 & 54 & 48 & 48 & 0.949 & 0.009 \\
+\texttt{ground\_truth=ROGUE} & \texttt{J3-J4} & 197 & 54 & 48 & 48 & 0.949 & 0.009 \\
+\texttt{quadrant=FLAWED\_APPROVAL} & \texttt{J3-J4} & 73 & 44 & 41 & 41 & 0.943 & 0.016 \\
+\texttt{ground\_truth=ROGUE} & \texttt{J1-J2} & 197 & 71 & 62 & 62 & 0.939 & 0.019 \\
+\texttt{verdict=BLOCK} & \texttt{J1-J2} & 198 & 72 & 62 & 62 & 0.937 & 0.020 \\
+\texttt{quadrant=FLAWED\_APPROVAL} & \texttt{J1-J2} & 73 & 51 & 49 & 49 & 0.933 & 0.033 \\
+\texttt{verdict=BLOCK} & \texttt{J3-J5} & 198 & 54 & 50 & 48 & 0.910 & 0.017 \\
+\texttt{ground\_truth=ROGUE} & \texttt{J3-J5} & 197 & 54 & 50 & 48 & 0.910 & 0.017 \\
+\texttt{verdict=BLOCK} & \texttt{J4-J5} & 198 & 48 & 50 & 46 & 0.900 & 0.016 \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+Interpretation: The strongest redundancy is concentrated in \texttt{BLOCK}, \texttt{ROGUE}, and especially \texttt{FLAWED\_APPROVAL} cases. Perfect-looking correlations in \texttt{APPROVE}, \texttt{CLEAN}, and \texttt{FLAWED\_BLOCK} were often based on only 1-2 active cases and were not treated as substantive evidence.
+
+\section*{Step 5: Rule-Rule Distance Matrices And Clustering}
+
+Motivation: Pairwise tables are hard to interpret as a system. We built rule-rule distance matrices and clustered rules to identify natural groups.
+
+Distances:
+
+\begin{verbatim}
+pass-level distance(A, B) = 1 - Jaccard(A, B)
+case-level distance(A, B) = 1 - corr(fire_rate_A, fire_rate_B)
+\end{verbatim}
+
+Script:
+
+\href{../scripts/cluster_rules.py}{\path{cluster_rules.py}}
+
+Outputs:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \href{../results/clusters/rule_distance_jaccard_reruns.csv}{\path{rule_distance_jaccard_reruns.csv}}
+  \item \href{../results/clusters/rule_distance_fire_rate_corr_reruns.csv}{\path{rule_distance_fire_rate_corr_reruns.csv}}
+  \item \href{../results/clusters/rule_cluster_linkage_jaccard_reruns.csv}{\path{rule_cluster_linkage_jaccard_reruns.csv}}
+  \item \href{../results/clusters/rule_cluster_linkage_fire_rate_corr_reruns.csv}{\path{rule_cluster_linkage_fire_rate_corr_reruns.csv}}
+  \item \href{../results/clusters/rule_clusters_jaccard_reruns.csv}{\path{rule_clusters_jaccard_reruns.csv}}
+  \item \href{../results/clusters/rule_clusters_fire_rate_corr_reruns.csv}{\path{rule_clusters_fire_rate_corr_reruns.csv}}
+\end{itemize}
+
+Cluster visualization:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{../results/plots/rule_cluster_visual_summary_reruns.png}
+\caption{Rule cluster visual summary.}
+\end{figure}
+
+Closest pairs by case-level fire-rate correlation:
+
+\begin{longtable}{L{0.22\textwidth} R{0.18\textwidth} R{0.18\textwidth}}
+\toprule
+Pair & Distance & Correlation \\
+\midrule
+\endhead
+\texttt{J3-J4} & 0.051 & 0.949 \\
+\texttt{J3-J5} & 0.087 & 0.913 \\
+\texttt{J1-J2} & 0.092 & 0.908 \\
+\texttt{J4-J5} & 0.093 & 0.907 \\
+\texttt{F1-F2} & 0.116 & 0.884 \\
+\texttt{J2-J5} & 0.125 & 0.875 \\
+\bottomrule
+\end{longtable}
+
+Case-level fire-rate correlation clusters:
+
+\begin{longtable}{R{0.20\textwidth} L{0.65\textwidth}}
+\toprule
+Distance Threshold & Clusters \\
+\midrule
+\endhead
+0.10 & \texttt{J3 J4 J5}; \texttt{J1 J2}; all others singleton \\
+0.20 & \texttt{J1 J2 J3 J4 J5}; \texttt{F1 F2}; all others singleton \\
+0.35 & \texttt{J1 J2 J3 J4 J5}; \texttt{F1 F2 U1 U3}; all others singleton \\
+\bottomrule
+\end{longtable}
+
+Interpretation: Clustering confirmed a tight \texttt{J3/J4/J5} core, a nearby \texttt{J1/J2} pair, and a broader \texttt{J1-J5} judge-reasoning block. \texttt{F1/F2} formed a weaker factual-rule cluster. \texttt{U1/U3} clustered under pass-level Jaccard but less tightly under case-level fire-rate correlation.
+
+\section*{Step 6: Compressed Rulebooks And Recomputed Alpha}
+
+Motivation: If rule clusters are meaningful, compressing them should reduce label fragmentation. We tested whether smaller rulebooks reproduce citation sets more consistently and whether MASI Krippendorff alpha improves.
+
+Scripts:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \href{../scripts/evaluate_compressed_rulebook.py}{\path{evaluate_compressed_rulebook.py}}
+  \item \href{../scripts/compute_compressed_alpha.py}{\path{compute_compressed_alpha.py}}
+\end{itemize}
+
+Outputs:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \href{../results/compressed_rulebook/compressed_rulebook_reproducibility_reruns.csv}{\path{compressed_rulebook_reproducibility_reruns.csv}}
+  \item \href{../results/compressed_rulebook/compressed_rulebook_alpha_seed_and_reruns_available.csv}{\path{compressed_rulebook_alpha_seed_and_reruns_available.csv}}
+\end{itemize}
+
+Compressed rulebooks:
+
+\begin{longtable}{L{0.20\textwidth} R{0.10\textwidth} L{0.60\textwidth}}
+\toprule
+Spec & Labels & Definition \\
+\midrule
+\endhead
+\texttt{original} & 14 & Original observed labels \\
+\texttt{j\_only} & 11 & \texttt{J12 = J1/J2}; \texttt{J345 = J3/J4/J5}; all others original \\
+\texttt{natural\_tight} & 9 & \texttt{F12}, \texttt{J12}, \texttt{J345}, \texttt{U13}, plus remaining singleton labels \\
+\texttt{j\_all} & 10 & \texttt{J\_ALL = J1/J2/J3/J4/J5}; all others original \\
+\texttt{broad\_clusters} & 6 & broad \texttt{F123\_U13}, \texttt{J\_ALL}, plus \texttt{H1}, \texttt{S1}, \texttt{U2}, \texttt{U4} \\
+\bottomrule
+\end{longtable}
+
+Rerun reproducibility under compressed codebooks:
+
+\begin{longtable}{L{0.22\textwidth} R{0.10\textwidth} R{0.13\textwidth} R{0.15\textwidth} R{0.15\textwidth} R{0.15\textwidth}}
+\toprule
+Codebook & Labels & Exact Same All 5 & Mean Pairwise Jaccard & Mean Unique Sets/Case & Label Pair Agreement \\
+\midrule
+\endhead
+\texttt{original} & 14 & 0.007 & 0.638 & 3.652 & 0.843 \\
+\texttt{j\_only} & 11 & 0.007 & 0.650 & 3.642 & 0.823 \\
+\texttt{natural\_tight} & 9 & 0.020 & 0.649 & 3.142 & 0.831 \\
+\texttt{j\_all} & 10 & 0.007 & 0.657 & 3.639 & 0.814 \\
+\texttt{broad\_clusters} & 6 & 0.054 & 0.640 & 2.726 & 0.804 \\
+\bottomrule
+\end{longtable}
+
+Recomputed k=6 MASI Krippendorff alpha:
+
+This alpha table uses \href{../data/rule_incidence_seed_and_reruns_available.csv}{\path{rule_incidence_seed_and_reruns_available.csv}}, which retains all 297 cases and treats the single missing \texttt{rerun\_05} observation as a missing annotation. That matches the repository's \texttt{compute\_stability.py} convention for rule-citation alpha. The balanced 296-case matrix is used for most rerun-only analyses above, but not for this k=6 reproduction check.
+
+\begin{longtable}{L{0.22\textwidth} R{0.09\textwidth} R{0.09\textwidth} R{0.08\textwidth} R{0.10\textwidth} R{0.16\textwidth} R{0.16\textwidth}}
+\toprule
+Codebook & Labels & Cases & Runs & Alpha & Observed Disagreement & Expected Disagreement \\
+\midrule
+\endhead
+\texttt{original} & 14 & 297 & 6 & 0.238 & 0.583 & 0.765 \\
+\texttt{j\_only} & 11 & 297 & 6 & 0.242 & 0.576 & 0.760 \\
+\texttt{natural\_tight} & 9 & 297 & 6 & 0.278 & 0.534 & 0.739 \\
+\texttt{j\_all} & 10 & 297 & 6 & 0.244 & 0.573 & 0.758 \\
+\texttt{broad\_clusters} & 6 & 297 & 6 & 0.263 & 0.495 & 0.672 \\
+\bottomrule
+\end{longtable}
+
+The original implementation reported \texttt{alpha = 0.23833564424581033}. The local remeasurement gave \texttt{alpha = 0.238172}, close enough to confirm that the same MASI-alpha calculation is being approximated. The small residual difference is consistent with using a direct local implementation rather than NLTK's \texttt{AnnotationTask} internals.
+
+Interpretation: Compression improved alpha, but only modestly. The best version was the 9-rule \texttt{natural\_tight} rulebook, raising alpha from about \texttt{0.238} to about \texttt{0.278}. This is an improvement, but still far below a stable rationale layer.
+
+\subsection*{Alpha Uncertainty And Finite-Sample Noise Margin}
+
+Motivation: The alpha values are estimated from a finite set of cases. To quantify the sampling uncertainty, we used a paired nonparametric bootstrap over cases. Each bootstrap replicate resampled cases with replacement while preserving the full run bundle for each sampled case, then recomputed alpha for the original and compressed rulebooks. This keeps the repeated-measures structure intact.
+
+Script:
+
+\href{../scripts/bootstrap_alpha_uncertainty.py}{\path{bootstrap_alpha_uncertainty.py}}
+
+For the paper-like k=6 seed+rerun frame:
+
+\begin{longtable}{L{0.34\textwidth} R{0.12\textwidth} R{0.20\textwidth} R{0.18\textwidth}}
+\toprule
+Quantity & Estimate & 95\% Bootstrap CI & Noise Margin \\
+\midrule
+\endhead
+Original 14-rule alpha & 0.238 & [0.219, 0.257] & about +/- 0.019 \\
+Natural-tight 9-rule alpha & 0.278 & [0.255, 0.298] & about +/- 0.022 \\
+Improvement & +0.039 & [+0.031, +0.047] & about +/- 0.008 \\
+\bottomrule
+\end{longtable}
+
+For the k=5 reruns-only sensitivity check:
+
+\begin{longtable}{L{0.40\textwidth} R{0.15\textwidth} R{0.25\textwidth}}
+\toprule
+Quantity & Estimate & 95\% Bootstrap CI \\
+\midrule
+\endhead
+Original 14-rule alpha & 0.231 & [0.212, 0.251] \\
+Natural-tight 9-rule alpha & 0.270 & [0.246, 0.292] \\
+Improvement & +0.039 & [+0.030, +0.048] \\
+\bottomrule
+\end{longtable}
+
+Interpretation: The finite-sample noise margin for an individual alpha estimate is about \texttt{+/- 0.02} alpha units. Because the comparison is paired on the same cases, the uncertainty for the increase is smaller, about \texttt{+/- 0.008}. The observed increase from \texttt{0.238} to \texttt{0.278} is therefore larger than the finite-sample noise margin and is statistically distinguishable from zero under this bootstrap. Substantively, however, the gain remains modest: both alpha values are still low.
+
+This bootstrap only captures uncertainty from finite case sampling. It does not include uncertainty from prompt changes, model snapshot changes, temperature changes, or using a genuine-arm rerun instead of the ablation-arm rerun.
+
+\section*{Step 7: Entropy Per Case And Per Rule/Cluster}
+
+Motivation: Alpha summarizes agreement at the dataset level, but it does not show which cases or rules are intrinsically unpredictable. We therefore measured Shannon entropy in bits.
+
+For each case, we computed entropy over distinct citation-set states across the 5 reruns:
+
+\begin{verbatim}
+H(case) = - sum_s p(s) log2 p(s)
+\end{verbatim}
+
+where \texttt{s} is a distinct citation-set state.
+
+For each individual rule or compressed cluster, we computed binary fired/not-fired entropy across reruns:
+
+\begin{verbatim}
+p = fired_passes / observed_passes
+H(rule, case) = -p log2(p) - (1-p) log2(1-p)
+\end{verbatim}
+
+Entropy is zero when a rule is always absent or always present, and highest when it flickers around half the time.
+
+Script:
+
+\href{../scripts/measure_entropy.py}{\path{measure_entropy.py}}
+
+Outputs:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \href{../results/entropy/case_entropy_summary_reruns.csv}{\path{case_entropy_summary_reruns.csv}}
+  \item \href{../results/entropy/case_entropy_reruns.csv}{\path{case_entropy_reruns.csv}}
+  \item \href{../results/entropy/label_entropy_reruns.csv}{\path{label_entropy_reruns.csv}}
+\end{itemize}
+
+Case-level citation-set entropy:
+
+\begin{longtable}{L{0.22\textwidth} R{0.16\textwidth} R{0.16\textwidth} R{0.16\textwidth} R{0.16\textwidth}}
+\toprule
+Rulebook & Mean Entropy Bits & Normalized Entropy & Mean Unique Sets & Zero-Entropy Cases \\
+\midrule
+\endhead
+\texttt{original} & 1.732 & 0.746 & 3.652 & 2 / 296 \\
+\texttt{j\_only} & 1.728 & 0.744 & 3.642 & 2 / 296 \\
+\texttt{j\_all} & 1.726 & 0.743 & 3.639 & 2 / 296 \\
+\texttt{natural\_tight} & 1.483 & 0.639 & 3.142 & 6 / 296 \\
+\texttt{broad\_clusters} & 1.249 & 0.538 & 2.726 & 16 / 296 \\
+\bottomrule
+\end{longtable}
+
+Interpretation: compression lowers case-level entropy, especially \texttt{natural\_tight} and \texttt{broad\_clusters}, but most cases still occupy multiple citation-set states across reruns.
+
+Entropy per original 14 individual rules:
+
+\begingroup
+\small
+\begin{longtable}{L{0.07\textwidth} R{0.09\textwidth} R{0.08\textwidth} R{0.08\textwidth} R{0.11\textwidth} R{0.12\textwidth} L{0.30\textwidth}}
+\toprule
+Rule & Seen Cases & H Seen & H All & Flicker Given Seen & Unanimous Given Seen & Fired-Pass Histogram \\
+\midrule
+\endhead
+\texttt{F3} & 144 & 0.837 & 0.407 & 0.972 & 0.028 & \texttt{1:43 2:55 3:23 4:19 5:4} \\
+\texttt{H1} & 259 & 0.805 & 0.705 & 0.931 & 0.069 & \texttt{1:64 2:93 3:46 4:38 5:18} \\
+\texttt{U4} & 282 & 0.803 & 0.765 & 0.929 & 0.071 & \texttt{1:55 2:71 3:79 4:57 5:20} \\
+\texttt{J1} & 92 & 0.779 & 0.242 & 0.989 & 0.011 & \texttt{1:66 2:15 3:9 4:1 5:1} \\
+\texttt{J2} & 71 & 0.775 & 0.186 & 0.986 & 0.014 & \texttt{1:52 2:12 3:6 5:1} \\
+\texttt{J3} & 57 & 0.770 & 0.148 & 0.982 & 0.018 & \texttt{1:42 2:11 3:3 5:1} \\
+\texttt{J4} & 50 & 0.762 & 0.129 & 0.980 & 0.020 & \texttt{1:38 2:8 3:3 5:1} \\
+\texttt{J5} & 52 & 0.756 & 0.133 & 0.981 & 0.019 & \texttt{1:41 2:6 3:4 5:1} \\
+\texttt{U2} & 2 & 0.722 & 0.005 & 1.000 & 0.000 & \texttt{1:2} \\
+\texttt{U3} & 283 & 0.460 & 0.440 & 0.558 & 0.442 & \texttt{1:24 2:40 3:25 4:69 5:125} \\
+\texttt{F1} & 194 & 0.394 & 0.258 & 0.479 & 0.521 & \texttt{1:10 2:10 3:27 4:46 5:101} \\
+\texttt{U1} & 294 & 0.231 & 0.230 & 0.265 & 0.735 & \texttt{1:4 2:16 3:31 4:27 5:216} \\
+\texttt{S1} & 115 & 0.130 & 0.051 & 0.165 & 0.835 & \texttt{1:11 2:4 3:1 4:3 5:96} \\
+\texttt{F2} & 197 & 0.062 & 0.042 & 0.081 & 0.919 & \texttt{2:2 3:1 4:13 5:181} \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+This creates a clear entropy-based rule clustering:
+
+\begin{longtable}{L{0.24\textwidth} L{0.36\textwidth} L{0.30\textwidth}}
+\toprule
+Entropy Cluster & Rules & Interpretation \\
+\midrule
+\endhead
+High entropy / unstable & \texttt{F3}, \texttt{H1}, \texttt{U4}, \texttt{J1}, \texttt{J2}, \texttt{J3}, \texttt{J4}, \texttt{J5} & Presence/absence flicker across reruns \\
+Lower entropy / more stable & \texttt{U3}, \texttt{F1}, \texttt{U1}, \texttt{S1}, \texttt{F2} & More reproducible once active \\
+Too rare to interpret & \texttt{U2} & Only 2 seen cases \\
+\bottomrule
+\end{longtable}
+
+Entropy per \texttt{natural\_tight} compressed cluster:
+
+\begingroup
+\small
+\begin{longtable}{L{0.10\textwidth} L{0.16\textwidth} R{0.10\textwidth} R{0.08\textwidth} R{0.08\textwidth} R{0.14\textwidth} R{0.15\textwidth}}
+\toprule
+Cluster & Members & Seen Cases & H Seen & H All & Flicker Given Seen & Unanimous Given Seen \\
+\midrule
+\endhead
+\texttt{F3} & \texttt{F3} & 144 & 0.837 & 0.407 & 0.972 & 0.028 \\
+\texttt{H1} & \texttt{H1} & 259 & 0.805 & 0.705 & 0.931 & 0.069 \\
+\texttt{U4} & \texttt{U4} & 282 & 0.803 & 0.765 & 0.929 & 0.071 \\
+\texttt{J12} & \texttt{J1 J2} & 92 & 0.779 & 0.242 & 0.989 & 0.011 \\
+\texttt{J345} & \texttt{J3 J4 J5} & 59 & 0.777 & 0.155 & 0.983 & 0.017 \\
+\texttt{U13} & \texttt{U1 U3} & 294 & 0.226 & 0.225 & 0.262 & 0.738 \\
+\texttt{S1} & \texttt{S1} & 115 & 0.130 & 0.051 & 0.165 & 0.835 \\
+\texttt{F12} & \texttt{F1 F2} & 198 & 0.024 & 0.016 & 0.030 & 0.970 \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+The compressed clusters show the same separation:
+
+\begin{longtable}{L{0.24\textwidth} L{0.32\textwidth} L{0.34\textwidth}}
+\toprule
+Entropy Cluster & Natural-Tight Clusters & Interpretation \\
+\midrule
+\endhead
+Low entropy / stable & \texttt{F12}, \texttt{S1}, \texttt{U13} & Compression captures relatively stable concepts \\
+High entropy / unstable & \texttt{F3}, \texttt{H1}, \texttt{U4}, \texttt{J12}, \texttt{J345} & These remain flickery even after compression \\
+Too rare to interpret & \texttt{U2} & Only 2 seen cases \\
+\bottomrule
+\end{longtable}
+
+Interpretation: Entropy confirms that the J clusters are not merely unstable because of label substitution. Even after compression, \texttt{J12} and \texttt{J345} remain high-entropy sensors. The entropy split also identifies \texttt{F3}, \texttt{H1}, and \texttt{U4} as major non-J contributors to rationale instability.
+
+\section*{Step 8: Cluster-Level Presence/Absence Flicker}
+
+Motivation: Strong correlation can mean two different things:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item Label-substitution instability: the same concept is detected, but nearby labels are swapped.
+  \item Presence/absence instability: the entire concept family flickers on and off.
+\end{enumerate}
+
+Compression fixes the first problem, but not the second. To distinguish them, we asked:
+
+\begin{verbatim}
+When any member of a compressed cluster fires in a case,
+how often does the cluster fire in all reruns?
+\end{verbatim}
+
+Script:
+
+\href{../scripts/measure_cluster_flicker.py}{\path{measure_cluster_flicker.py}}
+
+Outputs:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \href{../results/compressed_rulebook/cluster_flicker_summary_reruns.csv}{\path{cluster_flicker_summary_reruns.csv}}
+  \item \href{../results/compressed_rulebook/cluster_flicker_cases_reruns.csv}{\path{cluster_flicker_cases_reruns.csv}}
+\end{itemize}
+
+Cluster-level on/off stability for the \texttt{natural\_tight} codebook:
+
+\begingroup
+\small
+\begin{longtable}{L{0.10\textwidth} L{0.12\textwidth} R{0.09\textwidth} R{0.16\textwidth} R{0.09\textwidth} R{0.13\textwidth} L{0.22\textwidth}}
+\toprule
+Cluster & Members & Cases Seen & Fires All 5 & Flickers & Mean Fire Rate When Seen & Histogram \\
+\midrule
+\endhead
+\texttt{F12} & \texttt{F1 F2} & 198 & 192/198 = 0.970 & 0.030 & 0.988 & \texttt{1:1 2:1 3:1 4:3 5:192} \\
+\texttt{S1} & \texttt{S1} & 115 & 96/115 = 0.835 & 0.165 & 0.894 & \texttt{1:11 2:4 3:1 4:3 5:96} \\
+\texttt{U13} & \texttt{U1 U3} & 294 & 217/294 = 0.738 & 0.262 & 0.899 & \texttt{1:4 2:16 3:28 4:29 5:217} \\
+\texttt{U4} & \texttt{U4} & 282 & 20/282 = 0.071 & 0.929 & 0.540 & \texttt{1:55 2:71 3:79 4:57 5:20} \\
+\texttt{H1} & \texttt{H1} & 259 & 18/259 = 0.069 & 0.931 & 0.486 & \texttt{1:64 2:93 3:46 4:38 5:18} \\
+\texttt{F3} & \texttt{F3} & 144 & 4/144 = 0.028 & 0.972 & 0.442 & \texttt{1:43 2:55 3:23 4:19 5:4} \\
+\texttt{J12} & \texttt{J1 J2} & 92 & 1/92 = 0.011 & 0.989 & 0.287 & \texttt{1:66 2:15 3:9 4:1 5:1} \\
+\texttt{J345} & \texttt{J3 J4 J5} & 59 & 1/59 = 0.017 & 0.983 & 0.281 & \texttt{1:42 2:12 3:4 5:1} \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+Interpretation: This was the decisive diagnostic. The J rules are correlated, but the compressed J-family signal itself almost never appears in all reruns once it appears at least once. \texttt{J12} and \texttt{J345} are not merely suffering from label substitution. They are suffering from family-level on/off flicker.
+
+By contrast, \texttt{F12} behaves like a genuinely stable merged concept: once the \texttt{F1/F2} family appears, it appears in all five reruns 97.0\% of the time.
+
+\section*{Conclusion}
+
+The analyses agree on the natural geometry of the rulebook:
+
+\begin{verbatim}
+Tight J core:       J3 J4 J5
+Nearby J pair:      J1 J2
+Broad J block:      J1 J2 J3 J4 J5
+Factual cluster:    F1 F2
+Universal cluster:  U1 U3, weaker and more base-rate driven
+\end{verbatim}
+
+However, natural clustering does not rescue rationale reproducibility.
+
+The reason is now clear. The J rules are strongly correlated when they appear, and their case-level fire-rate profiles are highly similar. But the whole J-family signal flickers on and off across reruns. Compressing \texttt{J3/J4/J5} into \texttt{J345} removes some surface label fragmentation, but it does not make the underlying sensor stable.
+
+The strongest practical findings are:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item \texttt{F12 = F1/F2} is a plausible stable merged concept.
+  \item \texttt{J12 = J1/J2} and \texttt{J345 = J3/J4/J5} are natural clusters, but not stable sensors in the current ablation rerun data.
+  \item The 9-rule \texttt{natural\_tight} codebook improves MASI alpha from about \texttt{0.238} to about \texttt{0.278}, but that remains low.
+  \item Most residual instability is not label substitution. It is presence/absence flicker, especially for \texttt{J12}, \texttt{J345}, \texttt{F3}, \texttt{H1}, and \texttt{U4}.
+\end{enumerate}
+
+For v3, this means rule compression alone is not enough. The likely useful next step is to reformulate or separately test the unstable families as ternary per-rule sensors: \texttt{SUPPORTED}, \texttt{CONTRADICTED}, \texttt{UNSUPPORTED}, plus timeout/error. The boundary that matters most is not just which label fires, but whether the model can consistently decide that the relevant rule-family is present at all.
+
+\end{document}
