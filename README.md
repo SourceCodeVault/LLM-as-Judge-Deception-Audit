@@ -465,7 +465,16 @@ ulimit -n 4096
 
 ## Obtaining the Apollo Corpus
 
-This study uses the Apollo Research insider-trading deception corpus as Line 1 source data. The corpus is already included to assist reproducability. It is also publicly available at the official Apollo Research source:
+This study uses the Apollo Research insider-trading deception corpus as Line 1 source data.
+
+**Corpus Authors:** Jérémy Scheurer, Mikita Balesni, Marius Hobbhahn (Apollo Research)
+**Corpus License:** Creative Commons Attribution 4.0 International (CC-BY-4.0) — https://creativecommons.org/licenses/by/4.0/
+**Original Source:** https://github.com/ApolloResearch/insider-trading
+**Corpus Paper:** Scheurer, J., Balesni, M., & Hobbhahn, M. (2023). *Large language models can strategically deceive their users when put under pressure*. arXiv. https://arxiv.org/abs/2311.07590
+
+The corpus is already included to assist reproducibility and is redistributed under its original CC-BY-4.0 license. The Apollo corpus retains its original license and copyright notice; see `data/raw/ApolloResearch/insider-trading-main/LICENSE`.
+
+   It is also publicly available at the official Apollo Research source:
 
 ​```bash
 git clone https://github.com/ApolloResearch/insider-trading data/raw/ApolloResearch
@@ -618,6 +627,5 @@ Independent researcher working at the intersection of AI safety and enterprise G
 - **MSc**, Information Technology for E-Commerce  
 - **BSc**, Information & Computing  
 - **CISA** — Certified Information Systems Auditor (ISACA)  
-- **CAMS** — Certified Anti-Money Laundering Specialist (ACAMS)  
 
 LinkedIn: [Adrian St. Vaughan](https://www.linkedin.com/in/adrianstvaughan/)
