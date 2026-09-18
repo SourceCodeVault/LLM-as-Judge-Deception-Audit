@@ -510,11 +510,11 @@ All analysis decisions (thresholds, metrics, inclusion criteria) remain locked a
 If you use this software or methodology in academic work, please cite:
 
 ```bibtex
-@software{stvaughan_correspondence_auditor_2026,
+@software{stvaughan_2026_reliable_verdicts,
   author  = {St Vaughan, Adrian},
-  title   = {Correspondence Auditor: Three-Gate Verification for LLM-as-Judge Pipelines},
+  title   = {Reliable verdicts, unreliable rationales: a test–retest study of an LLM-as-judge audit instrument},
   year    = {2026},
-  version = {v1.0-prereg},
+  version = {v3.0-preprint},
   doi     = {10.5281/zenodo.20326022},
   url     = {https://github.com/SourceCodeVault/LLM-as-Judge-Deception-Audit}
 }
