@@ -931,7 +931,6 @@ The Correspondence Auditor — instrument, prompt manifests, frozen `policy.md` 
 
 The complete pre-registration amendment history (v1–v27) is summarized in \hyperref[sec:appendix-d]{Appendix D}.
 
-- **Keywords:** test–retest reliability, LLM-as-judge, measurement artifact
 
 # Ethics Statement {-}
 
