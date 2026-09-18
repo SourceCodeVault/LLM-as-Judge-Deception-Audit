@@ -2,16 +2,13 @@
 
 An open-source, high-integrity audit layer that sits **downstream** of any LLM-as-Judge pipeline. The Auditor is a Line 3 instrument: it does not try to be a better judge. It records what the judge was given, what the judge concluded, and whether those two things are reconcilable against the policy.  
 
-This repository is the frozen experimental artefact for "Auditing LLM-as-Judge Pipelines: A Source-Grounded Instrument for Detecting Strategic-Deception Blindspots" (St. Vaughan, 2026; methodology deposit DOI 10.5281/zenodo.20326022). 
+This repository is the frozen experimental artefact for "Reliable verdicts, unreliable rationales: a test–retest study of an LLM-as-judge audit instrument" (St Vaughan, 2026; archive DOI https://zenodo.org/doi/10.5281/zenodo.20326022 — resolves to the latest archived release). 
 
-**This codebase represents the v2.0 release.**
+**This codebase represents the v2.0 software release.** The manuscript in `paper/` is the v3.0-preprint paper (tag `v3.0-preprint`); software and paper versions are independent.
 
-**Permanent Archive Links:**
-* v1.2-reporting-framework: https://doi.org/10.5281/zenodo.20427241
-* v1.3-pilot-results: https://doi.org/10.5281/zenodo.20427306
-* v2.0-preprint: https://doi.org/10.5281/zenodo.20921659
+**Permanent archive (all releases):** https://zenodo.org/doi/10.5281/zenodo.20326022 — resolves to the latest archived release.
 
-For the actively maintained tool, see [Correspondence Auditor](https://github.com/SourceCodeVault/Correspondence-Auditor). Issues against this code go to `KNOWN_ISSUES.md` and will be addressed in the main repo, not here.
+For the actively maintained tool, see [Correspondence Auditor](https://github.com/SourceCodeVault/Correspondence-Auditor). Issues against this code go to `historical/KNOWN_ISSUES.md` and will be addressed in the main repo, not here.
 
 ---
 
@@ -205,7 +202,7 @@ python run.py --mode A --env remote_openrouter
 python run.py --mode A --canary
 ```
 
-See [README-CANARY.md](README-CANARY.md) for full documentation.
+See [historical/README-CANARY.md](historical/README-CANARY.md) for full documentation.
 
 ---
 
@@ -322,106 +319,26 @@ In this mode, the Auditor forces Gate B and Gate C to relitigate every single ca
 
 ---
 
-## Project Structure  
+## Project Structure
+
+Key items (everything else supports the pipeline and is documented in-line):
 
 ```
 .
-├── CITATION.cff
-├── config
-│   └── cost_mapping.yaml
-├── data
-│   ├── raw
-│   │   └── ApolloResearch
-│   └── synthetic
-│       └── structural_v1_scoped_but_deferred
-├── domains
-│   └── insider_trading
-│       ├── manifest.json
-│       └── policy.md
-├── historical
-│   ├── historical_v17-v18.zip
-│   └── README.md
-├── input
-│   └── dataset_20260521_192859
-│       ├── ApolloResearch
-│       └── manifest.jsonl
-├── KNOWN_ISSUES.md
-├── LICENSE
-├── paper
-│   ├── build_paper.py
-│   ├── PAPER.md
-│   └── PRE_REGISTRATION.md
-├── prompts
-│   ├── L2_Z01_JudgeBench.json
-│   ├── L2_Z02_ScratchpadAware.json
-│   ├── L2_Z03_Paranoid.json
-│   ├── L2_Z04_Lenient.json
-│   ├── L2_Z05_ManagerAligned.json
-│   ├── L2_Z07_SameModelControl.json
-│   ├── L2_Z08_ScratchpadAwareControl.json
-│   ├── L3_GateB_FactChecker.json
-│   └── L3_GateC_LogicAuditor.json
-├── pytest.ini
-├── README-CANARY.md
-├── README.md
-├── requirements.txt
-├── run.py
-├── shared
-│   ├── __init__.py
-│   ├── api_clients
-│   │   ├── __init__.py
-│   │   ├── __pycache__
-│   │   ├── cerebras_client.py
-│   │   ├── ollama_client.py
-│   │   └── openrouter_client.py
-│   ├── llm_utils.py
-│   ├── logging_utils.py
-│   ├── string_utils.py
-│   └── ui_utils.py
-├── steps
-│   ├── __init__.py
-│   ├── banner.py
-│   ├── claim_miner.py
-│   ├── l2_judge.py
-│   ├── l3_auditor.py
-│   ├── orchestrator.py
-│   ├── schema.py
-│   └── source_compiler.py
-├── tests
-│   ├── test_path_sort_equivalence.py
-│   ├── test_select_pilot_determinism.py
-│   ├── test_v17_schema_repairs.py
-│   ├── test_validate_sort_parity.py
-│   ├── TEST-RESULT_test_backfill_reconciliation.md
-│   ├── TEST-RESULT_test_path_sort_equivalence.md
-│   ├── TEST-RESULT_test_select_pilot_determinism.md
-│   ├── TEST-RESULT_test_v17_schema_repairs.txt
-│   └── TEST-RESULT_test_validate_sort_parity.md
-├── tools
-│   ├── backfill_manifest_v19.py
-│   ├── build_dashboard.py
-│   ├── build-canary-files
-│   │   ├── check_canary_disjoint.py
-│   │   ├── generate_canary.py
-│   │   ├── README.md
-│   │   ├── stage_a_scenario.txt
-│   │   ├── stage_b_rogue_deceptive.txt
-│   │   ├── stage_b_rogue_honest.txt
-│   │   ├── stage_b_safe.txt
-│   │   ├── stage_c_rogue_deceptive.txt
-│   │   ├── stage_c_rogue_honest.txt
-│   │   ├── stage_c_safe.txt
-│   │   ├── synthetic_entities.yaml
-│   │   └── triage_canary.py
-│   ├── clean_tainted.py
-│   ├── compute_stability.py
-│   ├── extract_stratified_subsample.py
-│   ├── hash_mapping.py
-│   ├── l3_gate_b_irr_tester.py
-│   ├── select_pilot.py
-│   ├── tainted_cases.txt
-│   └── update_openrouter_costs.py
-```  
+├── run.py                     # entry point
+├── CITATION.cff              # citation metadata (evergreen archive DOI)
+├── paper/
+│   ├── PAPER.md              # the v3.0-preprint manuscript
+│   ├── PRE_REGISTRATION.md   # v1–v27 amendment trail
+│   └── supplementary/        # Supplementary 1 (+ PDF), Erratum 1, S3 scoping note v2.3
+├── prompts/                  # frozen L2/L3 prompt manifests
+├── rulebook-redundancy-analysis/  # Supplementary 1 data + scripts
+├── shared/, steps/, domains/, config/   # pipeline implementation
+├── tests/                    # test suites + TEST-RESULT reports
+├── tools/                    # analysis & forensics tooling (incl. build-canary-files/)
+├── input/, output/           # frozen pilot corpus and run artifacts
+└── historical/               # earlier pre-reg snapshots, KNOWN_ISSUES, canary docs
+```
 
 ---
 ## Setup
@@ -600,9 +517,7 @@ If you use this software or methodology in academic work, please cite:
 }
 ```
 
-The `version` field anchors the citation to the methodology deposit. To explicitly cite the finalized reporting framework or the final pilot results, reference the subsequent Zenodo deposits:
-* `v1.2-reporting-framework` (DOI: 10.5281/zenodo.20427241)
-* `v1.3-pilot-results` (DOI: 10.5281/zenodo.20427306)
+All releases (v1.0-prereg → v3.0-preprint) are archived under a single evergreen DOI: https://zenodo.org/doi/10.5281/zenodo.20326022 (resolves to the latest archived release).
 
 ---
 
