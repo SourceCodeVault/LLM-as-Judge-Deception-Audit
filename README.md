@@ -6,6 +6,8 @@ This repository is the frozen experimental artefact for "Reliable verdicts, unre
 
 **This codebase represents the v2.0 software release.** The manuscript in `paper/` is the v3.0-preprint paper (tag `v3.0-preprint`); software and paper versions are independent.
 
+**Read the paper:** [paper/PAPER-v3.0-preprint.pdf](paper/PAPER-v3.0-preprint.pdf)
+
 **Permanent archive (all releases):** https://zenodo.org/doi/10.5281/zenodo.20326022 — resolves to the latest archived release.
 
 For the actively maintained tool, see [Correspondence Auditor](https://github.com/SourceCodeVault/Correspondence-Auditor). Issues against this code go to `historical/KNOWN_ISSUES.md` and will be addressed in the main repo, not here.
@@ -328,7 +330,8 @@ Key items (everything else supports the pipeline and is documented in-line):
 ├── run.py                     # entry point
 ├── CITATION.cff              # citation metadata (evergreen archive DOI)
 ├── paper/
-│   ├── PAPER.md              # the v3.0-preprint manuscript
+│   ├── PAPER.md              # the v3.0-preprint manuscript (source)
+│   ├── PAPER-v3.0-preprint.pdf  # rendered paper (ship this to readers)
 │   ├── PRE_REGISTRATION.md   # v1–v27 amendment trail
 │   └── supplementary/        # Supplementary 1 (+ PDF), Erratum 1, S3 scoping note v2.3
 ├── prompts/                  # frozen L2/L3 prompt manifests
